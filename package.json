@@ -18,6 +18,7 @@
     "start:prod": "node dist/main",
     "dev": "npm run docker:compose && npm run prisma:generate && npm run prisma:push && npm run start:dev",
     "docker:compose": "docker-compose -f docker-compose.dev.yml up -d",
+    "prisma:seed": "npx prisma db seed",
     "prisma:push": "npx prisma db push",
     "prisma:generate": "npx prisma generate",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -75,5 +76,8 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   }
 }
