@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "EditorConfig.EditorConfig",
+    "esbenp.prettier-vscode",
+    "mikestead.dotenv",
+    "dbaeumer.vscode-eslint",
+    "ms-azuretools.vscode-docker",
+    "Prisma.prisma",
+  ]
+}
