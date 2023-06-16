@@ -21,6 +21,7 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "dev": "npm run docker:compose && npm run prisma:generate && npm run prisma:push && npm run start:dev",
+    "dev:min": "npm run docker:compose && npm run start:dev",
     "docker:compose": "docker-compose -f docker-compose.dev.yml up -d",
     "prisma:seed": "npx prisma db seed",
     "prisma:push": "npx prisma db push",
@@ -36,6 +37,7 @@
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/swagger": "^7.0.0",
     "@prisma/client": "^4.11.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0"
