@@ -5,6 +5,10 @@
   "author": "Routinely",
   "private": true,
   "license": "MIT",
+  "homepage": "https://github.com/RoutinelyOrganization/",
+  "bugs": {
+    "url": "https://github.com/RoutinelyOrganization/routinely-api/issues"
+  },
   "repository": {
     "url": "git@github.com:RoutinelyOrganization/Routinely.API.git",
     "type": "git"
