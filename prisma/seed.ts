@@ -3,18 +3,9 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  const profile1 = await prisma.profile.upsert({
-    where: {
-      userId: 'usrid123456789',
-    },
-    update: {},
-    create: {
-      userId: 'usrid123456789',
-      age: 20,
-    },
-  });
+  const getAccountSessionsAndProfile = await prisma.account.findFirst({});
 
-  console.log({ profile1 });
+  console.info(getAccountSessionsAndProfile);
 }
 
 main()
