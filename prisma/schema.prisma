@@ -10,12 +10,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  password      String
+  verifiedAt    DateTime    @map("verified_at")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  permission    Permission  @relation(fields: [permissionId], references: [id])
+  permissionId  Int         @map("permission_id")
+  sessions      Session[]
+  profile       Profile?
+
+  @@map("accounts")
+}
+
 model Profile {
   id        Int       @id @default(autoincrement())
-  userId    String    @unique
-  age       Int
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  name      String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  account   Account   @relation(fields: [accountId], references: [id])
+  accountId String    @unique @map("account_id")
 
   @@map("profiles")
+}
+
+model Session {
+  id        String    @id @default(uuid())
+  account   Account   @relation(fields: [accountId], references: [id])
+  accountId String    @map("account_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("sessions")
+}
+
+model Permission {
+  id      Int @id @default(autoincrement())
+  role    String @unique
+  account Account[]
+
+  @@map("permissions")
 }
