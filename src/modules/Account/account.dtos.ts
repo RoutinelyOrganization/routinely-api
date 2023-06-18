@@ -25,5 +25,6 @@ export class CreateAccountDto {
 
   @IsNotEmpty()
   @IsBoolean()
+  @ApiProperty()
   acceptedTerms: boolean;
 }
