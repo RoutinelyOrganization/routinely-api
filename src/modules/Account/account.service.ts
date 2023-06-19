@@ -17,13 +17,13 @@ export class AccountService {
   constructor(private accountRepository: AccountRepository) {}
 
   private hashData(unhashedData: string): string {
-    return createHash(process.env.HASH_ALGORITHM)
-      .update(unhashedData)
+    return createHash('sha256')
+      .update(unhashedData + process.env.SALT_DATA)
       .digest('hex');
   }
 
-  private async hashPassword(pass: string): Promise<string> {
-    return await hash(pass, Number(process.env.SALT_ROUNDS));
+  private async hashPassword(password: string): Promise<string> {
+    return await hash(password, Number(process.env.SALT_ROUNDS));
   }
 
   private async comparePassword(
