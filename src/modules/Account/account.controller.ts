@@ -8,7 +8,7 @@ import { AccountService } from './account.service';
 export class AccountController {
   constructor(private accountService: AccountService) {}
 
-  @Post()
+  @Post('register')
   async create(
     @Body() { name, email, password, acceptedTerms }: CreateAccountDto
   ) {
