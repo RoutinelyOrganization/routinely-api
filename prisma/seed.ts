@@ -1,20 +1,46 @@
 import { PrismaClient } from '@prisma/client';
+import { createHash } from 'node:crypto';
+import { hashSync } from 'bcrypt';
 
 const prisma = new PrismaClient();
 
-async function main() {
-  const profile1 = await prisma.profile.upsert({
-    where: {
-      userId: 'usrid123456789',
-    },
-    update: {},
-    create: {
-      userId: 'usrid123456789',
-      age: 20,
-    },
-  });
+const account = {
+  name: 'Ada Lovelace',
+  email: 'admin@admin.com',
+  password: 'Admin@21',
+};
 
-  console.log({ profile1 });
+async function main() {
+  const emailHash = createHash('sha256')
+    .update(account.email + process.env.SALT_DATA)
+    .digest('hex');
+
+  await prisma.account
+    .upsert({
+      where: {
+        email: emailHash,
+      },
+      update: {},
+      create: {
+        email: emailHash,
+        password: hashSync(account.password, Number(process.env.SALT_ROUNDS)),
+        profile: {
+          create: {
+            name: account.name,
+          },
+        },
+      },
+    })
+    .then(() => {
+      console.info('\n------SEED------');
+      console.info('Seed account credentials:');
+      console.info(`email: admin@admin.com`);
+      console.info(`pass: Admin@11`);
+      console.info('--------END-------\n');
+    })
+    .catch((error) => {
+      throw new Error('PRISMA:SEED::MAIN\n' + error);
+    });
 }
 
 main()

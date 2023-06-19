@@ -1,6 +1,7 @@
 yarn.lock
 package-lock.json
 .env
+*.todo
 
 # compiled output
 /dist

@@ -10,12 +10,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Account {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  password      String
+  verifiedAt    DateTime?   @map("verified_at")
+  acceptedAt    DateTime    @default(now()) @map("accepted_at")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  profile       Profile?
+
+  @@map("accounts")
+}
+
 model Profile {
   id        Int       @id @default(autoincrement())
-  userId    String    @unique
-  age       Int
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  name      String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  account   Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId String    @unique @map("account_id")
 
   @@map("profiles")
 }
