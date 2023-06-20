@@ -53,5 +53,22 @@ describe('AccountService Unit Tests', () => {
       );
       expect(createHashMock.digest).toHaveReturnedWith('hashed_data');
     });
+
+    it('verify if user already exists by using his hashed email', async () => {
+      const createAccountInput: CreateAccountDto = {
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        acceptedTerms: true,
+        password: faker.internet.password(),
+      };
+      const accountRepositorySpy = jest.spyOn(
+        accountRepositoryMock,
+        'alreadyExists'
+      );
+
+      await service.createAccount(createAccountInput);
+
+      expect(accountRepositorySpy).toHaveBeenCalledWith('hashed_data');
+    });
   });
 });
