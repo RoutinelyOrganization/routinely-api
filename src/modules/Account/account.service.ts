@@ -3,7 +3,6 @@ import { hash, compare } from 'bcrypt';
 import {
   Injectable,
   BadRequestException,
-  InternalServerErrorException,
   UnprocessableEntityException,
 } from '@nestjs/common/';
 import type {
@@ -63,6 +62,5 @@ export class AccountService {
     }
 
     // todo: logger ({ location: 'SRC:MODULES:ACCOUNT:ACCOUNT_SERVICE::CREATE_ACCOUNT' });
-    //throw new InternalServerErrorException();
   }
 }
