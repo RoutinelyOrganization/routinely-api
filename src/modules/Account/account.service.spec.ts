@@ -1,11 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AccountService } from './account.service';
-import { CreateAccountDto } from './account.dtos';
-import { faker } from '@faker-js/faker';
 import * as crypto from 'crypto';
 import { AccountRepository } from './account.repository';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { createAccountInput } from './tests/stubs/account.stubs';
 
 describe('AccountService Unit Tests', () => {
   let service: AccountService;
@@ -37,12 +36,6 @@ describe('AccountService Unit Tests', () => {
 
   describe('When creating a new account', () => {
     it('should hash email field from input', async () => {
-      const createAccountInput: CreateAccountDto = {
-        name: faker.person.fullName(),
-        email: faker.internet.email(),
-        acceptedTerms: true,
-        password: faker.internet.password(),
-      };
       jest
         .spyOn(crypto, 'createHash')
         .mockImplementationOnce(() => createHashMock);
@@ -56,12 +49,6 @@ describe('AccountService Unit Tests', () => {
     });
 
     it('verify if user already exists by using his hashed email', async () => {
-      const createAccountInput: CreateAccountDto = {
-        name: faker.person.fullName(),
-        email: faker.internet.email(),
-        acceptedTerms: true,
-        password: faker.internet.password(),
-      };
       const accountRepositorySpy = jest.spyOn(
         accountRepositoryMock,
         'alreadyExists'
@@ -73,12 +60,6 @@ describe('AccountService Unit Tests', () => {
     });
 
     it('it throws if user already exsists', async () => {
-      const createAccountInput: CreateAccountDto = {
-        name: faker.person.fullName(),
-        email: faker.internet.email(),
-        acceptedTerms: true,
-        password: faker.internet.password(),
-      };
       jest
         .spyOn(accountRepositoryMock, 'alreadyExists')
         .mockImplementation(() => {
