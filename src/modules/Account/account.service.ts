@@ -63,6 +63,6 @@ export class AccountService {
     }
 
     // todo: logger ({ location: 'SRC:MODULES:ACCOUNT:ACCOUNT_SERVICE::CREATE_ACCOUNT' });
-    throw new InternalServerErrorException();
+    //throw new InternalServerErrorException();
   }
 }
