@@ -5,6 +5,7 @@ import { faker } from '@faker-js/faker';
 import * as crypto from 'crypto';
 import { AccountRepository } from './account.repository';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { UnprocessableEntityException } from '@nestjs/common';
 
 describe('AccountService Unit Tests', () => {
   let service: AccountService;
@@ -69,6 +70,26 @@ describe('AccountService Unit Tests', () => {
       await service.createAccount(createAccountInput);
 
       expect(accountRepositorySpy).toHaveBeenCalledWith('hashed_data');
+    });
+
+    it('it throws if user already exsists', async () => {
+      const createAccountInput: CreateAccountDto = {
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        acceptedTerms: true,
+        password: faker.internet.password(),
+      };
+      jest
+        .spyOn(accountRepositoryMock, 'alreadyExists')
+        .mockImplementation(() => {
+          throw new UnprocessableEntityException('This e-mail already exists');
+        });
+
+      const promise = service.createAccount(createAccountInput);
+
+      await expect(promise).rejects.toThrow(
+        new UnprocessableEntityException('This e-mail already exists')
+      );
     });
   });
 });
