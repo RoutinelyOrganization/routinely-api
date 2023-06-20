@@ -5,18 +5,23 @@ import { AccountRepository } from './account.repository';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { createAccountInput } from './tests/stubs/account.stubs';
+import * as bcrypt from 'bcrypt';
 
 describe('AccountService Unit Tests', () => {
   let service: AccountService;
 
   const salt = process.env.SALT_DATA;
+  const saltRounds = Number(process.env.SALT_ROUNDS);
+
+  jest.mock('bcrypt', () => ({
+    hash: jest.fn(),
+  }));
 
   const createHashMock = {
     update: jest.fn().mockReturnThis(),
     digest: jest.fn(() => 'hashed_data'),
   } as unknown as jest.Mocked<crypto.Hash>;
 
-  // Mocking AccountRepository
   const accountRepositoryMock = {
     alreadyExists: jest.fn(),
     createAccount: jest.fn(),
@@ -59,7 +64,7 @@ describe('AccountService Unit Tests', () => {
       expect(accountRepositorySpy).toHaveBeenCalledWith('hashed_data');
     });
 
-    it('it throws if user already exsists', async () => {
+    it('it throws if user already exists', async () => {
       jest
         .spyOn(accountRepositoryMock, 'alreadyExists')
         .mockImplementation(() => {
@@ -70,6 +75,22 @@ describe('AccountService Unit Tests', () => {
 
       await expect(promise).rejects.toThrow(
         new UnprocessableEntityException('This e-mail already exists')
+      );
+    });
+
+    it('it hashes user password before calling repository', async () => {
+      jest
+        .spyOn(accountRepositoryMock, 'alreadyExists')
+        .mockResolvedValue(false);
+      const hashSpy = jest.spyOn(bcrypt, 'hash').mockImplementation(() => {
+        return new Promise((resolve) => resolve('hashed_password'));
+      });
+
+      await service.createAccount(createAccountInput);
+
+      expect(hashSpy).toHaveBeenCalledWith(
+        createAccountInput.password,
+        saltRounds
       );
     });
   });
