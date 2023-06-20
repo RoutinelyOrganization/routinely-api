@@ -19,7 +19,7 @@ describe('AccountService Unit Tests', () => {
 
   const createHashMock = {
     update: jest.fn().mockReturnThis(),
-    digest: jest.fn(() => 'hashed_data'),
+    digest: jest.fn(() => 'hashed_email'),
   } as unknown as jest.Mocked<crypto.Hash>;
 
   const accountRepositoryMock = {
@@ -50,7 +50,7 @@ describe('AccountService Unit Tests', () => {
       expect(createHashMock.update).toHaveBeenCalledWith(
         createAccountInput.email + salt
       );
-      expect(createHashMock.digest).toHaveReturnedWith('hashed_data');
+      expect(createHashMock.digest).toHaveReturnedWith('hashed_email');
     });
 
     it('verify if user already exists by using his hashed email', async () => {
@@ -61,7 +61,7 @@ describe('AccountService Unit Tests', () => {
 
       await service.createAccount(createAccountInput);
 
-      expect(accountRepositorySpy).toHaveBeenCalledWith('hashed_data');
+      expect(accountRepositorySpy).toHaveBeenCalledWith('hashed_email');
     });
 
     it('it throws if user already exists', async () => {
@@ -92,6 +92,29 @@ describe('AccountService Unit Tests', () => {
         createAccountInput.password,
         saltRounds
       );
+    });
+
+    it('it should create a new account with correct data', async () => {
+      // hashing password
+      jest.spyOn(bcrypt, 'hash').mockImplementation(() => {
+        return new Promise((resolve) => resolve('hashed_password'));
+      });
+      // hashing email
+      jest
+        .spyOn(crypto, 'createHash')
+        .mockImplementationOnce(() => createHashMock);
+      const accountRepositorySpy = jest.spyOn(
+        accountRepositoryMock,
+        'createAccount'
+      );
+
+      await service.createAccount(createAccountInput);
+
+      expect(accountRepositorySpy).toHaveBeenCalledWith({
+        email: 'hashed_email',
+        password: 'hashed_password',
+        name: createAccountInput.name,
+      });
     });
   });
 });
