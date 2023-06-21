@@ -2,11 +2,15 @@ import { Controller, Body, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CreateAccountDto, AccessAccountDto } from './account.dtos';
 import { AccountService } from './account.service';
+import { SessionService } from '../Session/session.service';
 
 @ApiTags('Authentication routes')
 @Controller('auth')
 export class AccountController {
-  constructor(private accountService: AccountService) {}
+  constructor(
+    private accountService: AccountService,
+    private sessionService: SessionService
+  ) {}
 
   @Post('register')
   async create(
@@ -31,6 +35,13 @@ export class AccountController {
       password,
     });
 
-    return;
+    const sessionData = this.sessionService.createSession({
+      accountId: accountData.id,
+      permissions: accountData.permissions,
+      name: accountData.profile.name,
+      remember,
+    });
+
+    return sessionData;
   }
 }
