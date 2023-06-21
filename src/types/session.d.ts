@@ -23,5 +23,5 @@ export type ICreateSessionServiceResponse = Pick<
 > & {
   token: string;
   refreshToken: string;
-  expiresInTimestamp: number;
+  expiresIn: Date;
 };
