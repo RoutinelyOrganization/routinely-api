@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto';
 import { hash, compare } from 'bcrypt';
 import {
   Injectable,
@@ -11,16 +10,11 @@ import type {
   ICreateAccountResponse,
 } from 'src/types/account';
 import { AccountRepository } from './account.repository';
+import { hashDataAsync } from 'src/utils/hashes';
 
 @Injectable()
 export class AccountService {
   constructor(private accountRepository: AccountRepository) {}
-
-  private hashData(unhashedData: string): string {
-    return createHash('sha256')
-      .update(unhashedData + process.env.SALT_DATA)
-      .digest('hex');
-  }
 
   private async hashPassword(password: string): Promise<string> {
     return await hash(password, Number(process.env.SALT_ROUNDS));
@@ -40,7 +34,12 @@ export class AccountService {
       throw new BadRequestException('Please accept our privacy policies');
     }
 
-    const hashedEmail = this.hashData(data.email);
+    const hashedEmail = await hashDataAsync(data.email, process.env.SALT_DATA);
+
+    if (!hashedEmail) {
+      throw new UnprocessableEntityException('Unknown error');
+    }
+
     const alreadyExists = await this.accountRepository.alreadyExists(
       hashedEmail
     );
