@@ -4,11 +4,13 @@ import {
   BadRequestException,
   InternalServerErrorException,
   UnprocessableEntityException,
+  UnauthorizedException,
 } from '@nestjs/common/';
 import type {
-  ICreateAccountExpect,
-  ICreateAccountResponse,
+  ICreateAccountServiceResponse,
+  IAccessAccountServiceResponse,
 } from 'src/types/account';
+import { AccessAccountDto, CreateAccountDto } from './account.dtos';
 import { AccountRepository } from './account.repository';
 import { hashDataAsync } from 'src/utils/hashes';
 
@@ -28,8 +30,8 @@ export class AccountService {
   }
 
   async createAccount(
-    data: ICreateAccountExpect
-  ): Promise<ICreateAccountResponse> {
+    data: CreateAccountDto
+  ): Promise<ICreateAccountServiceResponse> {
     if (data.acceptedTerms !== true) {
       throw new BadRequestException('Please accept our privacy policies');
     }
@@ -63,5 +65,35 @@ export class AccountService {
 
     // todo: logger ({ location: 'SRC:MODULES:ACCOUNT:ACCOUNT_SERVICE::CREATE_ACCOUNT' });
     throw new InternalServerErrorException();
+  }
+
+  async accessAccount(
+    accountInput: AccessAccountDto
+  ): Promise<IAccessAccountServiceResponse> {
+    const hashedEmail = await hashDataAsync(
+      accountInput.email,
+      process.env.SALT_DATA
+    );
+    const credentialFromDatabase =
+      await this.accountRepository.findAccountByEmail(hashedEmail);
+
+    if (!credentialFromDatabase) {
+      throw new UnauthorizedException('Invalid credentials. Please try again.');
+    }
+
+    const validatePass = await this.comparePassword(
+      accountInput.password,
+      credentialFromDatabase.password
+    );
+
+    if (!validatePass) {
+      throw new UnauthorizedException('Invalid credentials. Please try again.');
+    }
+
+    return {
+      id: credentialFromDatabase.id,
+      permissions: credentialFromDatabase.permissions,
+      profile: credentialFromDatabase.profile,
+    };
   }
 }
