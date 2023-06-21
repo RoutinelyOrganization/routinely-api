@@ -23,17 +23,12 @@ export class SessionService {
     const randomSessionToken = randomBytes(20).toString('hex');
     const randomRefreshToken = randomBytes(20).toString('hex');
 
-    const hashedSessionToken = await hashDataAsync(
-      randomSessionToken,
-      process.env.SALT_SESSION
-    );
-
     const hashedRefreshToken = await hashDataAsync(
       randomRefreshToken,
       process.env.SALT_SESSION
     );
 
-    if (!hashedSessionToken || !hashedRefreshToken) {
+    if (!hashedRefreshToken) {
       throw new InternalServerErrorException('Error on try create session');
     }
 
@@ -44,7 +39,7 @@ export class SessionService {
     const now = new Date().getTime();
 
     const sessionConfig = {
-      sessionToken: hashedSessionToken,
+      sessionToken: randomSessionToken,
       refreshToken: hashedRefreshToken,
       sessionExpiresIn: new Date(now + sessionTokenExpiresIn),
       refreshExpiresIn: new Date(now + refreshTokenExpiresIn),
@@ -63,7 +58,7 @@ export class SessionService {
 
     // todo: create cache
     // const sessionDataToCache = {
-    //   hashedToken: hashedSessionToken,
+    //   sessionToken: randomSessionToken,
     //   accountId,
     //   permissions,
     //   name,
