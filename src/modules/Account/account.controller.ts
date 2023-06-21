@@ -1,6 +1,6 @@
 import { Controller, Body, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateAccountDto } from './account.dtos';
+import { CreateAccountDto, AccessAccountDto } from './account.dtos';
 import { AccountService } from './account.service';
 
 @ApiTags('Authentication routes')
@@ -22,5 +22,15 @@ export class AccountController {
     return {
       message,
     };
+  }
+
+  @Post('')
+  async access(@Body() { email, password, remember }: AccessAccountDto) {
+    const accountData = await this.accountService.accessAccount({
+      email,
+      password,
+    });
+
+    return;
   }
 }
