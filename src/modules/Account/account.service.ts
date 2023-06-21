@@ -5,11 +5,9 @@ import {
   BadRequestException,
   UnprocessableEntityException,
 } from '@nestjs/common/';
-import type {
-  ICreateAccountExpect,
-  ICreateAccountResponse,
-} from 'src/types/account';
+import type { ICreateAccountResponse } from 'src/types/account';
 import { AccountRepository } from './account.repository';
+import { CreateAccountDto } from './account.dtos';
 
 @Injectable()
 export class AccountService {
@@ -33,13 +31,13 @@ export class AccountService {
   }
 
   async createAccount(
-    data: ICreateAccountExpect
+    createAccountInput: CreateAccountDto
   ): Promise<ICreateAccountResponse> {
-    if (data.acceptedTerms !== true) {
+    if (createAccountInput.acceptedTerms !== true) {
       throw new BadRequestException('Please accept our privacy policies');
     }
 
-    const hashedEmail = this.hashData(data.email);
+    const hashedEmail = this.hashData(createAccountInput.email);
     const alreadyExists = await this.accountRepository.alreadyExists(
       hashedEmail
     );
@@ -48,11 +46,11 @@ export class AccountService {
       throw new UnprocessableEntityException('This e-mail already exists');
     }
 
-    const hashedPassword = await this.hashPassword(data.password);
+    const hashedPassword = await this.hashPassword(createAccountInput.password);
     const created = await this.accountRepository.createAccount({
       email: hashedEmail,
       password: hashedPassword,
-      name: data.name,
+      name: createAccountInput.name,
     });
 
     if (created) {
