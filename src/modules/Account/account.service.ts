@@ -2,7 +2,6 @@ import { hash, compare } from 'bcrypt';
 import {
   Injectable,
   BadRequestException,
-  InternalServerErrorException,
   UnprocessableEntityException,
   UnauthorizedException,
 } from '@nestjs/common/';
@@ -30,13 +29,16 @@ export class AccountService {
   }
 
   async createAccount(
-    data: CreateAccountDto
+    createAccountInput: CreateAccountDto
   ): Promise<ICreateAccountServiceResponse> {
-    if (data.acceptedTerms !== true) {
+    if (createAccountInput.acceptedTerms !== true) {
       throw new BadRequestException('Please accept our privacy policies');
     }
 
-    const hashedEmail = await hashDataAsync(data.email, process.env.SALT_DATA);
+    const hashedEmail = await hashDataAsync(
+      createAccountInput.email,
+      process.env.SALT_DATA
+    );
 
     if (!hashedEmail) {
       throw new UnprocessableEntityException('Unknown error');
@@ -50,11 +52,11 @@ export class AccountService {
       throw new UnprocessableEntityException('This e-mail already exists');
     }
 
-    const hashedPassword = await this.hashPassword(data.password);
+    const hashedPassword = await this.hashPassword(createAccountInput.password);
     const created = await this.accountRepository.createAccount({
       email: hashedEmail,
       password: hashedPassword,
-      name: data.name,
+      name: createAccountInput.name,
     });
 
     if (created) {
@@ -64,7 +66,6 @@ export class AccountService {
     }
 
     // todo: logger ({ location: 'SRC:MODULES:ACCOUNT:ACCOUNT_SERVICE::CREATE_ACCOUNT' });
-    throw new InternalServerErrorException();
   }
 
   async accessAccount(
