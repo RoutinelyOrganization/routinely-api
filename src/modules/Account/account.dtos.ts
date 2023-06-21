@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import {
   IsNotEmpty,
   Matches,
@@ -26,5 +26,14 @@ export class CreateAccountDto {
   @IsNotEmpty()
   @IsBoolean()
   @ApiProperty()
-  acceptedTerms: boolean;
+  acceptedTerms?: boolean;
+}
+
+export class AccessAccountDto extends PickType(CreateAccountDto, [
+  'email',
+  'password',
+]) {
+  @IsBoolean()
+  @ApiProperty()
+  remember?: boolean;
 }
