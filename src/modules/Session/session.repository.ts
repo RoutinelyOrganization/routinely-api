@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { ICreateSessionRepositoryExpect } from 'src/types/session';
+import { CreateSessionRepositoryInput } from './session.dtos';
 
 @Injectable()
 export class SessionRepository {
@@ -14,7 +14,7 @@ export class SessionRepository {
     accountId,
     permissions,
     name,
-  }: ICreateSessionRepositoryExpect): Promise<boolean> {
+  }: CreateSessionRepositoryInput): Promise<boolean> {
     return await this.prisma.session
       .create({
         data: {

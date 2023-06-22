@@ -5,11 +5,12 @@ import {
   UnprocessableEntityException,
   UnauthorizedException,
 } from '@nestjs/common/';
-import type {
-  ICreateAccountServiceResponse,
-  IAccessAccountServiceResponse,
-} from 'src/types/account';
-import { AccessAccountDto, CreateAccountDto } from './account.dtos';
+import {
+  AccessAccountControllerInput,
+  CreateAccountControllerInput,
+  CreateAccountServiceOutput,
+  AccessAccountServiceOutput,
+} from './account.dtos';
 import { AccountRepository } from './account.repository';
 import { hashDataAsync } from 'src/utils/hashes';
 
@@ -29,8 +30,8 @@ export class AccountService {
   }
 
   async createAccount(
-    createAccountInput: CreateAccountDto
-  ): Promise<ICreateAccountServiceResponse> {
+    createAccountInput: CreateAccountControllerInput
+  ): Promise<CreateAccountServiceOutput> {
     if (createAccountInput.acceptedTerms !== true) {
       throw new BadRequestException('Please accept our privacy policies');
     }
@@ -69,8 +70,8 @@ export class AccountService {
   }
 
   async accessAccount(
-    accountInput: AccessAccountDto
-  ): Promise<IAccessAccountServiceResponse> {
+    accountInput: AccessAccountControllerInput
+  ): Promise<AccessAccountServiceOutput> {
     const hashedEmail = await hashDataAsync(
       accountInput.email,
       process.env.SALT_DATA
@@ -94,7 +95,7 @@ export class AccountService {
     return {
       id: credentialFromDatabase.id,
       permissions: credentialFromDatabase.permissions,
-      profile: credentialFromDatabase.profile,
+      name: credentialFromDatabase.name,
     };
   }
 }

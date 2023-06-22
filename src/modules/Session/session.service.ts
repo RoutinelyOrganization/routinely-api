@@ -2,9 +2,9 @@ import { randomBytes } from 'node:crypto';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SessionRepository } from './session.repository';
 import {
-  ICreateSessionServiceExpect,
-  ICreateSessionServiceResponse,
-} from 'src/types/session';
+  CreateSessionServiceInput,
+  CreateSessionServiceOutput,
+} from './session.dtos';
 import { hashDataAsync } from 'src/utils/hashes';
 
 @Injectable()
@@ -19,7 +19,7 @@ export class SessionService {
     permissions,
     name,
     remember,
-  }: ICreateSessionServiceExpect): Promise<ICreateSessionServiceResponse> {
+  }: CreateSessionServiceInput): Promise<CreateSessionServiceOutput> {
     const randomSessionToken = randomBytes(20).toString('hex');
     const randomRefreshToken = randomBytes(20).toString('hex');
 

@@ -1,6 +1,9 @@
 import { Controller, Body, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateAccountDto, AccessAccountDto } from './account.dtos';
+import {
+  CreateAccountControllerInput,
+  AccessAccountControllerInput,
+} from './account.dtos';
 import { AccountService } from './account.service';
 import { SessionService } from '../Session/session.service';
 
@@ -14,7 +17,8 @@ export class AccountController {
 
   @Post('register')
   async create(
-    @Body() { name, email, password, acceptedTerms }: CreateAccountDto
+    @Body()
+    { name, email, password, acceptedTerms }: CreateAccountControllerInput
   ) {
     const { message } = await this.accountService.createAccount({
       name,
@@ -29,7 +33,9 @@ export class AccountController {
   }
 
   @Post('')
-  async access(@Body() { email, password, remember }: AccessAccountDto) {
+  async access(
+    @Body() { email, password, remember }: AccessAccountControllerInput
+  ) {
     const accountData = await this.accountService.accessAccount({
       email,
       password,
@@ -38,7 +44,7 @@ export class AccountController {
     const sessionData = this.sessionService.createSession({
       accountId: accountData.id,
       permissions: accountData.permissions,
-      name: accountData.profile.name,
+      name: accountData.name,
       remember,
     });
 

@@ -1,9 +1,9 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
-  ICreateAccountRepositoryExpect,
-  IAccessAccountRepositoryResponse,
-} from 'src/types/account';
+  CreateAccountRepositoryInput,
+  AccessAccountRepositoryOutput,
+} from './account.dtos';
 
 @Injectable()
 export class AccountRepository {
@@ -13,7 +13,7 @@ export class AccountRepository {
     email,
     password,
     name,
-  }: ICreateAccountRepositoryExpect): Promise<boolean> {
+  }: CreateAccountRepositoryInput): Promise<boolean> {
     const response = await this.prisma.account
       .create({
         data: {
@@ -57,7 +57,7 @@ export class AccountRepository {
 
   async findAccountByEmail(
     email: string
-  ): Promise<IAccessAccountRepositoryResponse | null> {
+  ): Promise<AccessAccountRepositoryOutput | null> {
     const account = await this.prisma.account
       .findUnique({
         where: {
@@ -83,6 +83,12 @@ export class AccountRepository {
         throw new InternalServerErrorException();
       });
 
-    return account;
+    const name = account.profile.name;
+    delete account.profile;
+
+    return {
+      ...account,
+      name,
+    };
   }
 }
