@@ -56,14 +56,6 @@ export class SessionService {
       throw new InternalServerErrorException();
     }
 
-    // todo: create cache
-    // const sessionDataToCache = {
-    //   sessionToken: randomSessionToken,
-    //   accountId,
-    //   permissions,
-    //   name,
-    // };
-
     const sessionDataToResponse = {
       token: randomSessionToken,
       refreshToken: randomRefreshToken,
