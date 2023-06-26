@@ -1,23 +1,22 @@
-import { createHash } from 'node:crypto';
 import { hash, compare } from 'bcrypt';
 import {
   Injectable,
   BadRequestException,
   UnprocessableEntityException,
+  UnauthorizedException,
 } from '@nestjs/common/';
-import type { ICreateAccountResponse } from 'src/types/account';
+import {
+  AccessAccountControllerInput,
+  CreateAccountControllerInput,
+  CreateAccountServiceOutput,
+  AccessAccountServiceOutput,
+} from './account.dtos';
 import { AccountRepository } from './account.repository';
-import { CreateAccountDto } from './account.dtos';
+import { hashDataAsync } from 'src/utils/hashes';
 
 @Injectable()
 export class AccountService {
   constructor(private accountRepository: AccountRepository) {}
-
-  private hashData(unhashedData: string): string {
-    return createHash('sha256')
-      .update(unhashedData + process.env.SALT_DATA)
-      .digest('hex');
-  }
 
   private async hashPassword(password: string): Promise<string> {
     return await hash(password, Number(process.env.SALT_ROUNDS));
@@ -31,13 +30,21 @@ export class AccountService {
   }
 
   async createAccount(
-    createAccountInput: CreateAccountDto
-  ): Promise<ICreateAccountResponse> {
+    createAccountInput: CreateAccountControllerInput
+  ): Promise<CreateAccountServiceOutput> {
     if (createAccountInput.acceptedTerms !== true) {
       throw new BadRequestException('Please accept our privacy policies');
     }
 
-    const hashedEmail = this.hashData(createAccountInput.email);
+    const hashedEmail = await hashDataAsync(
+      createAccountInput.email,
+      process.env.SALT_DATA
+    );
+
+    if (!hashedEmail) {
+      throw new UnprocessableEntityException('Unknown error');
+    }
+
     const alreadyExists = await this.accountRepository.alreadyExists(
       hashedEmail
     );
@@ -60,5 +67,35 @@ export class AccountService {
     }
 
     // todo: logger ({ location: 'SRC:MODULES:ACCOUNT:ACCOUNT_SERVICE::CREATE_ACCOUNT' });
+  }
+
+  async accessAccount(
+    accountInput: AccessAccountControllerInput
+  ): Promise<AccessAccountServiceOutput> {
+    const hashedEmail = await hashDataAsync(
+      accountInput.email,
+      process.env.SALT_DATA
+    );
+    const credentialFromDatabase =
+      await this.accountRepository.findAccountByEmail(hashedEmail);
+
+    if (!credentialFromDatabase) {
+      throw new UnauthorizedException('Invalid credentials. Please try again.');
+    }
+
+    const validatePass = await this.comparePassword(
+      accountInput.password,
+      credentialFromDatabase.password
+    );
+
+    if (!validatePass) {
+      throw new UnauthorizedException('Invalid credentials. Please try again.');
+    }
+
+    return {
+      id: credentialFromDatabase.id,
+      permissions: credentialFromDatabase.permissions,
+      name: credentialFromDatabase.name,
+    };
   }
 }
