@@ -9,6 +9,7 @@ import {
   resetPasswordInput,
 } from './tests/stubs/account.stubs';
 import * as bcrypt from 'bcrypt';
+import { AccountNotFoundError } from './account.errors';
 
 describe('AccountService Unit Tests', () => {
   let service: AccountService;
@@ -123,11 +124,20 @@ describe('AccountService Unit Tests', () => {
 
   describe('When reseting user password', () => {
     it('should verify if user exists with email', async () => {
+      accountRepositoryMock.alreadyExists.mockResolvedValue(true);
       const repositorySpy = jest.spyOn(accountRepositoryMock, 'alreadyExists');
 
       await service.resetPassword(resetPasswordInput);
 
       expect(repositorySpy).toHaveBeenCalledWith(resetPasswordInput.email);
+    });
+
+    it("should throw error if account doesn't exists", async () => {
+      accountRepositoryMock.alreadyExists.mockResolvedValue(false);
+
+      const promise = service.resetPassword(resetPasswordInput);
+
+      await expect(promise).rejects.toThrow(new AccountNotFoundError());
     });
   });
 });

@@ -8,6 +8,7 @@ import {
 import type { ICreateAccountResponse } from 'src/types/account';
 import { AccountRepository } from './account.repository';
 import { CreateAccountDto, ResetPasswordInput } from './account.dtos';
+import { AccountNotFoundError } from './account.errors';
 
 @Injectable()
 export class AccountService {
@@ -63,6 +64,9 @@ export class AccountService {
   }
 
   async resetPassword(resetPasswordInput: ResetPasswordInput): Promise<void> {
-    await this.accountRepository.alreadyExists(resetPasswordInput.email);
+    const accountExists = await this.accountRepository.alreadyExists(
+      resetPasswordInput.email
+    );
+    if (!accountExists) throw new AccountNotFoundError();
   }
 }
