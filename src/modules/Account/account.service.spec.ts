@@ -139,5 +139,7 @@ describe('AccountService Unit Tests', () => {
 
       await expect(promise).rejects.toThrow(new AccountNotFoundError());
     });
+
+    it.todo('should create reset password token');
   });
 });
