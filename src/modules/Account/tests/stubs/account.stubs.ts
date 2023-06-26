@@ -1,4 +1,4 @@
-import { CreateAccountDto } from '../../account.dtos';
+import { CreateAccountDto, ResetPasswordInput } from '../../account.dtos';
 import { faker } from '@faker-js/faker';
 
 export const createAccountInput: CreateAccountDto = {
@@ -6,4 +6,8 @@ export const createAccountInput: CreateAccountDto = {
   email: faker.internet.email(),
   acceptedTerms: true,
   password: faker.internet.password(),
+};
+
+export const resetPasswordInput: ResetPasswordInput = {
+  email: faker.internet.email(),
 };

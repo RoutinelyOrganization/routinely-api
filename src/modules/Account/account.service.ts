@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common/';
 import type { ICreateAccountResponse } from 'src/types/account';
 import { AccountRepository } from './account.repository';
-import { CreateAccountDto } from './account.dtos';
+import { CreateAccountDto, ResetPasswordInput } from './account.dtos';
 
 @Injectable()
 export class AccountService {
@@ -60,5 +60,9 @@ export class AccountService {
     }
 
     // todo: logger ({ location: 'SRC:MODULES:ACCOUNT:ACCOUNT_SERVICE::CREATE_ACCOUNT' });
+  }
+
+  async resetPassword(resetPasswordInput: ResetPasswordInput): Promise<void> {
+    await this.accountRepository.alreadyExists(resetPasswordInput.email);
   }
 }

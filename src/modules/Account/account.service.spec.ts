@@ -4,7 +4,10 @@ import * as crypto from 'crypto';
 import { AccountRepository } from './account.repository';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UnprocessableEntityException } from '@nestjs/common';
-import { createAccountInput } from './tests/stubs/account.stubs';
+import {
+  createAccountInput,
+  resetPasswordInput,
+} from './tests/stubs/account.stubs';
 import * as bcrypt from 'bcrypt';
 
 describe('AccountService Unit Tests', () => {
@@ -115,6 +118,16 @@ describe('AccountService Unit Tests', () => {
         password: 'hashed_password',
         name: createAccountInput.name,
       });
+    });
+  });
+
+  describe('When reseting user password', () => {
+    it('should verify if user exists with email', async () => {
+      const repositorySpy = jest.spyOn(accountRepositoryMock, 'alreadyExists');
+
+      await service.resetPassword(resetPasswordInput);
+
+      expect(repositorySpy).toHaveBeenCalledWith(resetPasswordInput.email);
     });
   });
 });

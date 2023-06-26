@@ -28,3 +28,7 @@ export class CreateAccountDto {
   @ApiProperty()
   acceptedTerms: boolean;
 }
+
+export class ResetPasswordInput {
+  email: string;
+}
