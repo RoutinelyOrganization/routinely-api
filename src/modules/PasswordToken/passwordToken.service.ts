@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { randomBytes } from 'node:crypto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class PasswordTokenService {
@@ -16,6 +17,12 @@ export class PasswordTokenService {
   }
 
   async create(): Promise<string> {
-    return this.generateCode();
+    const token = this.generateCode();
+    const hashedToken = await bcrypt.hash(
+      token,
+      Number(process.env.SALT_ROUNDS)
+    );
+
+    return hashedToken;
   }
 }
