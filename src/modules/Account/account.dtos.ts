@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import {
   IsNotEmpty,
   Matches,
@@ -7,7 +7,19 @@ import {
   IsBoolean,
 } from 'class-validator';
 
-export class CreateAccountDto {
+class AccountBaseDto {
+  id: string;
+  email: string;
+  password: string;
+  permissions: string[];
+  verifiedAt: Date | null;
+  acceptedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Create
+export class CreateAccountControllerInput {
   @IsNotEmpty()
   @Matches(/^[a-zA-ZÀ-ÿ ]+$/)
   @ApiProperty()
@@ -26,7 +38,44 @@ export class CreateAccountDto {
   @IsNotEmpty()
   @IsBoolean()
   @ApiProperty()
-  acceptedTerms: boolean;
+  acceptedTerms?: boolean;
+}
+
+export class CreateAccountRepositoryInput extends PickType(AccountBaseDto, [
+  'email',
+  'password',
+]) {
+  name: string;
+}
+
+export class CreateAccountServiceOutput {
+  message: string;
+}
+
+// Access
+export class AccessAccountControllerInput extends PickType(
+  CreateAccountControllerInput,
+  ['email', 'password']
+) {
+  @IsBoolean()
+  @ApiProperty()
+  remember?: boolean;
+}
+
+export class AccessAccountRepositoryOutput extends PickType(AccountBaseDto, [
+  'id',
+  'email',
+  'password',
+  'permissions',
+]) {
+  name: string;
+}
+
+export class AccessAccountServiceOutput extends PickType(AccountBaseDto, [
+  'id',
+  'permissions',
+]) {
+  name: string;
 }
 
 export class ResetPasswordInput {

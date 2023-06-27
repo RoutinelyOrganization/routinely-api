@@ -1,7 +1,8 @@
-import { CreateAccountDto, ResetPasswordInput } from '../../account.dtos';
+import { ResetPasswordInput } from '../../account.dtos';
+import { CreateAccountControllerInput } from '../../account.dtos';
 import { faker } from '@faker-js/faker';
 
-export const createAccountInput: CreateAccountDto = {
+export const createAccountInput: CreateAccountControllerInput = {
   name: faker.person.fullName(),
   email: faker.internet.email(),
   acceptedTerms: true,
