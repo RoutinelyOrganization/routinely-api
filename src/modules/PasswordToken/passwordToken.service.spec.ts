@@ -4,7 +4,10 @@ import { PasswordTokenService } from './passwordToken.service';
 import { PasswordTokenRepository } from './passwordToken.repository';
 import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
-import { createTokenInput } from './tests/passwordToken.stubs';
+import {
+  createTokenInput,
+  createTokenOutput,
+} from './tests/passwordToken.stubs';
 
 describe('PasswordToken Unit Tests', () => {
   let service: PasswordTokenService;
@@ -68,7 +71,20 @@ describe('PasswordToken Unit Tests', () => {
 
       await service.create(createTokenInput);
 
-      expect(repositorySpy).toHaveBeenCalledWith({ ...createTokenInput });
+      expect(repositorySpy).toHaveBeenCalledWith({
+        ...createTokenInput,
+        token: 'hashed_token',
+      });
+    });
+
+    it('should return correct response', async () => {
+      jest
+        .spyOn(passwordTokenRepositoryMock, 'create')
+        .mockResolvedValue({ ...createTokenOutput });
+
+      const response = await service.create(createTokenInput);
+
+      expect(response).toEqual(createTokenOutput);
     });
   });
 });

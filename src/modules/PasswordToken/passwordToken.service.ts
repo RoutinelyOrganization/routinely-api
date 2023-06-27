@@ -3,6 +3,7 @@ import { randomBytes } from 'node:crypto';
 import * as bcrypt from 'bcrypt';
 import { CreatePasswordTokenInput } from './passwordToken.dtos';
 import { PasswordTokenRepository } from './passwordToken.repository';
+import { CreatePasswordTokenOutput } from './passwordToken.dtos';
 
 @Injectable()
 export class PasswordTokenService {
@@ -20,13 +21,16 @@ export class PasswordTokenService {
 
   async create(
     createPasswordTokenInput: CreatePasswordTokenInput
-  ): Promise<string> {
+  ): Promise<CreatePasswordTokenOutput> {
     const token = this.generateCode();
     const hashedToken = await bcrypt.hash(
       token,
       Number(process.env.SALT_ROUNDS)
     );
-    await this.repository.create(createPasswordTokenInput);
-    return hashedToken;
+    const createdToken = await this.repository.create({
+      ...createPasswordTokenInput,
+      token: hashedToken,
+    });
+    return createdToken;
   }
 }
