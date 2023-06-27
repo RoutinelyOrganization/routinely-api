@@ -1,10 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { MailingService } from './mailing.service';
 import * as nodemailer from 'nodemailer';
-import { createTransportStub } from './tests/mailing.stubs';
+
+import { CreateEmailInput } from './mailing.dtos';
+import { faker } from '@faker-js/faker';
 
 describe('MailingService Unit Tests', () => {
   let service: MailingService;
+
+  const createTransportMock = {
+    sendMail: jest.fn(),
+  } as unknown as jest.Mocked<nodemailer.Transporter>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -15,10 +21,18 @@ describe('MailingService Unit Tests', () => {
   });
 
   describe('#sendMail', () => {
+    const createEmailInput: CreateEmailInput = {
+      from: process.env.FROM_EMAIL,
+      to: faker.internet.email(),
+      subject: faker.word.words(10),
+      html: 'html_template',
+    };
     it('calls nodemailer.Transport with correct params', async () => {
-      const nodemailerSpy = jest.spyOn(nodemailer, 'createTransport');
+      const nodemailerSpy = jest
+        .spyOn(nodemailer, 'createTransport')
+        .mockImplementationOnce(() => createTransportMock);
 
-      await service.sendEmail();
+      await service.sendEmail(createEmailInput);
 
       expect(nodemailerSpy).toHaveBeenCalledWith({
         host: process.env.EMAIL_HOST,
@@ -28,6 +42,18 @@ describe('MailingService Unit Tests', () => {
           pass: process.env.EMAIL_PASSWORD,
         },
       });
+    });
+
+    it('calls .sendEmail with correct params', async () => {
+      jest
+        .spyOn(nodemailer, 'createTransport')
+        .mockImplementationOnce(() => createTransportMock);
+
+      await service.sendEmail(createEmailInput);
+
+      expect(createTransportMock.sendMail).toHaveBeenCalledWith(
+        createEmailInput
+      );
     });
   });
 });
