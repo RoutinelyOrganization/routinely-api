@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { CreateEmailInput } from './mailing.dtos';
+import { SendEmailError } from './mailing.errors';
 
 @Injectable()
 export class MailingService {
@@ -24,6 +25,10 @@ export class MailingService {
       html: createEmailInput.html,
     };
 
-    await transporter.sendMail(emailData);
+    try {
+      await transporter.sendMail(emailData);
+    } catch (e) {
+      throw new SendEmailError();
+    }
   }
 }

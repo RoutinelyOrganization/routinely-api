@@ -4,6 +4,7 @@ import * as nodemailer from 'nodemailer';
 
 import { CreateEmailInput } from './mailing.dtos';
 import { faker } from '@faker-js/faker';
+import { SendEmailError } from './mailing.errors';
 
 describe('MailingService Unit Tests', () => {
   let service: MailingService;
@@ -54,6 +55,19 @@ describe('MailingService Unit Tests', () => {
       expect(createTransportMock.sendMail).toHaveBeenCalledWith(
         createEmailInput
       );
+    });
+
+    it('throws error if .sendMail fails', async () => {
+      jest
+        .spyOn(nodemailer, 'createTransport')
+        .mockImplementationOnce(() => createTransportMock);
+      jest.spyOn(createTransportMock, 'sendMail').mockImplementationOnce(() => {
+        throw new Error();
+      });
+
+      const promise = service.sendEmail(createEmailInput);
+
+      await expect(promise).rejects.toThrow(new SendEmailError());
     });
   });
 });
