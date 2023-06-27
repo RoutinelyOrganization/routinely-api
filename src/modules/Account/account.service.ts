@@ -76,6 +76,7 @@ export class AccountService {
       resetPasswordInput.email
     );
     if (!accountExists) throw new AccountNotFoundError();
+    // todo: call tokenservice and email service
   }
 
   async accessAccount(

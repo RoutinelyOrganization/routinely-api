@@ -152,5 +152,7 @@ describe('AccountService Unit Tests', () => {
 
       await expect(promise).rejects.toThrow(new AccountNotFoundError());
     });
+
+    it.todo('should send email confirmation ');
   });
 });
