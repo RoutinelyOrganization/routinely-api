@@ -10,6 +10,7 @@ import {
 } from './tests/stubs/account.stubs';
 import * as bcrypt from 'bcrypt';
 import { AccountNotFoundError } from './account.errors';
+import { hashDataAsync } from '../../utils/hashes';
 
 describe('AccountService Unit Tests', () => {
   let service: AccountService;
@@ -21,13 +22,17 @@ describe('AccountService Unit Tests', () => {
     hash: jest.fn(),
   }));
 
+  jest.mock('../../utils/hashes', () => ({
+    hashDataAsync: jest.fn().mockResolvedValue('hashed_email'),
+  }));
+
   const createHashMock = {
     update: jest.fn().mockReturnThis(),
     digest: jest.fn(() => 'hashed_email'),
   } as unknown as jest.Mocked<crypto.Hash>;
 
   const accountRepositoryMock = {
-    alreadyExists: jest.fn(),
+    alreadyExists: jest.fn().mockResolvedValue(true),
     createAccount: jest.fn(),
   };
 
@@ -46,6 +51,9 @@ describe('AccountService Unit Tests', () => {
   describe('When creating a new account', () => {
     it('should hash email field from input', async () => {
       jest
+        .spyOn(accountRepositoryMock, 'alreadyExists')
+        .mockResolvedValueOnce(false);
+      jest
         .spyOn(crypto, 'createHash')
         .mockImplementationOnce(() => createHashMock);
 
@@ -58,6 +66,9 @@ describe('AccountService Unit Tests', () => {
     });
 
     it('verify if user already exists by using his hashed email', async () => {
+      jest
+        .spyOn(accountRepositoryMock, 'alreadyExists')
+        .mockResolvedValueOnce(false);
       const accountRepositorySpy = jest.spyOn(
         accountRepositoryMock,
         'alreadyExists'
@@ -132,6 +143,8 @@ describe('AccountService Unit Tests', () => {
       expect(repositorySpy).toHaveBeenCalledWith(resetPasswordInput.email);
     });
 
+    it.todo('should verify if user exists with telephone');
+
     it("should throw error if account doesn't exists", async () => {
       accountRepositoryMock.alreadyExists.mockResolvedValue(false);
 
@@ -139,7 +152,5 @@ describe('AccountService Unit Tests', () => {
 
       await expect(promise).rejects.toThrow(new AccountNotFoundError());
     });
-
-    it.todo('should create reset password token');
   });
 });

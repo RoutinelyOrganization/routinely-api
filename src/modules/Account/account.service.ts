@@ -77,6 +77,7 @@ export class AccountService {
     );
     if (!accountExists) throw new AccountNotFoundError();
   }
+
   async accessAccount(
     accountInput: AccessAccountControllerInput
   ): Promise<AccessAccountServiceOutput> {
