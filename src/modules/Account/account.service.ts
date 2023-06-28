@@ -17,12 +17,14 @@ import { AccountNotFoundError } from './account.errors';
 import { hashDataAsync } from 'src/utils/hashes';
 import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
 import { CreatePasswordTokenInput } from '../PasswordToken/passwordToken.dtos';
+import { MailingService } from '../Mailing/mailing.service';
 
 @Injectable()
 export class AccountService {
   constructor(
     private accountRepository: AccountRepository,
-    private tokenService: PasswordTokenService
+    private tokenService: PasswordTokenService,
+    private mailingService: MailingService
   ) {}
 
   private async hashPassword(password: string): Promise<string> {
@@ -87,6 +89,12 @@ export class AccountService {
     );
 
     await this.tokenService.create({ accountId: account.id });
+    await this.mailingService.sendEmail({
+      from: process.env.FROM_EMAIL,
+      to: account.email,
+      subject: 'Reset Password - Routinely',
+      html: `html template here`,
+    });
   }
 
   async accessAccount(

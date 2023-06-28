@@ -14,6 +14,7 @@ import { hashDataAsync } from '../../utils/hashes';
 import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
 import { faker } from '@faker-js/faker';
 import { AccessAccountRepositoryOutput } from './account.dtos';
+import { MailingService } from '../Mailing/mailing.service';
 
 describe('AccountService Unit Tests', () => {
   let service: AccountService;
@@ -44,6 +45,10 @@ describe('AccountService Unit Tests', () => {
     create: jest.fn(),
   };
 
+  const mailingServiceMock = {
+    sendEmail: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -51,6 +56,7 @@ describe('AccountService Unit Tests', () => {
         PrismaService,
         { provide: AccountRepository, useValue: accountRepositoryMock },
         { provide: PasswordTokenService, useValue: tokenServiceMock },
+        { provide: MailingService, useValue: mailingServiceMock },
       ],
     }).compile();
 
@@ -145,6 +151,7 @@ describe('AccountService Unit Tests', () => {
   describe('When reseting user password', () => {
     const accountStub = {
       id: faker.string.uuid(),
+      email: faker.internet.email(),
     };
     accountRepositoryMock.findAccountByEmail.mockResolvedValue(accountStub);
 
@@ -188,6 +195,21 @@ describe('AccountService Unit Tests', () => {
 
       expect(tokenServiceSpy).toHaveBeenCalledWith({
         accountId: accountStub.id,
+      });
+    });
+
+    it('should call MailingService.sendEmail with correct params', async () => {
+      accountRepositoryMock.alreadyExists.mockResolvedValue(true);
+
+      const mailingServiceSpy = jest.spyOn(mailingServiceMock, 'sendEmail');
+
+      await service.resetPassword(resetPasswordInput);
+
+      expect(mailingServiceSpy).toHaveBeenCalledWith({
+        from: process.env.FROM_EMAIL,
+        to: accountStub.email,
+        subject: 'Reset Password - Routinely',
+        html: `html template here`,
       });
     });
 
