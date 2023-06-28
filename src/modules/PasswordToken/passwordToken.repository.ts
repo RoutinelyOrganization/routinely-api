@@ -2,13 +2,14 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreatePasswordTokenInput,
   CreatePasswordTokenOutput,
+  CreatePasswordTokenRepositoryInput,
 } from './passwordToken.dtos';
 
 export class PasswordTokenRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(
-    createPasswordTokenInput: CreatePasswordTokenInput
+    createPasswordTokenInput: CreatePasswordTokenRepositoryInput
   ): Promise<CreatePasswordTokenOutput> {
     return await this.prisma.resetPasswordToken.create({
       data: {
