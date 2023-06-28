@@ -18,6 +18,7 @@ import { hashDataAsync } from 'src/utils/hashes';
 import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
 import { CreatePasswordTokenInput } from '../PasswordToken/passwordToken.dtos';
 import { MailingService } from '../Mailing/mailing.service';
+import { SendEmailError } from '../Mailing/mailing.errors';
 
 @Injectable()
 export class AccountService {
@@ -89,12 +90,17 @@ export class AccountService {
     );
 
     await this.tokenService.create({ accountId: account.id });
-    await this.mailingService.sendEmail({
-      from: process.env.FROM_EMAIL,
-      to: account.email,
-      subject: 'Reset Password - Routinely',
-      html: `html template here`,
-    });
+
+    try {
+      await this.mailingService.sendEmail({
+        from: process.env.FROM_EMAIL,
+        to: account.email,
+        subject: 'Reset Password - Routinely',
+        html: `html template here`,
+      });
+    } catch (e) {
+      throw new SendEmailError();
+    }
   }
 
   async accessAccount(

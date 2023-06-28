@@ -15,6 +15,7 @@ import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
 import { faker } from '@faker-js/faker';
 import { AccessAccountRepositoryOutput } from './account.dtos';
 import { MailingService } from '../Mailing/mailing.service';
+import { SendEmailError } from '../Mailing/mailing.errors';
 
 describe('AccountService Unit Tests', () => {
   let service: AccountService;
@@ -211,6 +212,17 @@ describe('AccountService Unit Tests', () => {
         subject: 'Reset Password - Routinely',
         html: `html template here`,
       });
+    });
+
+    it('should throw error if MailingService.sendEmail throws', async () => {
+      accountRepositoryMock.alreadyExists.mockResolvedValue(true);
+      jest.spyOn(mailingServiceMock, 'sendEmail').mockImplementation(() => {
+        throw new SendEmailError();
+      });
+
+      const promise = service.resetPassword(resetPasswordInput);
+
+      await expect(promise).rejects.toThrow(new SendEmailError());
     });
 
     it.todo('should send email confirmation ');
