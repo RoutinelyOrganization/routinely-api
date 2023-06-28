@@ -15,10 +15,14 @@ import { AccountRepository } from './account.repository';
 import { ResetPasswordInput } from './account.dtos';
 import { AccountNotFoundError } from './account.errors';
 import { hashDataAsync } from 'src/utils/hashes';
+import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
 
 @Injectable()
 export class AccountService {
-  constructor(private accountRepository: AccountRepository) {}
+  constructor(
+    private accountRepository: AccountRepository,
+    private tokenService: PasswordTokenService
+  ) {}
 
   private async hashPassword(password: string): Promise<string> {
     return await hash(password, Number(process.env.SALT_ROUNDS));
@@ -77,6 +81,9 @@ export class AccountService {
     );
     if (!accountExists) throw new AccountNotFoundError();
     // todo: call tokenservice and email service
+    const account = await this.accountRepository.findAccountByEmail(
+      resetPasswordInput.email
+    );
   }
 
   async accessAccount(

@@ -11,6 +11,7 @@ import {
 import * as bcrypt from 'bcrypt';
 import { AccountNotFoundError } from './account.errors';
 import { hashDataAsync } from '../../utils/hashes';
+import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
 
 describe('AccountService Unit Tests', () => {
   let service: AccountService;
@@ -34,6 +35,11 @@ describe('AccountService Unit Tests', () => {
   const accountRepositoryMock = {
     alreadyExists: jest.fn().mockResolvedValue(true),
     createAccount: jest.fn(),
+    findAccountByEmail: jest.fn(),
+  };
+
+  const tokenServiceMock = {
+    create: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -42,6 +48,7 @@ describe('AccountService Unit Tests', () => {
         AccountService,
         PrismaService,
         { provide: AccountRepository, useValue: accountRepositoryMock },
+        { provide: PasswordTokenService, useValue: tokenServiceMock },
       ],
     }).compile();
 
@@ -151,6 +158,18 @@ describe('AccountService Unit Tests', () => {
       const promise = service.resetPassword(resetPasswordInput);
 
       await expect(promise).rejects.toThrow(new AccountNotFoundError());
+    });
+
+    it('should call AccountRepository.find with correct params', async () => {
+      accountRepositoryMock.alreadyExists.mockResolvedValue(true);
+      const tokenServiceSpy = jest.spyOn(
+        accountRepositoryMock,
+        'findAccountByEmail'
+      );
+
+      await service.resetPassword(resetPasswordInput);
+
+      expect(tokenServiceSpy).toHaveBeenCalledWith(resetPasswordInput.email);
     });
 
     it.todo('should send email confirmation ');
