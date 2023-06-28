@@ -16,6 +16,7 @@ import { ResetPasswordInput } from './account.dtos';
 import { AccountNotFoundError } from './account.errors';
 import { hashDataAsync } from 'src/utils/hashes';
 import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
+import { CreatePasswordTokenInput } from '../PasswordToken/passwordToken.dtos';
 
 @Injectable()
 export class AccountService {
@@ -84,6 +85,8 @@ export class AccountService {
     const account = await this.accountRepository.findAccountByEmail(
       resetPasswordInput.email
     );
+
+    await this.tokenService.create({ accountId: account.id });
   }
 
   async accessAccount(
