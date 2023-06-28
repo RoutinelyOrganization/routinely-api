@@ -144,7 +144,7 @@ describe('AccountService Unit Tests', () => {
 
   describe('When reseting user password', () => {
     const accountStub = {
-      accountId: faker.string.uuid(),
+      id: faker.string.uuid(),
     };
     accountRepositoryMock.findAccountByEmail.mockResolvedValue(accountStub);
 
@@ -180,15 +180,15 @@ describe('AccountService Unit Tests', () => {
       expect(repositorySpy).toHaveBeenCalledWith(resetPasswordInput.email);
     });
 
-    it.skip('should call PasswordTokenService.create with correct params', async () => {
-      // Não sei porque esse teste falha
+    it('should call PasswordTokenService.create with correct params', async () => {
       accountRepositoryMock.alreadyExists.mockResolvedValue(true);
-
       const tokenServiceSpy = jest.spyOn(tokenServiceMock, 'create');
 
       await service.resetPassword(resetPasswordInput);
 
-      expect(tokenServiceSpy).toHaveBeenCalledWith(accountStub);
+      expect(tokenServiceSpy).toHaveBeenCalledWith({
+        accountId: accountStub.id,
+      });
     });
 
     it.todo('should send email confirmation ');
