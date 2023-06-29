@@ -10,3 +10,7 @@ export class CreatePasswordTokenRepositoryInput {
 }
 
 export type CreatePasswordTokenOutput = PasswordToken;
+
+export class CreatePasswordCodeOutput {
+  code: string;
+}

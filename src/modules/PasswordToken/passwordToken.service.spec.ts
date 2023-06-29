@@ -84,7 +84,7 @@ describe('PasswordToken Unit Tests', () => {
 
       const response = await service.create(createTokenInput);
 
-      expect(response).toEqual(createTokenOutput);
+      expect(response).toEqual({ code: '123123' });
     });
   });
 });
