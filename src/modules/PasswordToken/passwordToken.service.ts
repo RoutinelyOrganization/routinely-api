@@ -4,6 +4,7 @@ import * as bcrypt from 'bcrypt';
 import {
   CreatePasswordCodeOutput,
   CreatePasswordTokenInput,
+  VerifyCodeInput,
 } from './passwordToken.dtos';
 import { PasswordTokenRepository } from './passwordToken.repository';
 
@@ -24,11 +25,6 @@ export class PasswordTokenService {
   async create(
     createPasswordTokenInput: CreatePasswordTokenInput
   ): Promise<CreatePasswordCodeOutput> {
-    const code = this.generateCode();
-    const hashedToken = await bcrypt.hash(
-      code,
-      Number(process.env.SALT_ROUNDS)
-    );
     const tokenExist = await this.repository.findByAccountId(
       createPasswordTokenInput.accountId
     );
@@ -37,10 +33,20 @@ export class PasswordTokenService {
       await this.repository.deleteToken(createPasswordTokenInput.accountId);
     }
 
+    const code = this.generateCode();
+    const hashedToken = await bcrypt.hash(
+      code,
+      Number(process.env.SALT_ROUNDS)
+    );
+
     await this.repository.create({
       ...createPasswordTokenInput,
       token: hashedToken,
     });
     return { code: code };
+  }
+
+  async verifyToken(verifyCodeInput: VerifyCodeInput) {
+    await bcrypt.hash(verifyCodeInput.code, Number(process.env.SALT_ROUNDS));
   }
 }

@@ -14,3 +14,7 @@ export type CreatePasswordTokenOutput = PasswordToken;
 export class CreatePasswordCodeOutput {
   code: string;
 }
+
+export class VerifyCodeInput {
+  code: string;
+}

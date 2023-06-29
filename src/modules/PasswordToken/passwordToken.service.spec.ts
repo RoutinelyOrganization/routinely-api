@@ -44,6 +44,10 @@ describe('PasswordToken Unit Tests', () => {
     service = module.get<PasswordTokenService>(PasswordTokenService);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('When creating a new password token', () => {
     const tokenStub = {
       id: 1,
@@ -104,6 +108,19 @@ describe('PasswordToken Unit Tests', () => {
       const response = await service.create(createTokenInput);
 
       expect(response).toEqual({ code: '123123' });
+    });
+  });
+
+  describe('#verifyToken', () => {
+    const token = {
+      code: '123789',
+    };
+    it('calls bcrypt.hash with correct params', async () => {
+      const bcryptSpy = jest.spyOn(bcrypt, 'hash');
+
+      await service.verifyToken(token);
+
+      expect(bcryptSpy).toHaveBeenCalledWith(token.code, saltRounds);
     });
   });
 });
