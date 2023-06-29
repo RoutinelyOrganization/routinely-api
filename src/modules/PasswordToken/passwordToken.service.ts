@@ -47,6 +47,10 @@ export class PasswordTokenService {
   }
 
   async verifyToken(verifyCodeInput: VerifyCodeInput) {
-    await bcrypt.hash(verifyCodeInput.code, Number(process.env.SALT_ROUNDS));
+    const token = await bcrypt.hash(
+      verifyCodeInput.code,
+      Number(process.env.SALT_ROUNDS)
+    );
+    await this.repository.findByToken(token);
   }
 }

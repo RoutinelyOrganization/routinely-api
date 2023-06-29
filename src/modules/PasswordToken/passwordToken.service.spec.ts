@@ -26,6 +26,7 @@ describe('PasswordToken Unit Tests', () => {
   const passwordTokenRepositoryMock = {
     create: jest.fn(),
     findByAccountId: jest.fn(),
+    findByToken: jest.fn(),
     deleteToken: jest.fn(),
   };
 
@@ -115,12 +116,27 @@ describe('PasswordToken Unit Tests', () => {
     const token = {
       code: '123789',
     };
+
     it('calls bcrypt.hash with correct params', async () => {
       const bcryptSpy = jest.spyOn(bcrypt, 'hash');
 
       await service.verifyToken(token);
 
       expect(bcryptSpy).toHaveBeenCalledWith(token.code, saltRounds);
+    });
+
+    it('calls repository.findByToken with correct params', async () => {
+      jest.spyOn(bcrypt, 'hash').mockImplementation(() => {
+        return new Promise((resolve) => resolve('hashed_code'));
+      });
+      const repositorySpy = jest.spyOn(
+        passwordTokenRepositoryMock,
+        'findByToken'
+      );
+
+      await service.verifyToken(token);
+
+      expect(repositorySpy).toHaveBeenCalledWith('hashed_code');
     });
   });
 });
