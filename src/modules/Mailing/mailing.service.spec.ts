@@ -63,9 +63,10 @@ describe('MailingService Unit Tests', () => {
 
       await service.sendEmail(createEmailInput);
 
-      expect(createTransportMock.sendMail).toHaveBeenCalledWith(
-        createEmailInput
-      );
+      expect(createTransportMock.sendMail).toHaveBeenCalledWith({
+        ...createEmailInput,
+        template: undefined,
+      });
     });
 
     it('calls handlerbars.compile with html template', async () => {

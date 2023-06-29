@@ -25,14 +25,13 @@ export class MailingService {
       'utf8'
     );
 
-    const compiledSource = handlebars.compile(source);
+    const compiledTemplate = handlebars.compile(source);
 
     const emailData = {
-      from: process.env.FROM_EMAIL,
+      from: createEmailInput.from,
       to: createEmailInput.to,
       subject: createEmailInput.subject,
       html: createEmailInput.html,
-      template: createEmailInput.template,
     };
 
     try {
