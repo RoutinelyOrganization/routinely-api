@@ -24,6 +24,7 @@ describe('PasswordToken Unit Tests', () => {
 
   const passwordTokenRepositoryMock = {
     create: jest.fn(),
+    findByAccountId: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -54,6 +55,16 @@ describe('PasswordToken Unit Tests', () => {
 
       expect(randomBytesSpy).toHaveBeenCalledTimes(2);
       expect(randomBytesSpy).toHaveBeenCalledWith(3);
+    });
+
+    it('should check if account already has token', async () => {
+      const repositorySpy = jest
+        .spyOn(passwordTokenRepositoryMock, 'findByAccountId')
+        .mockResolvedValue(true);
+
+      await service.create(createTokenInput);
+
+      expect(repositorySpy).toHaveBeenCalledWith(createTokenInput.accountId);
     });
 
     it('should hash token after being generated', async () => {

@@ -29,6 +29,9 @@ export class PasswordTokenService {
       code,
       Number(process.env.SALT_ROUNDS)
     );
+    const tokenExist = this.repository.findByAccountId(
+      createPasswordTokenInput.accountId
+    );
     await this.repository.create({
       ...createPasswordTokenInput,
       token: hashedToken,

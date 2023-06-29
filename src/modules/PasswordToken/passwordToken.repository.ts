@@ -19,4 +19,10 @@ export class PasswordTokenRepository {
       },
     });
   }
+
+  async findByAccountId(accountId: string) {
+    return await this.prisma.resetPasswordToken.findUnique({
+      where: { accountId },
+    });
+  }
 }
