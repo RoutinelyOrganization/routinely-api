@@ -89,7 +89,6 @@ export class AccountService {
       resetPasswordInput.email
     );
 
-    // todo:check if user has code
     // todo: check if user code has expired
     const createdCode = await this.tokenService.create({
       accountId: account.id,

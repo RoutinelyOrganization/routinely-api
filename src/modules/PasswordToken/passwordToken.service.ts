@@ -29,10 +29,11 @@ export class PasswordTokenService {
       code,
       Number(process.env.SALT_ROUNDS)
     );
-    const tokenExist = this.repository.findByAccountId(
+    const tokenExist = await this.repository.findByAccountId(
       createPasswordTokenInput.accountId
     );
-    if (tokenExist) {
+    const currentDate = new Date(Date.now()).getTime();
+    if (tokenExist && tokenExist.expireAt.getTime() > currentDate) {
       this.repository.deleteToken(createPasswordTokenInput.accountId);
     }
 

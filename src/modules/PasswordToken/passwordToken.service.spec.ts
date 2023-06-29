@@ -8,6 +8,7 @@ import {
   createTokenInput,
   createTokenOutput,
 } from './tests/passwordToken.stubs';
+import { faker } from '@faker-js/faker';
 
 describe('PasswordToken Unit Tests', () => {
   let service: PasswordTokenService;
@@ -44,6 +45,11 @@ describe('PasswordToken Unit Tests', () => {
   });
 
   describe('When creating a new password token', () => {
+    const tokenStub = {
+      id: 1,
+      token: 'hashed_code',
+      expireAt: faker.date.soon({ days: 2 }),
+    };
     it('should generate token with correct params ', async () => {
       const randomBytesSpy = jest
         .spyOn(crypto, 'randomBytes')
@@ -61,17 +67,17 @@ describe('PasswordToken Unit Tests', () => {
     it('should check if account already has token', async () => {
       const repositorySpy = jest
         .spyOn(passwordTokenRepositoryMock, 'findByAccountId')
-        .mockResolvedValue(true);
+        .mockResolvedValue(tokenStub);
 
       await service.create(createTokenInput);
 
       expect(repositorySpy).toHaveBeenCalledWith(createTokenInput.accountId);
     });
 
-    it('should delete token if account already has one', async () => {
+    it('should delete token if account already has one and is expired', async () => {
       jest
         .spyOn(passwordTokenRepositoryMock, 'findByAccountId')
-        .mockResolvedValue(true);
+        .mockResolvedValue(tokenStub);
       const repositorySpy = jest.spyOn(
         passwordTokenRepositoryMock,
         'deleteToken'
