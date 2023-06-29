@@ -88,18 +88,20 @@ export class AccountService {
     const account = await this.accountRepository.findAccountByEmail(
       resetPasswordInput.email
     );
-    // todo: tokenService.generate
-    // todo: tokenService.create
-    // todo:check if user has token
-    await this.tokenService.create({ accountId: account.id });
+
+    // todo:check if user has code
+    // todo: check if user code has expired
+    const createdCode = await this.tokenService.create({
+      accountId: account.id,
+    });
 
     try {
-      await this.mailingService.sendEmail({
+      return await this.mailingService.sendEmail({
         from: process.env.FROM_EMAIL,
         to: account.email,
         subject: 'Reset Password - Routinely',
-        payload: { name: account.name, code: 'token' },
-        template: '../../templates/resetPassword.handlebars',
+        payload: { name: account.name, code: createdCode.code },
+        template: 'resetPassword.handlebars',
       });
     } catch (e) {
       throw new SendEmailError();

@@ -22,7 +22,7 @@ describe('AccountService Unit Tests', () => {
 
   const salt = process.env.SALT_DATA;
   const saltRounds = Number(process.env.SALT_ROUNDS);
-  const resetPasswordTemplatePath = '../../templates/resetPassword.handlebars';
+  const resetPasswordTemplatePath = 'resetPassword.handlebars';
 
   jest.mock('bcrypt', () => ({
     hash: jest.fn(),
@@ -48,7 +48,7 @@ describe('AccountService Unit Tests', () => {
   };
 
   const mailingServiceMock = {
-    sendEmail: jest.fn(),
+    sendEmail: jest.fn().mockResolvedValue(true),
   };
 
   beforeEach(async () => {
@@ -156,12 +156,15 @@ describe('AccountService Unit Tests', () => {
       email: faker.internet.email(),
       name: faker.person.firstName(),
     };
+
     accountRepositoryMock.findAccountByEmail.mockResolvedValue(accountStub);
+    const repositorySpy = jest.spyOn(accountRepositoryMock, 'alreadyExists');
+    const tokenServiceSpy = jest
+      .spyOn(tokenServiceMock, 'create')
+      .mockResolvedValue({ code: '123789' });
 
     it('should verify if user exists with email', async () => {
       accountRepositoryMock.alreadyExists.mockResolvedValue(true);
-
-      const repositorySpy = jest.spyOn(accountRepositoryMock, 'alreadyExists');
 
       await service.resetPassword(resetPasswordInput);
 
@@ -192,7 +195,7 @@ describe('AccountService Unit Tests', () => {
 
     it('should call PasswordTokenService.create with correct params', async () => {
       accountRepositoryMock.alreadyExists.mockResolvedValue(true);
-      const tokenServiceSpy = jest.spyOn(tokenServiceMock, 'create');
+      jest.spyOn(mailingServiceMock, 'sendEmail').mockResolvedValue(true);
 
       await service.resetPassword(resetPasswordInput);
 
@@ -212,7 +215,7 @@ describe('AccountService Unit Tests', () => {
         from: process.env.FROM_EMAIL,
         to: accountStub.email,
         subject: 'Reset Password - Routinely',
-        payload: { code: 'token', name: accountStub.name },
+        payload: { code: '123789', name: accountStub.name },
         template: resetPasswordTemplatePath,
       });
     });
