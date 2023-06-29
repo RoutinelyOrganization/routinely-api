@@ -15,7 +15,6 @@ export class PasswordTokenRepository {
       data: {
         token: createPasswordTokenInput.token,
         accountId: createPasswordTokenInput.accountId,
-        expireAt: createPasswordTokenInput.accountId,
       },
     });
   }

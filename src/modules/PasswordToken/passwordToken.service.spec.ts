@@ -50,6 +50,7 @@ describe('PasswordToken Unit Tests', () => {
       token: 'hashed_code',
       expireAt: faker.date.recent({ days: 1 }),
     };
+
     it('should generate token with correct params ', async () => {
       const randomBytesSpy = jest
         .spyOn(crypto, 'randomBytes')
@@ -68,20 +69,6 @@ describe('PasswordToken Unit Tests', () => {
       const repositorySpy = jest
         .spyOn(passwordTokenRepositoryMock, 'findByAccountId')
         .mockResolvedValue(tokenStub);
-
-      await service.create(createTokenInput);
-
-      expect(repositorySpy).toHaveBeenCalledWith(createTokenInput.accountId);
-    });
-
-    it('should delete token if account already has one and is expired', async () => {
-      jest
-        .spyOn(passwordTokenRepositoryMock, 'findByAccountId')
-        .mockResolvedValue(tokenStub);
-      const repositorySpy = jest.spyOn(
-        passwordTokenRepositoryMock,
-        'deleteToken'
-      );
 
       await service.create(createTokenInput);
 

@@ -3,5 +3,4 @@ export interface PasswordToken {
   token: string;
   accountId: string;
   createdAt: Date;
-  expireAt: Date;
 }

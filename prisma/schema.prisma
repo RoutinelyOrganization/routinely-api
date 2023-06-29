@@ -33,7 +33,7 @@ model ResetPasswordToken {
   account Account? @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId String @unique @map("account_id")
   createdAt DateTime @default(now()) @map("created_at")
-  expireAt DateTime 
+  
 }
 
 model Profile {

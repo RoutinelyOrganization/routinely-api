@@ -32,9 +32,9 @@ export class PasswordTokenService {
     const tokenExist = await this.repository.findByAccountId(
       createPasswordTokenInput.accountId
     );
-    const currentDate = new Date(Date.now()).getTime();
-    if (tokenExist && tokenExist.expireAt.getTime() < currentDate) {
-      this.repository.deleteToken(createPasswordTokenInput.accountId);
+
+    if (tokenExist) {
+      await this.repository.deleteToken(createPasswordTokenInput.accountId);
     }
 
     await this.repository.create({
