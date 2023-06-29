@@ -31,7 +31,7 @@ export class MailingService {
       from: createEmailInput.from,
       to: createEmailInput.to,
       subject: createEmailInput.subject,
-      html: createEmailInput.html,
+      html: compiledTemplate(createEmailInput.payload),
     };
 
     try {

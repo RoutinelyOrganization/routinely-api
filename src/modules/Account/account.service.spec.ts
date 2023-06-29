@@ -154,6 +154,7 @@ describe('AccountService Unit Tests', () => {
     const accountStub = {
       id: faker.string.uuid(),
       email: faker.internet.email(),
+      name: faker.person.firstName(),
     };
     accountRepositoryMock.findAccountByEmail.mockResolvedValue(accountStub);
 
@@ -211,7 +212,7 @@ describe('AccountService Unit Tests', () => {
         from: process.env.FROM_EMAIL,
         to: accountStub.email,
         subject: 'Reset Password - Routinely',
-        html: `html template here`,
+        payload: { code: 'token', name: accountStub.name },
         template: resetPasswordTemplatePath,
       });
     });

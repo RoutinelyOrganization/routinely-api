@@ -98,7 +98,7 @@ export class AccountService {
         from: process.env.FROM_EMAIL,
         to: account.email,
         subject: 'Reset Password - Routinely',
-        html: `html template here`,
+        payload: { name: account.name, code: 'token' },
         template: '../../templates/resetPassword.handlebars',
       });
     } catch (e) {
