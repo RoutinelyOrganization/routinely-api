@@ -48,7 +48,7 @@ describe('PasswordToken Unit Tests', () => {
     const tokenStub = {
       id: 1,
       token: 'hashed_code',
-      expireAt: faker.date.soon({ days: 2 }),
+      expireAt: faker.date.recent({ days: 1 }),
     };
     it('should generate token with correct params ', async () => {
       const randomBytesSpy = jest

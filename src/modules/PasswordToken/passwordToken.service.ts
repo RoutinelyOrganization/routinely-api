@@ -33,7 +33,7 @@ export class PasswordTokenService {
       createPasswordTokenInput.accountId
     );
     const currentDate = new Date(Date.now()).getTime();
-    if (tokenExist && tokenExist.expireAt.getTime() > currentDate) {
+    if (tokenExist && tokenExist.expireAt.getTime() < currentDate) {
       this.repository.deleteToken(createPasswordTokenInput.accountId);
     }
 
