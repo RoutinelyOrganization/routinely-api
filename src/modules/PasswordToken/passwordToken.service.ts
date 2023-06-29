@@ -32,6 +32,10 @@ export class PasswordTokenService {
     const tokenExist = this.repository.findByAccountId(
       createPasswordTokenInput.accountId
     );
+    if (tokenExist) {
+      this.repository.deleteToken(createPasswordTokenInput.accountId);
+    }
+
     await this.repository.create({
       ...createPasswordTokenInput,
       token: hashedToken,

@@ -25,4 +25,10 @@ export class PasswordTokenRepository {
       where: { accountId },
     });
   }
+
+  async deleteToken(accountId: string) {
+    return await this.prisma.resetPasswordToken.delete({
+      where: { accountId },
+    });
+  }
 }

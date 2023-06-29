@@ -25,6 +25,7 @@ describe('PasswordToken Unit Tests', () => {
   const passwordTokenRepositoryMock = {
     create: jest.fn(),
     findByAccountId: jest.fn(),
+    deleteToken: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -61,6 +62,20 @@ describe('PasswordToken Unit Tests', () => {
       const repositorySpy = jest
         .spyOn(passwordTokenRepositoryMock, 'findByAccountId')
         .mockResolvedValue(true);
+
+      await service.create(createTokenInput);
+
+      expect(repositorySpy).toHaveBeenCalledWith(createTokenInput.accountId);
+    });
+
+    it('should delete token if account already has one', async () => {
+      jest
+        .spyOn(passwordTokenRepositoryMock, 'findByAccountId')
+        .mockResolvedValue(true);
+      const repositorySpy = jest.spyOn(
+        passwordTokenRepositoryMock,
+        'deleteToken'
+      );
 
       await service.create(createTokenInput);
 
