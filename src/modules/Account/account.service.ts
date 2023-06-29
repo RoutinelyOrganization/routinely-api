@@ -88,7 +88,9 @@ export class AccountService {
     const account = await this.accountRepository.findAccountByEmail(
       resetPasswordInput.email
     );
-
+    // todo: tokenService.generate
+    // todo: tokenService.create
+    // todo:check if user has token
     await this.tokenService.create({ accountId: account.id });
 
     try {
@@ -97,6 +99,7 @@ export class AccountService {
         to: account.email,
         subject: 'Reset Password - Routinely',
         html: `html template here`,
+        template: '../../templates/resetPassword.handlebars',
       });
     } catch (e) {
       throw new SendEmailError();

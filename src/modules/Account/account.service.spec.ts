@@ -22,6 +22,7 @@ describe('AccountService Unit Tests', () => {
 
   const salt = process.env.SALT_DATA;
   const saltRounds = Number(process.env.SALT_ROUNDS);
+  const resetPasswordTemplatePath = '../../templates/resetPassword.handlebars';
 
   jest.mock('bcrypt', () => ({
     hash: jest.fn(),
@@ -211,6 +212,7 @@ describe('AccountService Unit Tests', () => {
         to: accountStub.email,
         subject: 'Reset Password - Routinely',
         html: `html template here`,
+        template: resetPasswordTemplatePath,
       });
     });
 
@@ -225,6 +227,6 @@ describe('AccountService Unit Tests', () => {
       await expect(promise).rejects.toThrow(new SendEmailError());
     });
 
-    it.todo('should send email confirmation ');
+    it.todo('check if user already has token');
   });
 });
