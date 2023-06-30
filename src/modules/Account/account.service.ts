@@ -96,7 +96,6 @@ export class AccountService {
       hashedEmail
     );
 
-    // todo: check if user code has expired
     const createdCode = await this.tokenService.create({
       accountId: account.id,
     });
@@ -111,7 +110,6 @@ export class AccountService {
       });
       return { accountId: account.id };
     } catch (e) {
-      console.log(e, 'account service');
       throw new SendEmailError();
     }
   }
@@ -131,7 +129,7 @@ export class AccountService {
         password: hashedPassword,
         accountId: changePasswordInput.accountId,
       });
-      // TODO: delete token after changes password
+
       await this.tokenService.deleteToken(changePasswordInput.accountId);
     } else throw new InvalidCodeError();
     return;
