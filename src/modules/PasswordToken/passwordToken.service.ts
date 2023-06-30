@@ -47,10 +47,11 @@ export class PasswordTokenService {
   }
 
   async verifyToken(verifyCodeInput: VerifyCodeInput) {
-    const token = await bcrypt.hash(
+    const hashedCode = await bcrypt.hash(
       verifyCodeInput.code,
       Number(process.env.SALT_ROUNDS)
     );
-    await this.repository.findByToken(token);
+    const token = await this.repository.findByToken(hashedCode);
+    const isEqual = await bcrypt.compare(verifyCodeInput.code, token.token);
   }
 }

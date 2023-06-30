@@ -14,8 +14,14 @@ describe('PasswordToken Unit Tests', () => {
   let service: PasswordTokenService;
   const saltRounds = Number(process.env.SALT_ROUNDS);
 
+  const tokenStub = {
+    id: 1,
+    token: 'hashed_code',
+  };
+
   jest.mock('bcrypt', () => ({
     hash: jest.fn(),
+    compare: jest.fn(),
   }));
 
   const randomBytesMock = {
@@ -50,12 +56,6 @@ describe('PasswordToken Unit Tests', () => {
   });
 
   describe('When creating a new password token', () => {
-    const tokenStub = {
-      id: 1,
-      token: 'hashed_code',
-      expireAt: faker.date.recent({ days: 1 }),
-    };
-
     it('should generate token with correct params ', async () => {
       const randomBytesSpy = jest
         .spyOn(crypto, 'randomBytes')
@@ -117,6 +117,13 @@ describe('PasswordToken Unit Tests', () => {
       code: '123789',
     };
 
+    jest.spyOn(bcrypt, 'hash').mockImplementation(() => {
+      return new Promise((resolve) => resolve('hashed_code'));
+    });
+    jest
+      .spyOn(passwordTokenRepositoryMock, 'findByToken')
+      .mockResolvedValue(tokenStub);
+
     it('calls bcrypt.hash with correct params', async () => {
       const bcryptSpy = jest.spyOn(bcrypt, 'hash');
 
@@ -137,6 +144,19 @@ describe('PasswordToken Unit Tests', () => {
       await service.verifyToken(token);
 
       expect(repositorySpy).toHaveBeenCalledWith('hashed_code');
+    });
+
+    it('calls bcrypt.compare with correct params', async () => {
+      const bcryptSpy = jest
+        .spyOn(bcrypt, 'compare')
+        .mockResolvedValue(true as never);
+      jest
+        .spyOn(passwordTokenRepositoryMock, 'findByToken')
+        .mockResolvedValue(tokenStub);
+
+      await service.verifyToken(token);
+
+      expect(bcryptSpy).toHaveBeenCalledWith(token.code, tokenStub.token);
     });
   });
 });
