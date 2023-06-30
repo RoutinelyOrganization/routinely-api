@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import {
   CreateAccountControllerInput,
   AccessAccountControllerInput,
+  ResetPasswordInput,
 } from './account.dtos';
 import { AccountService } from './account.service';
 import { SessionService } from '../Session/session.service';
@@ -49,5 +50,14 @@ export class AccountController {
     });
 
     return sessionData;
+  }
+
+  @Post('resetpassword')
+  async resetPassword(@Body() resetPasswordInput: ResetPasswordInput) {
+    try {
+      return await this.accountService.resetPassword(resetPasswordInput);
+    } catch (e) {
+      throw e;
+    }
   }
 }

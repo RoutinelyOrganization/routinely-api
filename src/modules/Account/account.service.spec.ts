@@ -171,6 +171,22 @@ describe('AccountService Unit Tests', () => {
       .spyOn(tokenServiceMock, 'create')
       .mockResolvedValue({ code: '123789' });
 
+    it('should hash input email', async () => {
+      jest
+        .spyOn(accountRepositoryMock, 'alreadyExists')
+        .mockResolvedValueOnce(true);
+      jest
+        .spyOn(crypto, 'createHash')
+        .mockImplementationOnce(() => createHashMock);
+
+      await service.resetPassword(accountStub);
+
+      expect(createHashMock.update).toHaveBeenCalledWith(
+        accountStub.email + salt
+      );
+      expect(createHashMock.digest).toHaveReturnedWith('hashed_email');
+    });
+
     it('should verify if user exists with email', async () => {
       accountRepositoryMock.alreadyExists.mockResolvedValue(true);
 

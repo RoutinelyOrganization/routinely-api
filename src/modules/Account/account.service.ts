@@ -80,6 +80,11 @@ export class AccountService {
   }
 
   async resetPassword(resetPasswordInput: ResetPasswordInput): Promise<void> {
+    const hashedEmail = await hashDataAsync(
+      resetPasswordInput.email,
+      process.env.SALT_DATA
+    );
+
     const accountExists = await this.accountRepository.alreadyExists(
       resetPasswordInput.email
     );
