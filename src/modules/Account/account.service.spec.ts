@@ -10,12 +10,12 @@ import {
 } from './tests/stubs/account.stubs';
 import * as bcrypt from 'bcrypt';
 import { AccountNotFoundError } from './account.errors';
-import { hashDataAsync } from '../../utils/hashes';
+
 import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
 import { faker } from '@faker-js/faker';
-import { AccessAccountRepositoryOutput } from './account.dtos';
 import { MailingService } from '../Mailing/mailing.service';
 import { SendEmailError } from '../Mailing/mailing.errors';
+import { ChangePasswordInput } from './account.dtos';
 
 describe('AccountService Unit Tests', () => {
   let service: AccountService;
@@ -41,10 +41,12 @@ describe('AccountService Unit Tests', () => {
     alreadyExists: jest.fn().mockResolvedValue(true),
     createAccount: jest.fn(),
     findAccountByEmail: jest.fn(),
+    changePassword: jest.fn(),
   };
 
   const tokenServiceMock = {
     create: jest.fn(),
+    verifyToken: jest.fn(),
   };
 
   const mailingServiceMock = {
@@ -243,9 +245,11 @@ describe('AccountService Unit Tests', () => {
 
   describe('When changing user password', () => {
     const changePasswordInput = {
+      code: '123789',
       password: 'new_password',
       repeatPassword: 'new_password',
     };
+
     it('calls bcryt.hash with input password', async () => {
       const bcryptSpy = jest.spyOn(bcrypt, 'hash');
 
@@ -255,6 +259,16 @@ describe('AccountService Unit Tests', () => {
         changePasswordInput.password,
         saltRounds
       );
+    });
+
+    it('calls PasswordTokenService.verify with input code', async () => {
+      const tokenServiceSpy = jest.spyOn(tokenServiceMock, 'verifyToken');
+
+      await service.changePassword(changePasswordInput);
+
+      expect(tokenServiceSpy).toHaveBeenCalledWith({
+        code: changePasswordInput.code,
+      });
     });
   });
 });

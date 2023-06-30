@@ -85,4 +85,5 @@ export class ResetPasswordInput {
 export class ChangePasswordInput {
   password: string;
   repeatPassword: string;
+  code: string;
 }
