@@ -5,6 +5,7 @@ import { SendEmailError } from './mailing.errors';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import * as handlebars from 'handlebars';
+
 @Injectable()
 export class MailingService {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -18,13 +19,14 @@ export class MailingService {
         user: process.env.EMAIL_USERNAME,
         pass: process.env.EMAIL_PASSWORD,
       },
+      secure: false,
     } as nodemailer.TransportOptions);
 
     const source = readFileSync(
-      join(__dirname, '../../templates/', createEmailInput.template),
+      join(__dirname, '../../../templates/', createEmailInput.template),
       'utf8'
     );
-
+    console.log();
     const compiledTemplate = handlebars.compile(source);
 
     const emailData = {
@@ -37,6 +39,7 @@ export class MailingService {
     try {
       await transporter.sendMail(emailData);
     } catch (e) {
+      console.log(e, 'mailing service');
       throw new SendEmailError();
     }
   }

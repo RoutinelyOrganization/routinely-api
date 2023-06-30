@@ -102,12 +102,13 @@ export class AccountService {
     try {
       return await this.mailingService.sendEmail({
         from: process.env.FROM_EMAIL,
-        to: account.email,
+        to: resetPasswordInput.email,
         subject: 'Reset Password - Routinely',
         payload: { name: account.name, code: createdCode.code },
         template: 'resetPassword.handlebars',
       });
     } catch (e) {
+      console.log(e, 'account service');
       throw new SendEmailError();
     }
   }

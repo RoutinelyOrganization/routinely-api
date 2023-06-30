@@ -14,6 +14,10 @@ describe('MailingService Unit Tests', () => {
     compile: jest.fn().mockImplementationOnce(() => 'compiled_template'),
   }));
 
+  jest.mock('fs', () => ({
+    readFileSync: jest.fn(),
+  }));
+
   const createTransportMock = {
     sendMail: jest.fn(),
   } as unknown as jest.Mocked<nodemailer.Transporter>;
@@ -39,6 +43,7 @@ describe('MailingService Unit Tests', () => {
       const nodemailerSpy = jest
         .spyOn(nodemailer, 'createTransport')
         .mockImplementationOnce(() => createTransportMock);
+      jest.spyOn(fs, 'readFileSync').mockReturnValue('template_path');
 
       await service.sendEmail(createEmailInput);
 
@@ -49,6 +54,7 @@ describe('MailingService Unit Tests', () => {
           user: process.env.EMAIL_USERNAME,
           pass: process.env.EMAIL_PASSWORD,
         },
+        secure: false,
       });
     });
 

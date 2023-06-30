@@ -4,7 +4,9 @@ import {
   CreatePasswordTokenOutput,
   CreatePasswordTokenRepositoryInput,
 } from './passwordToken.dtos';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class PasswordTokenRepository {
   constructor(private prisma: PrismaService) {}
 
