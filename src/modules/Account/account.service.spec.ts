@@ -46,6 +46,7 @@ describe('AccountService Unit Tests', () => {
   const tokenServiceMock = {
     create: jest.fn(),
     verifyToken: jest.fn(),
+    deleteToken: jest.fn(),
   };
 
   const mailingServiceMock = {

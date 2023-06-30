@@ -53,4 +53,8 @@ export class PasswordTokenService {
 
     return isEqual ? true : false;
   }
+
+  async deleteToken(accountId: string) {
+    return await this.repository.deleteToken(accountId);
+  }
 }

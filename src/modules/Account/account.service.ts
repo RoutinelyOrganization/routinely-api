@@ -11,6 +11,7 @@ import {
   AccessAccountServiceOutput,
   CreateAccountControllerInput,
   ChangePasswordInput,
+  ResetPasswordOutput,
 } from './account.dtos';
 import { AccountRepository } from './account.repository';
 import { ResetPasswordInput } from './account.dtos';
@@ -79,7 +80,9 @@ export class AccountService {
     // todo: logger ({ location: 'SRC:MODULES:ACCOUNT:ACCOUNT_SERVICE::CREATE_ACCOUNT' });
   }
 
-  async resetPassword(resetPasswordInput: ResetPasswordInput): Promise<void> {
+  async resetPassword(
+    resetPasswordInput: ResetPasswordInput
+  ): Promise<ResetPasswordOutput> {
     const hashedEmail = await hashDataAsync(
       resetPasswordInput.email,
       process.env.SALT_DATA
@@ -99,13 +102,14 @@ export class AccountService {
     });
 
     try {
-      return await this.mailingService.sendEmail({
+      await this.mailingService.sendEmail({
         from: process.env.FROM_EMAIL,
         to: resetPasswordInput.email,
         subject: 'Reset Password - Routinely',
         payload: { name: account.name, code: createdCode.code },
         template: 'resetPassword.handlebars',
       });
+      return { accountId: account.id };
     } catch (e) {
       console.log(e, 'account service');
       throw new SendEmailError();
@@ -128,6 +132,7 @@ export class AccountService {
         accountId: changePasswordInput.accountId,
       });
       // TODO: delete token after changes password
+      await this.tokenService.deleteToken(changePasswordInput.accountId);
     } else throw new InvalidCodeError();
     return;
   }

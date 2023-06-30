@@ -82,6 +82,10 @@ export class ResetPasswordInput {
   email: string;
 }
 
+export class ResetPasswordOutput {
+  accountId: string;
+}
+
 export class ChangePasswordInput {
   password: string;
   repeatPassword: string;
