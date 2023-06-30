@@ -113,7 +113,7 @@ describe('PasswordToken Unit Tests', () => {
   });
 
   describe('#verifyToken', () => {
-    const token = {
+    const verifyCodeInput = {
       code: '123789',
     };
 
@@ -127,9 +127,9 @@ describe('PasswordToken Unit Tests', () => {
     it('calls bcrypt.hash with correct params', async () => {
       const bcryptSpy = jest.spyOn(bcrypt, 'hash');
 
-      await service.verifyToken(token);
+      await service.verifyToken(verifyCodeInput);
 
-      expect(bcryptSpy).toHaveBeenCalledWith(token.code, saltRounds);
+      expect(bcryptSpy).toHaveBeenCalledWith(verifyCodeInput.code, saltRounds);
     });
 
     it('calls repository.findByToken with correct params', async () => {
@@ -141,7 +141,7 @@ describe('PasswordToken Unit Tests', () => {
         'findByToken'
       );
 
-      await service.verifyToken(token);
+      await service.verifyToken(verifyCodeInput);
 
       expect(repositorySpy).toHaveBeenCalledWith('hashed_code');
     });
@@ -154,9 +154,12 @@ describe('PasswordToken Unit Tests', () => {
         .spyOn(passwordTokenRepositoryMock, 'findByToken')
         .mockResolvedValue(tokenStub);
 
-      await service.verifyToken(token);
+      await service.verifyToken(verifyCodeInput);
 
-      expect(bcryptSpy).toHaveBeenCalledWith(token.code, tokenStub.token);
+      expect(bcryptSpy).toHaveBeenCalledWith(
+        verifyCodeInput.code,
+        tokenStub.token
+      );
     });
   });
 });
