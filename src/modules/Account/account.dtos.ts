@@ -6,6 +6,7 @@ import {
   IsStrongPassword,
   IsBoolean,
 } from 'class-validator';
+import { IsEqualTo } from 'src/utils/decorators/isEqualTo';
 
 class AccountBaseDto {
   id: string;
@@ -79,6 +80,8 @@ export class AccessAccountServiceOutput extends PickType(AccountBaseDto, [
 }
 
 export class ResetPasswordInput {
+  @IsNotEmpty()
+  @IsEmail()
   email: string;
 }
 
@@ -87,9 +90,19 @@ export class ResetPasswordOutput {
 }
 
 export class ChangePasswordInput {
+  @IsNotEmpty()
+  @IsStrongPassword()
   password: string;
+
+  @IsNotEmpty()
+  @IsStrongPassword()
+  @IsEqualTo('password')
   repeatPassword: string;
+
+  @IsNotEmpty()
   code: string;
+
+  @IsNotEmpty()
   accountId: string;
 }
 
