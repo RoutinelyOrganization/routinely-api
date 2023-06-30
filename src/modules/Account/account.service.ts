@@ -10,6 +10,7 @@ import {
   CreateAccountServiceOutput,
   AccessAccountServiceOutput,
   CreateAccountControllerInput,
+  ChangePasswordInput,
 } from './account.dtos';
 import { AccountRepository } from './account.repository';
 import { ResetPasswordInput } from './account.dtos';
@@ -105,6 +106,10 @@ export class AccountService {
     } catch (e) {
       throw new SendEmailError();
     }
+  }
+
+  async changePassword(changePasswordInput: ChangePasswordInput) {
+    await this.hashPassword(changePasswordInput.password);
   }
 
   async accessAccount(

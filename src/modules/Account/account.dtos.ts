@@ -81,3 +81,8 @@ export class AccessAccountServiceOutput extends PickType(AccountBaseDto, [
 export class ResetPasswordInput {
   email: string;
 }
+
+export class ChangePasswordInput {
+  password: string;
+  repeatPassword: string;
+}

@@ -65,6 +65,10 @@ describe('AccountService Unit Tests', () => {
     service = module.get<AccountService>(AccountService);
   });
 
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe('When creating a new account', () => {
     it('should hash email field from input', async () => {
       jest
@@ -86,6 +90,9 @@ describe('AccountService Unit Tests', () => {
       jest
         .spyOn(accountRepositoryMock, 'alreadyExists')
         .mockResolvedValueOnce(false);
+      jest
+        .spyOn(crypto, 'createHash')
+        .mockImplementationOnce(() => createHashMock);
       const accountRepositorySpy = jest.spyOn(
         accountRepositoryMock,
         'alreadyExists'
@@ -232,5 +239,22 @@ describe('AccountService Unit Tests', () => {
     });
 
     it.todo('check if user already has token');
+  });
+
+  describe('When changing user password', () => {
+    const changePasswordInput = {
+      password: 'new_password',
+      repeatPassword: 'new_password',
+    };
+    it('calls bcryt.hash with input password', async () => {
+      const bcryptSpy = jest.spyOn(bcrypt, 'hash');
+
+      await service.changePassword(changePasswordInput);
+
+      expect(bcryptSpy).toHaveBeenCalledWith(
+        changePasswordInput.password,
+        saltRounds
+      );
+    });
   });
 });
