@@ -3,6 +3,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateAccountRepositoryInput,
   AccessAccountRepositoryOutput,
+  ChangePasswordData,
 } from './account.dtos';
 
 @Injectable()
@@ -90,5 +91,12 @@ export class AccountRepository {
       ...account,
       name,
     };
+  }
+
+  async changePassword(data: ChangePasswordData) {
+    return await this.prisma.account.update({
+      where: { id: data.accountId },
+      data: { password: data.password },
+    });
   }
 }

@@ -15,7 +15,6 @@ import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
 import { faker } from '@faker-js/faker';
 import { MailingService } from '../Mailing/mailing.service';
 import { SendEmailError } from '../Mailing/mailing.errors';
-import { ChangePasswordInput } from './account.dtos';
 
 describe('AccountService Unit Tests', () => {
   let service: AccountService;
@@ -248,9 +247,10 @@ describe('AccountService Unit Tests', () => {
       code: '123789',
       password: 'new_password',
       repeatPassword: 'new_password',
+      accountId: faker.string.uuid(),
     };
     jest.spyOn(tokenServiceMock, 'verifyToken').mockResolvedValue(true);
-
+    jest.spyOn(bcrypt, 'hash').mockResolvedValue('hashed_password' as never);
     it('calls bcryt.hash with input password', async () => {
       const bcryptSpy = jest.spyOn(bcrypt, 'hash');
 
@@ -278,6 +278,21 @@ describe('AccountService Unit Tests', () => {
       const promise = service.changePassword(changePasswordInput);
 
       await expect(promise).rejects.toThrow(new InvalidCodeError());
+    });
+
+    it('calls AccountRepository.changePassword with correct data', async () => {
+      const accountRepositorySpy = jest.spyOn(
+        accountRepositoryMock,
+        'changePassword'
+      );
+      jest.spyOn(tokenServiceMock, 'verifyToken').mockResolvedValue(true);
+
+      await service.changePassword(changePasswordInput);
+
+      expect(accountRepositorySpy).toHaveBeenCalledWith({
+        password: 'hashed_password',
+        accountId: changePasswordInput.accountId,
+      });
     });
   });
 });

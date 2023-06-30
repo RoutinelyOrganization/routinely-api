@@ -86,4 +86,10 @@ export class ChangePasswordInput {
   password: string;
   repeatPassword: string;
   code: string;
+  accountId: string;
+}
+
+export class ChangePasswordData {
+  password: string;
+  accountId: string;
 }

@@ -111,8 +111,15 @@ export class AccountService {
     const isValid = await this.tokenService.verifyToken({
       code: changePasswordInput.code,
     });
-    if (!isValid) throw new InvalidCodeError();
-    await this.hashPassword(changePasswordInput.password);
+    if (isValid) {
+      const hashedPassword = await this.hashPassword(
+        changePasswordInput.password
+      );
+      return await this.accountRepository.changePassword({
+        password: hashedPassword,
+        accountId: changePasswordInput.accountId,
+      });
+    } else throw new InvalidCodeError();
   }
 
   async accessAccount(
