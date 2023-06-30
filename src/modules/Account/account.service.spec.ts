@@ -189,10 +189,13 @@ describe('AccountService Unit Tests', () => {
 
     it('should verify if user exists with email', async () => {
       accountRepositoryMock.alreadyExists.mockResolvedValue(true);
+      jest
+        .spyOn(crypto, 'createHash')
+        .mockImplementationOnce(() => createHashMock);
 
       await service.resetPassword(resetPasswordInput);
 
-      expect(repositorySpy).toHaveBeenCalledWith(resetPasswordInput.email);
+      expect(repositorySpy).toHaveBeenCalledWith('hashed_email');
     });
 
     it.todo('should verify if user exists with telephone');

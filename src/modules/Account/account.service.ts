@@ -86,7 +86,7 @@ export class AccountService {
     );
 
     const accountExists = await this.accountRepository.alreadyExists(
-      resetPasswordInput.email
+      hashedEmail
     );
     if (!accountExists) throw new AccountNotFoundError();
     // todo: call tokenservice and email service
