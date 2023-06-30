@@ -9,7 +9,7 @@ import {
   resetPasswordInput,
 } from './tests/stubs/account.stubs';
 import * as bcrypt from 'bcrypt';
-import { AccountNotFoundError } from './account.errors';
+import { AccountNotFoundError, InvalidCodeError } from './account.errors';
 
 import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
 import { faker } from '@faker-js/faker';
@@ -249,6 +249,7 @@ describe('AccountService Unit Tests', () => {
       password: 'new_password',
       repeatPassword: 'new_password',
     };
+    jest.spyOn(tokenServiceMock, 'verifyToken').mockResolvedValue(true);
 
     it('calls bcryt.hash with input password', async () => {
       const bcryptSpy = jest.spyOn(bcrypt, 'hash');
@@ -269,6 +270,14 @@ describe('AccountService Unit Tests', () => {
       expect(tokenServiceSpy).toHaveBeenCalledWith({
         code: changePasswordInput.code,
       });
+    });
+
+    it('throws error if PasswordTokenService.verify returns false', async () => {
+      jest.spyOn(tokenServiceMock, 'verifyToken').mockResolvedValue(false);
+
+      const promise = service.changePassword(changePasswordInput);
+
+      await expect(promise).rejects.toThrow(new InvalidCodeError());
     });
   });
 });

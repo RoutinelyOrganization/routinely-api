@@ -14,7 +14,7 @@ import {
 } from './account.dtos';
 import { AccountRepository } from './account.repository';
 import { ResetPasswordInput } from './account.dtos';
-import { AccountNotFoundError } from './account.errors';
+import { AccountNotFoundError, InvalidCodeError } from './account.errors';
 import { hashDataAsync } from 'src/utils/hashes';
 import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
 import { MailingService } from '../Mailing/mailing.service';
@@ -108,7 +108,10 @@ export class AccountService {
   }
 
   async changePassword(changePasswordInput: ChangePasswordInput) {
-    await this.tokenService.verifyToken({ code: changePasswordInput.code });
+    const isValid = await this.tokenService.verifyToken({
+      code: changePasswordInput.code,
+    });
+    if (!isValid) throw new InvalidCodeError();
     await this.hashPassword(changePasswordInput.password);
   }
 
