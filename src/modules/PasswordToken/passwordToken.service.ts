@@ -53,5 +53,7 @@ export class PasswordTokenService {
     );
     const token = await this.repository.findByToken(hashedCode);
     const isEqual = await bcrypt.compare(verifyCodeInput.code, token.token);
+    // TODO: check if match and return, if dont return error
+    return isEqual ? true : false;
   }
 }

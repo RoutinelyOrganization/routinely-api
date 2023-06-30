@@ -161,5 +161,16 @@ describe('PasswordToken Unit Tests', () => {
         tokenStub.token
       );
     });
+
+    it('returns correct response if bcrypt.compare returns true', async () => {
+      jest.spyOn(bcrypt, 'compare').mockResolvedValue(true as never);
+      jest
+        .spyOn(passwordTokenRepositoryMock, 'findByToken')
+        .mockResolvedValue(tokenStub);
+
+      const response = await service.verifyToken(verifyCodeInput);
+
+      expect(response).toBe(true);
+    });
   });
 });
