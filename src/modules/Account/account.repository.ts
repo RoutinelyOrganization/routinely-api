@@ -94,9 +94,13 @@ export class AccountRepository {
   }
 
   async changePassword(data: ChangePasswordData) {
-    return await this.prisma.account.update({
-      where: { id: data.accountId },
-      data: { password: data.password },
-    });
+    return await this.prisma.account
+      .update({
+        where: { id: data.accountId },
+        data: { password: data.password },
+      })
+      .catch(() => {
+        throw new InternalServerErrorException();
+      });
   }
 }
