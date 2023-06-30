@@ -291,6 +291,7 @@ describe('AccountService Unit Tests', () => {
 
       expect(tokenServiceSpy).toHaveBeenCalledWith({
         code: changePasswordInput.code,
+        accountId: changePasswordInput.accountId,
       });
     });
 

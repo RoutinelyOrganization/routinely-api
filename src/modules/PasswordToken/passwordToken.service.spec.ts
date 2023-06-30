@@ -115,6 +115,7 @@ describe('PasswordToken Unit Tests', () => {
   describe('#verifyToken', () => {
     const verifyCodeInput = {
       code: '123789',
+      accountId: faker.string.uuid(),
     };
 
     jest.spyOn(bcrypt, 'hash').mockImplementation(() => {
@@ -124,26 +125,18 @@ describe('PasswordToken Unit Tests', () => {
       .spyOn(passwordTokenRepositoryMock, 'findByToken')
       .mockResolvedValue(tokenStub);
 
-    it('calls bcrypt.hash with correct params', async () => {
-      const bcryptSpy = jest.spyOn(bcrypt, 'hash');
-
-      await service.verifyToken(verifyCodeInput);
-
-      expect(bcryptSpy).toHaveBeenCalledWith(verifyCodeInput.code, saltRounds);
-    });
-
-    it('calls repository.findByToken with correct params', async () => {
+    it('calls repository.findByAccountId with correct params', async () => {
       jest.spyOn(bcrypt, 'hash').mockImplementation(() => {
         return new Promise((resolve) => resolve('hashed_code'));
       });
       const repositorySpy = jest.spyOn(
         passwordTokenRepositoryMock,
-        'findByToken'
+        'findByAccountId'
       );
 
       await service.verifyToken(verifyCodeInput);
 
-      expect(repositorySpy).toHaveBeenCalledWith('hashed_code');
+      expect(repositorySpy).toHaveBeenCalledWith(verifyCodeInput.accountId);
     });
 
     it('calls bcrypt.compare with correct params', async () => {

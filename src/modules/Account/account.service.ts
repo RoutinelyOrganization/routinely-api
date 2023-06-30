@@ -89,7 +89,6 @@ export class AccountService {
       hashedEmail
     );
     if (!accountExists) throw new AccountNotFoundError();
-    // todo: call tokenservice and email service
     const account = await this.accountRepository.findAccountByEmail(
       hashedEmail
     );
@@ -113,19 +112,24 @@ export class AccountService {
     }
   }
 
-  async changePassword(changePasswordInput: ChangePasswordInput) {
+  async changePassword(
+    changePasswordInput: ChangePasswordInput
+  ): Promise<void> {
     const isValid = await this.tokenService.verifyToken({
       code: changePasswordInput.code,
+      accountId: changePasswordInput.accountId,
     });
     if (isValid) {
       const hashedPassword = await this.hashPassword(
         changePasswordInput.password
       );
-      return await this.accountRepository.changePassword({
+      await this.accountRepository.changePassword({
         password: hashedPassword,
         accountId: changePasswordInput.accountId,
       });
+      // TODO: delete token after changes password
     } else throw new InvalidCodeError();
+    return;
   }
 
   async accessAccount(

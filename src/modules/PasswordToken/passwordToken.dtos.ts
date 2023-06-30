@@ -17,4 +17,5 @@ export class CreatePasswordCodeOutput {
 
 export class VerifyCodeInput {
   code: string;
+  accountId: string;
 }

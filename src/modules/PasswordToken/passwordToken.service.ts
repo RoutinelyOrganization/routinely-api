@@ -38,7 +38,6 @@ export class PasswordTokenService {
       code,
       Number(process.env.SALT_ROUNDS)
     );
-
     await this.repository.create({
       ...createPasswordTokenInput,
       token: hashedToken,
@@ -47,13 +46,11 @@ export class PasswordTokenService {
   }
 
   async verifyToken(verifyCodeInput: VerifyCodeInput) {
-    const hashedCode = await bcrypt.hash(
-      verifyCodeInput.code,
-      Number(process.env.SALT_ROUNDS)
+    const token = await this.repository.findByAccountId(
+      verifyCodeInput.accountId
     );
-    const token = await this.repository.findByToken(hashedCode);
     const isEqual = await bcrypt.compare(verifyCodeInput.code, token.token);
-    // TODO: check if match and return, if dont return error
+
     return isEqual ? true : false;
   }
 }
