@@ -91,7 +91,7 @@ export class AccountService {
     if (!accountExists) throw new AccountNotFoundError();
     // todo: call tokenservice and email service
     const account = await this.accountRepository.findAccountByEmail(
-      resetPasswordInput.email
+      hashedEmail
     );
 
     // todo: check if user code has expired

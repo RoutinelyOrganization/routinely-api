@@ -214,10 +214,13 @@ describe('AccountService Unit Tests', () => {
         accountRepositoryMock,
         'findAccountByEmail'
       );
+      jest
+        .spyOn(crypto, 'createHash')
+        .mockImplementationOnce(() => createHashMock);
 
       await service.resetPassword(resetPasswordInput);
 
-      expect(repositorySpy).toHaveBeenCalledWith(resetPasswordInput.email);
+      expect(repositorySpy).toHaveBeenCalledWith('hashed_email');
     });
 
     it('should call PasswordTokenService.create with correct params', async () => {
