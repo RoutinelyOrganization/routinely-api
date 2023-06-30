@@ -10,7 +10,6 @@ import { PasswordTokenRepository } from './passwordToken.repository';
 
 @Injectable()
 export class PasswordTokenService {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   constructor(private repository: PasswordTokenRepository) {}
 
   private generateCode(): string {
