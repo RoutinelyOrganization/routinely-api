@@ -106,7 +106,7 @@ export class ChangePasswordInput {
   accountId: string;
 }
 
-export class ChangePasswordData {
+export class ChangePasswordRepositoryInput {
   password: string;
   accountId: string;
 }

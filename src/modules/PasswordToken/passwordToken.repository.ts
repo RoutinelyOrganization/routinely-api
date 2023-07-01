@@ -1,6 +1,5 @@
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
-  CreatePasswordTokenInput,
   CreatePasswordTokenOutput,
   CreatePasswordTokenRepositoryInput,
 } from './passwordToken.dtos';
