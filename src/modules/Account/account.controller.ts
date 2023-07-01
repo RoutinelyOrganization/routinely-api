@@ -1,4 +1,4 @@
-import { Controller, Body, Post } from '@nestjs/common';
+import { Controller, Body, Post, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
   CreateAccountControllerInput,
@@ -6,7 +6,9 @@ import {
 } from './account.dtos';
 import { AccountService } from './account.service';
 import { SessionService } from '../Session/session.service';
+import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
 
+@UseGuards(RolesGuard)
 @ApiTags('Authentication routes')
 @Controller('auth')
 export class AccountController {
@@ -16,6 +18,7 @@ export class AccountController {
   ) {}
 
   @Post('register')
+  @RequirePermissions([Permissions['100']])
   async create(
     @Body()
     { name, email, password, acceptedTerms }: CreateAccountControllerInput
@@ -33,6 +36,7 @@ export class AccountController {
   }
 
   @Post('')
+  @RequirePermissions([Permissions['101']])
   async access(
     @Body() { email, password, remember }: AccessAccountControllerInput
   ) {
