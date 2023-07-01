@@ -13,6 +13,7 @@ import {
 } from './account.dtos';
 import { AccountRepository } from './account.repository';
 import { hashDataAsync } from 'src/utils/hashes';
+import { RoleLevel } from 'src/guards';
 
 @Injectable()
 export class AccountService {
@@ -57,6 +58,7 @@ export class AccountService {
     const created = await this.accountRepository.createAccount({
       email: hashedEmail,
       password: hashedPassword,
+      permissions: RoleLevel.Standard,
       name: createAccountInput.name,
     });
 

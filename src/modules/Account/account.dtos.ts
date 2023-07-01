@@ -44,6 +44,7 @@ export class CreateAccountControllerInput {
 export class CreateAccountRepositoryInput extends PickType(AccountBaseDto, [
   'email',
   'password',
+  'permissions',
 ]) {
   name: string;
 }
