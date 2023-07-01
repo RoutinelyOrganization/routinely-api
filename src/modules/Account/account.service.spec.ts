@@ -1,11 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AccountService } from './account.service';
-import * as crypto from 'crypto';
-import { AccountRepository } from './account.repository';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { UnprocessableEntityException } from '@nestjs/common';
-import { createAccountInput } from './tests/stubs/account.stubs';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { RoleLevel } from 'src/guards/roles.config';
+import { AccountService } from './account.service';
+import { AccountRepository } from './account.repository';
+import { createAccountInput } from './tests/stubs/account.stubs';
 
 describe('AccountService Unit Tests', () => {
   let service: AccountService;
@@ -113,6 +114,7 @@ describe('AccountService Unit Tests', () => {
       expect(accountRepositorySpy).toHaveBeenCalledWith({
         email: 'hashed_email',
         password: 'hashed_password',
+        permissions: RoleLevel.Standard,
         name: createAccountInput.name,
       });
     });
