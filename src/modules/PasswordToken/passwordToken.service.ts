@@ -50,7 +50,7 @@ export class PasswordTokenService {
     );
     const isEqual = await bcrypt.compare(verifyCodeInput.code, token.token);
 
-    return isEqual ? true : false;
+    return isEqual;
   }
 
   async deleteToken(accountId: string) {
