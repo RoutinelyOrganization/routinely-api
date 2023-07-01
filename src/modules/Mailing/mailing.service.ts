@@ -8,9 +8,7 @@ import * as handlebars from 'handlebars';
 
 @Injectable()
 export class MailingService {
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
-  constructor() {}
-
+ 
   async sendEmail(createEmailInput: CreateEmailInput): Promise<any> {
     const transporter = nodemailer.createTransport({
       host: String(process.env.EMAIL_HOST),
