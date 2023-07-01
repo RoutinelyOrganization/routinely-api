@@ -36,3 +36,15 @@ export class CreateSessionServiceOutput extends PickType(SessionBaseDto, [
   refreshToken: string;
   expiresIn: Date;
 }
+
+// Validate
+export class FindSessionRepositoryInput extends PickType(SessionBaseDto, [
+  'sessionToken',
+]) {}
+
+export class FindSessionRepositoryOutpout extends PickType(SessionBaseDto, [
+  'accountId',
+  'permissions',
+]) {}
+
+export class FindSessionServiceOutput extends FindSessionRepositoryOutpout {}

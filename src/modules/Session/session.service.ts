@@ -1,9 +1,14 @@
 import { randomBytes } from 'node:crypto';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { SessionRepository } from './session.repository';
 import {
   CreateSessionServiceInput,
   CreateSessionServiceOutput,
+  FindSessionServiceOutput,
 } from './session.dtos';
 import { hashDataAsync } from 'src/utils/hashes';
 
@@ -65,5 +70,19 @@ export class SessionService {
     };
 
     return sessionDataToResponse;
+  }
+
+  async findSessionToken(
+    token: string
+  ): Promise<FindSessionServiceOutput | null> {
+    const sessionOutput = await this.sessionRepository.findSessionByToken({
+      sessionToken: token,
+    });
+
+    if (!sessionOutput) {
+      throw new UnauthorizedException('Session expired');
+    }
+
+    return sessionOutput;
   }
 }

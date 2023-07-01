@@ -1,6 +1,10 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateSessionRepositoryInput } from './session.dtos';
+import {
+  CreateSessionRepositoryInput,
+  FindSessionRepositoryInput,
+  FindSessionRepositoryOutpout,
+} from './session.dtos';
 
 @Injectable()
 export class SessionRepository {
@@ -32,6 +36,37 @@ export class SessionRepository {
       })
       .catch(() => {
         // todo: logger ({ location: 'SRC:MODULES:SESSION:SESSION_REPOSITORY::CREATE_SESSION' );
+        throw new InternalServerErrorException();
+      });
+  }
+
+  async findSessionByToken({
+    sessionToken,
+  }: FindSessionRepositoryInput): Promise<FindSessionRepositoryOutpout | null> {
+    return await this.prisma.session
+      .findFirst({
+        where: {
+          AND: [
+            {
+              sessionToken,
+            },
+            {
+              sessionExpiresIn: {
+                gt: new Date(),
+              },
+            },
+          ],
+        },
+        select: {
+          accountId: true,
+          permissions: true,
+        },
+      })
+      .then((result) => {
+        return result;
+      })
+      .catch(() => {
+        // todo: logger ({ location: 'SRC:MODULES:SESSION:SESSION_REPOSITORY::FIND_SESSION_BY_TOKEN' );
         throw new InternalServerErrorException();
       });
   }
