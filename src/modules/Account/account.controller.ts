@@ -1,8 +1,10 @@
-import { Controller, Body, Post } from '@nestjs/common';
+import { Controller, Body, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
   CreateAccountControllerInput,
   AccessAccountControllerInput,
+  ResetPasswordInput,
+  ChangePasswordInput,
 } from './account.dtos';
 import { AccountService } from './account.service';
 import { SessionService } from '../Session/session.service';
@@ -49,5 +51,23 @@ export class AccountController {
     });
 
     return sessionData;
+  }
+
+  @Post('resetpassword')
+  async resetPassword(@Body() resetPasswordInput: ResetPasswordInput) {
+    try {
+      return await this.accountService.resetPassword(resetPasswordInput);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  @Put('changepassword')
+  async changePassword(@Body() changePasswordInput: ChangePasswordInput) {
+    try {
+      return await this.accountService.changePassword(changePasswordInput);
+    } catch (e) {
+      throw e;
+    }
   }
 }
