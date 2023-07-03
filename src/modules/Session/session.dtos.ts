@@ -48,3 +48,27 @@ export class FindSessionRepositoryOutpout extends PickType(SessionBaseDto, [
 ]) {}
 
 export class FindSessionServiceOutput extends FindSessionRepositoryOutpout {}
+
+// Refresh
+export class FindExpiredSessionRepositoryInput extends PickType(
+  SessionBaseDto,
+  ['sessionToken']
+) {}
+
+export class FindExpiredSessionRepositoryOutput extends PickType(
+  SessionBaseDto,
+  ['id', 'refreshToken']
+) {}
+
+export class UpdateSessionRepositoryInput extends PickType(SessionBaseDto, [
+  'id',
+  'sessionToken',
+  'refreshToken',
+  'sessionExpiresIn',
+  'refreshExpiresIn',
+]) {}
+
+export class RefreshTokenServiceOutput extends OmitType(
+  CreateSessionServiceOutput,
+  ['name', 'permissions']
+) {}

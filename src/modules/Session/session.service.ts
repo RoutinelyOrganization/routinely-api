@@ -9,6 +9,7 @@ import {
   CreateSessionServiceInput,
   CreateSessionServiceOutput,
   FindSessionServiceOutput,
+  RefreshTokenServiceOutput,
 } from './session.dtos';
 import { hashDataAsync } from 'src/utils/hashes';
 
@@ -19,35 +20,62 @@ export class SessionService {
 
   constructor(private sessionRepository: SessionRepository) {}
 
-  async createSession({
-    accountId,
-    permissions,
-    name,
-    remember,
-  }: CreateSessionServiceInput): Promise<CreateSessionServiceOutput> {
-    const randomSessionToken = randomBytes(20).toString('hex');
-    const randomRefreshToken = randomBytes(20).toString('hex');
+  private randomToken = async (
+    hasheToken = false,
+    bytes = 20
+  ): Promise<{ original: string; hashed: string }> => {
+    const token = randomBytes(bytes).toString('hex');
+    let hashedToken: string;
 
-    const hashedRefreshToken = await hashDataAsync(
-      randomRefreshToken,
-      process.env.SALT_SESSION
-    );
+    if (hasheToken) {
+      hashedToken = await hashDataAsync(token, process.env.SALT_SESSION);
 
-    if (!hashedRefreshToken) {
-      throw new InternalServerErrorException('Error on try create session');
+      if (!hashedToken) {
+        throw new InternalServerErrorException('Error on try create session');
+      }
     }
 
+    return {
+      original: token,
+      hashed: hashedToken || undefined,
+    };
+  };
+
+  // ! includes remember in the session model
+  // ! includes remember in the session model
+  // ! includes remember in the session model
+  // ! includes remember in the session model
+  // ! includes remember in the session model
+  private calcTokensExpirationDate = (remember = false) => {
     const sessionTokenExpiresIn = remember
       ? this.expiresInAWeek
       : this.expiresInAHour;
     const refreshTokenExpiresIn = sessionTokenExpiresIn * (remember ? 4 : 1.5); // 1 month : 1h 30min
     const now = new Date().getTime();
 
-    const sessionConfig = {
-      sessionToken: randomSessionToken,
-      refreshToken: hashedRefreshToken,
-      sessionExpiresIn: new Date(now + sessionTokenExpiresIn),
+    return {
+      sessionExpiresIn: new Date(now),
       refreshExpiresIn: new Date(now + refreshTokenExpiresIn),
+    };
+  };
+
+  async createSession({
+    accountId,
+    permissions,
+    name,
+    remember,
+  }: CreateSessionServiceInput): Promise<CreateSessionServiceOutput> {
+    const randomSessionToken = await this.randomToken();
+    const randomRefreshToken = await this.randomToken(true);
+
+    const { sessionExpiresIn, refreshExpiresIn } =
+      this.calcTokensExpirationDate(remember);
+
+    const sessionConfig = {
+      sessionToken: randomSessionToken.original,
+      refreshToken: randomRefreshToken.hashed,
+      sessionExpiresIn,
+      refreshExpiresIn,
       accountId,
       permissions,
       name,
@@ -61,15 +89,13 @@ export class SessionService {
       throw new InternalServerErrorException();
     }
 
-    const sessionDataToResponse = {
-      token: randomSessionToken,
-      refreshToken: randomRefreshToken,
+    return {
+      token: randomSessionToken.original,
+      refreshToken: randomRefreshToken.original,
+      expiresIn: sessionConfig.sessionExpiresIn,
       permissions,
       name,
-      expiresIn: sessionConfig.sessionExpiresIn,
     };
-
-    return sessionDataToResponse;
   }
 
   async findSessionToken(
@@ -84,5 +110,56 @@ export class SessionService {
     }
 
     return sessionOutput;
+  }
+
+  async findExpiredSessionByTokenAndRefreshToken(
+    token: string,
+    refreshToken: string
+  ): Promise<RefreshTokenServiceOutput> {
+    const expiredSession =
+      await this.sessionRepository.findExpiredSessionByToken({
+        sessionToken: token,
+      });
+
+    if (!expiredSession) {
+      throw new UnauthorizedException(
+        'This session has expired or does not exist'
+      );
+    }
+
+    const hashedRefreshToken = await hashDataAsync(
+      refreshToken,
+      process.env.SALT_SESSION
+    );
+
+    if (!hashedRefreshToken) {
+      throw new InternalServerErrorException('Error on try verify session');
+    }
+
+    if (hashedRefreshToken !== expiredSession.refreshToken) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const randomSessionToken = await this.randomToken();
+    const randomRefreshToken = await this.randomToken(true);
+
+    const { sessionExpiresIn, refreshExpiresIn } =
+      this.calcTokensExpirationDate();
+
+    const newSessionConfig = {
+      id: expiredSession.id,
+      sessionToken: randomSessionToken.original,
+      refreshToken: randomRefreshToken.hashed,
+      sessionExpiresIn,
+      refreshExpiresIn,
+    };
+
+    await this.sessionRepository.updateSession(newSessionConfig);
+
+    return {
+      token: randomSessionToken.original,
+      refreshToken: randomRefreshToken.original,
+      expiresIn: sessionExpiresIn,
+    };
   }
 }
