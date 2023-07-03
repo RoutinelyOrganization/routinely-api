@@ -41,11 +41,6 @@ export class SessionService {
     };
   };
 
-  // ! includes remember in the session model
-  // ! includes remember in the session model
-  // ! includes remember in the session model
-  // ! includes remember in the session model
-  // ! includes remember in the session model
   private calcTokensExpirationDate = (remember = false) => {
     const sessionTokenExpiresIn = remember
       ? this.expiresInAWeek
@@ -54,7 +49,7 @@ export class SessionService {
     const now = new Date().getTime();
 
     return {
-      sessionExpiresIn: new Date(now),
+      sessionExpiresIn: new Date(now + sessionTokenExpiresIn),
       refreshExpiresIn: new Date(now + refreshTokenExpiresIn),
     };
   };
@@ -79,6 +74,7 @@ export class SessionService {
       accountId,
       permissions,
       name,
+      remember,
     };
 
     const sessionSaved = await this.sessionRepository.createSession(
@@ -144,7 +140,7 @@ export class SessionService {
     const randomRefreshToken = await this.randomToken(true);
 
     const { sessionExpiresIn, refreshExpiresIn } =
-      this.calcTokensExpirationDate();
+      this.calcTokensExpirationDate(expiredSession.remember);
 
     const newSessionConfig = {
       id: expiredSession.id,

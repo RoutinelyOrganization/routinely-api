@@ -7,6 +7,7 @@ class SessionBaseDto {
   accountId: string;
   name: string;
   permissions: string[];
+  remember: boolean;
   sessionExpiresIn: Date;
   refreshExpiresIn: Date;
   createdAt: Date;
@@ -57,7 +58,7 @@ export class FindExpiredSessionRepositoryInput extends PickType(
 
 export class FindExpiredSessionRepositoryOutput extends PickType(
   SessionBaseDto,
-  ['id', 'refreshToken']
+  ['id', 'refreshToken', 'remember']
 ) {}
 
 export class UpdateSessionRepositoryInput extends PickType(SessionBaseDto, [

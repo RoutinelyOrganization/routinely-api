@@ -93,6 +93,7 @@ export class SessionRepository {
         select: {
           id: true,
           refreshToken: true,
+          remember: true,
         },
       })
       .then((result) => {
