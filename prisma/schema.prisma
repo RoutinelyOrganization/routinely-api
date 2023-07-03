@@ -22,8 +22,18 @@ model Account {
 
   sessions      Session[]
   profile       Profile?
+  resetPasswordToken ResetPasswordToken?
 
   @@map("accounts")
+}
+
+model ResetPasswordToken {
+  id Int @id @default(autoincrement())
+  token String @unique
+  account Account? @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  accountId String @unique @map("account_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  
 }
 
 model Profile {

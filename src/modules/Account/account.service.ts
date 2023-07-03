@@ -7,17 +7,28 @@ import {
 } from '@nestjs/common/';
 import {
   AccessAccountControllerInput,
-  CreateAccountControllerInput,
   CreateAccountServiceOutput,
   AccessAccountServiceOutput,
+  CreateAccountControllerInput,
+  ChangePasswordInput,
+  ResetPasswordOutput,
+  ResetPasswordInput,
 } from './account.dtos';
 import { AccountRepository } from './account.repository';
+import { AccountNotFoundError, InvalidCodeError } from './account.errors';
 import { hashDataAsync } from 'src/utils/hashes';
 import { RoleLevel } from 'src/guards';
+import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
+import { MailingService } from '../Mailing/mailing.service';
+import { SendEmailError } from '../Mailing/mailing.errors';
 
 @Injectable()
 export class AccountService {
-  constructor(private accountRepository: AccountRepository) {}
+  constructor(
+    private accountRepository: AccountRepository,
+    private tokenService: PasswordTokenService,
+    private mailingService: MailingService
+  ) {}
 
   private async hashPassword(password: string): Promise<string> {
     return await hash(password, Number(process.env.SALT_ROUNDS));
@@ -69,6 +80,61 @@ export class AccountService {
     }
 
     // todo: logger ({ location: 'SRC:MODULES:ACCOUNT:ACCOUNT_SERVICE::CREATE_ACCOUNT' });
+  }
+
+  async resetPassword(
+    resetPasswordInput: ResetPasswordInput
+  ): Promise<ResetPasswordOutput> {
+    const hashedEmail = await hashDataAsync(
+      resetPasswordInput.email,
+      process.env.SALT_DATA
+    );
+
+    const accountExists = await this.accountRepository.alreadyExists(
+      hashedEmail
+    );
+    if (!accountExists) throw new AccountNotFoundError();
+    const account = await this.accountRepository.findAccountByEmail(
+      hashedEmail
+    );
+
+    const createdCode = await this.tokenService.create({
+      accountId: account.id,
+    });
+
+    try {
+      await this.mailingService.sendEmail({
+        from: process.env.FROM_EMAIL,
+        to: resetPasswordInput.email,
+        subject: 'Reset Password - Routinely',
+        payload: { name: account.name, code: createdCode.code },
+        template: 'resetPassword.handlebars',
+      });
+      return { accountId: account.id };
+    } catch (e) {
+      throw new SendEmailError();
+    }
+  }
+
+  async changePassword(
+    changePasswordInput: ChangePasswordInput
+  ): Promise<void> {
+    const isValid = await this.tokenService.verifyToken({
+      code: changePasswordInput.code,
+      accountId: changePasswordInput.accountId,
+    });
+    if (isValid) {
+      const hashedPassword = await this.hashPassword(
+        changePasswordInput.password
+      );
+      await this.accountRepository.changePassword({
+        password: hashedPassword,
+        accountId: changePasswordInput.accountId,
+      });
+
+      await this.tokenService.deleteToken(changePasswordInput.accountId);
+    } else throw new InvalidCodeError();
+    return;
   }
 
   async accessAccount(

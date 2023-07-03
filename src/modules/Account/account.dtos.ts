@@ -7,6 +7,7 @@ import {
   IsBoolean,
   IsHexadecimal,
 } from 'class-validator';
+import { IsEqualTo } from 'src/utils/decorators/isEqualTo';
 
 class AccountBaseDto {
   id: string;
@@ -86,4 +87,37 @@ export class RefreshSessionControllerInput {
   @IsHexadecimal()
   @ApiProperty()
   refreshToken: string;
+}
+
+// password
+export class ResetPasswordInput {
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+}
+
+export class ResetPasswordOutput {
+  accountId: string;
+}
+
+export class ChangePasswordInput {
+  @IsNotEmpty()
+  @IsStrongPassword()
+  password: string;
+
+  @IsNotEmpty()
+  @IsStrongPassword()
+  @IsEqualTo('password')
+  repeatPassword: string;
+
+  @IsNotEmpty()
+  code: string;
+
+  @IsNotEmpty()
+  accountId: string;
+}
+
+export class ChangePasswordRepositoryInput {
+  password: string;
+  accountId: string;
 }
