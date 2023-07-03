@@ -5,6 +5,7 @@ import {
   IsEmail,
   IsStrongPassword,
   IsBoolean,
+  IsHexadecimal,
 } from 'class-validator';
 
 class AccountBaseDto {
@@ -77,4 +78,12 @@ export class AccessAccountServiceOutput extends PickType(AccountBaseDto, [
   'permissions',
 ]) {
   name: string;
+}
+
+// Refresh
+export class RefreshSessionControllerInput {
+  @IsNotEmpty()
+  @IsHexadecimal()
+  @ApiProperty()
+  refreshToken: string;
 }

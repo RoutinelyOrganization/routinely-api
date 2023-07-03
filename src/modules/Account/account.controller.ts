@@ -1,12 +1,22 @@
-import { Controller, Body, Post, UseGuards } from '@nestjs/common';
+import { Request } from 'express';
+import {
+  Controller,
+  Body,
+  Post,
+  UseGuards,
+  HttpCode,
+  Req,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
   CreateAccountControllerInput,
   AccessAccountControllerInput,
+  RefreshSessionControllerInput,
 } from './account.dtos';
 import { AccountService } from './account.service';
 import { SessionService } from '../Session/session.service';
 import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
+import { CREDENTIALS_KEY } from 'src/config';
 
 @UseGuards(RolesGuard)
 @ApiTags('Authentication routes')
@@ -35,7 +45,26 @@ export class AccountController {
     };
   }
 
+  @Post('refresh')
+  @HttpCode(200)
+  @RequirePermissions([Permissions['000']])
+  async refresh(
+    @Body() { refreshToken }: RefreshSessionControllerInput,
+    @Req() request: Request
+  ) {
+    const { sessionToken } = request[CREDENTIALS_KEY];
+
+    const newSession =
+      await this.sessionService.findExpiredSessionByTokenAndRefreshToken(
+        sessionToken,
+        refreshToken
+      );
+
+    return newSession;
+  }
+
   @Post('')
+  @HttpCode(200)
   @RequirePermissions([Permissions['101']])
   async access(
     @Body() { email, password, remember }: AccessAccountControllerInput
