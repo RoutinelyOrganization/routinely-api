@@ -2,17 +2,18 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
-  UnauthorizedException,
+  BadRequestException,
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { SessionService } from 'src/modules/Session/session.service';
-import { RoleLevel } from './roles.config';
+import { RoleLevel, Permissions } from './roles.config';
+import { CREDENTIALS_KEY } from 'src/config';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  private anonymousAccount = {
+  private credentials = {
     accountId: 'anonymous',
     permissions: RoleLevel.Anonymous,
   };
@@ -57,16 +58,29 @@ export class RolesGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
 
     if (token && !this.isHexString(token)) {
-      throw new UnauthorizedException('Access token has a type error');
+      throw new BadRequestException('Access token has a type error');
     }
 
-    const payload = !token
-      ? this.anonymousAccount
-      : await this.sessionService.findSessionToken(token);
+    const isRefreshTokenRequest = requiredRoles[0] === Permissions['000'];
+
+    if (isRefreshTokenRequest && !token) {
+      throw new BadRequestException('Original access token is required');
+    }
+
+    if (isRefreshTokenRequest) {
+      request[CREDENTIALS_KEY] = {
+        sessionToken: token,
+      };
+      return true;
+    }
+
+    if (token) {
+      this.credentials = await this.sessionService.findSessionToken(token);
+    }
 
     const isInvalid = !this.validatePermissions(
       requiredRoles,
-      payload.permissions
+      this.credentials.permissions
     );
 
     if (isInvalid) {
@@ -75,9 +89,9 @@ export class RolesGuard implements CanActivate {
       );
     }
 
-    request['credentials'] = {
-      accountId: payload.accountId,
-      permissions: payload.permissions,
+    request[CREDENTIALS_KEY] = {
+      accountId: this.credentials.accountId,
+      permissions: this.credentials.permissions,
     };
 
     return true;
