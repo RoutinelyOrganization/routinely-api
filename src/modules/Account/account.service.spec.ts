@@ -1,16 +1,16 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AccountService } from './account.service';
-import * as crypto from 'crypto';
-import { AccountRepository } from './account.repository';
-import { PrismaService } from 'src/prisma/prisma.service';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as crypto from 'crypto';
+import * as bcrypt from 'bcrypt';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { RoleLevel } from 'src/guards/roles.config';
+import { AccountService } from './account.service';
+import { AccountRepository } from './account.repository';
 import {
   createAccountInput,
   resetPasswordInput,
 } from './tests/stubs/account.stubs';
-import * as bcrypt from 'bcrypt';
 import { AccountNotFoundError, InvalidCodeError } from './account.errors';
-
 import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
 import { faker } from '@faker-js/faker';
 import { MailingService } from '../Mailing/mailing.service';
@@ -154,6 +154,7 @@ describe('AccountService Unit Tests', () => {
       expect(accountRepositorySpy).toHaveBeenCalledWith({
         email: 'hashed_email',
         password: 'hashed_password',
+        permissions: RoleLevel.Standard,
         name: createAccountInput.name,
       });
     });

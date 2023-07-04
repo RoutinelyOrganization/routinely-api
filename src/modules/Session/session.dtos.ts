@@ -7,6 +7,7 @@ class SessionBaseDto {
   accountId: string;
   name: string;
   permissions: string[];
+  remember: boolean;
   sessionExpiresIn: Date;
   refreshExpiresIn: Date;
   createdAt: Date;
@@ -36,3 +37,39 @@ export class CreateSessionServiceOutput extends PickType(SessionBaseDto, [
   refreshToken: string;
   expiresIn: Date;
 }
+
+// Validate
+export class FindSessionRepositoryInput extends PickType(SessionBaseDto, [
+  'sessionToken',
+]) {}
+
+export class FindSessionRepositoryOutpout extends PickType(SessionBaseDto, [
+  'accountId',
+  'permissions',
+]) {}
+
+export class FindSessionServiceOutput extends FindSessionRepositoryOutpout {}
+
+// Refresh
+export class FindExpiredSessionRepositoryInput extends PickType(
+  SessionBaseDto,
+  ['sessionToken']
+) {}
+
+export class FindExpiredSessionRepositoryOutput extends PickType(
+  SessionBaseDto,
+  ['id', 'refreshToken', 'remember']
+) {}
+
+export class UpdateSessionRepositoryInput extends PickType(SessionBaseDto, [
+  'id',
+  'sessionToken',
+  'refreshToken',
+  'sessionExpiresIn',
+  'refreshExpiresIn',
+]) {}
+
+export class RefreshTokenServiceOutput extends OmitType(
+  CreateSessionServiceOutput,
+  ['name', 'permissions']
+) {}

@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { createHash } from 'node:crypto';
 import { hashSync } from 'bcrypt';
+import { RoleLevel } from '../src/guards/roles.config';
 
 const prisma = new PrismaClient();
 
@@ -24,6 +25,7 @@ async function main() {
       create: {
         email: emailHash,
         password: hashSync(account.password, Number(process.env.SALT_ROUNDS)),
+        permissions: RoleLevel.Standard,
         profile: {
           create: {
             name: account.name,

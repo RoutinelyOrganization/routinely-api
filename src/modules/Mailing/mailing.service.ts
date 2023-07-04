@@ -8,7 +8,6 @@ import * as handlebars from 'handlebars';
 
 @Injectable()
 export class MailingService {
- 
   async sendEmail(createEmailInput: CreateEmailInput): Promise<any> {
     const transporter = nodemailer.createTransport({
       host: String(process.env.EMAIL_HOST),

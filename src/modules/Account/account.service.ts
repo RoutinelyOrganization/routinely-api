@@ -12,11 +12,12 @@ import {
   CreateAccountControllerInput,
   ChangePasswordInput,
   ResetPasswordOutput,
+  ResetPasswordInput,
 } from './account.dtos';
 import { AccountRepository } from './account.repository';
-import { ResetPasswordInput } from './account.dtos';
 import { AccountNotFoundError, InvalidCodeError } from './account.errors';
 import { hashDataAsync } from 'src/utils/hashes';
+import { RoleLevel } from 'src/guards';
 import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
 import { MailingService } from '../Mailing/mailing.service';
 import { SendEmailError } from '../Mailing/mailing.errors';
@@ -68,6 +69,7 @@ export class AccountService {
     const created = await this.accountRepository.createAccount({
       email: hashedEmail,
       password: hashedPassword,
+      permissions: RoleLevel.Standard,
       name: createAccountInput.name,
     });
 

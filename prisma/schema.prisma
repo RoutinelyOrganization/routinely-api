@@ -14,7 +14,7 @@ model Account {
   id            String      @id @default(uuid())
   email         String      @unique
   password      String
-  permissions   String[]    @default(["common"])
+  permissions   String[]
   verifiedAt    DateTime?   @map("verified_at")
   acceptedAt    DateTime    @default(now()) @map("accepted_at")
   createdAt     DateTime    @default(now()) @map("created_at")
@@ -55,6 +55,7 @@ model Session {
   accountId         String    @map("account_id")
   name              String
   permissions       String[]
+  remember          Boolean   @default(false)
   sessionExpiresIn  DateTime  @map("session_expires_in")
   refreshExpiresIn  DateTime  @map("refresh_expires_in")
   createdAt         DateTime  @default(now()) @map("created_at")

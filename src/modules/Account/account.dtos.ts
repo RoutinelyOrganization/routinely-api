@@ -5,6 +5,7 @@ import {
   IsEmail,
   IsStrongPassword,
   IsBoolean,
+  IsHexadecimal,
 } from 'class-validator';
 import { IsEqualTo } from 'src/utils/decorators/isEqualTo';
 
@@ -45,6 +46,7 @@ export class CreateAccountControllerInput {
 export class CreateAccountRepositoryInput extends PickType(AccountBaseDto, [
   'email',
   'password',
+  'permissions',
 ]) {
   name: string;
 }
@@ -79,6 +81,15 @@ export class AccessAccountServiceOutput extends PickType(AccountBaseDto, [
   name: string;
 }
 
+// Refresh
+export class RefreshSessionControllerInput {
+  @IsNotEmpty()
+  @IsHexadecimal()
+  @ApiProperty()
+  refreshToken: string;
+}
+
+// password
 export class ResetPasswordInput {
   @IsNotEmpty()
   @IsEmail()

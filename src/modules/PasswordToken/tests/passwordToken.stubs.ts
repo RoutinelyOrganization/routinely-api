@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker';
-import { CreatePasswordTokenInput } from '../passwordToken.dtos';
 
 export const createTokenInput = {
   token: faker.string.alphanumeric(10),
