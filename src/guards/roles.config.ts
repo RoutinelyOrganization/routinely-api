@@ -5,6 +5,7 @@ type AccessPermissions = {
 /**
  * #### Customized
  * - 000: refresh:session
+ * - 001: reset:password
  * #### Account
  * - 100: create:account
  * - 101: read:account
@@ -19,6 +20,7 @@ type AccessPermissions = {
 export const Permissions: AccessPermissions = {
   // Customized
   '000': 'refresh:session',
+  '001': 'reset:password',
 
   //Account
   '100': 'create:account',

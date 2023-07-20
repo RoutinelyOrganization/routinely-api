@@ -4,6 +4,7 @@ import {
   Injectable,
   BadRequestException,
   ForbiddenException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
@@ -56,12 +57,23 @@ export class RolesGuard implements CanActivate {
     );
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
+    const firstRequiredRole = requiredRoles?.length && requiredRoles[0];
+
+    if (!firstRequiredRole) {
+      throw new InternalServerErrorException('unspecified permissions');
+    }
+
+    const isResetPasswordRequest = firstRequiredRole === Permissions['001'];
+
+    if (isResetPasswordRequest) {
+      return true;
+    }
 
     if (token && !this.isHexString(token)) {
       throw new BadRequestException('Access token has a type error');
     }
 
-    const isRefreshTokenRequest = requiredRoles[0] === Permissions['000'];
+    const isRefreshTokenRequest = firstRequiredRole === Permissions['000'];
 
     if (isRefreshTokenRequest && !token) {
       throw new BadRequestException('Original access token is required');
