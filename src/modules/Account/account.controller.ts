@@ -88,6 +88,7 @@ export class AccountController {
   }
 
   @Post('resetpassword')
+  @RequirePermissions([Permissions['001']])
   async resetPassword(@Body() resetPasswordInput: ResetPasswordInput) {
     try {
       return await this.accountService.resetPassword(resetPasswordInput);
@@ -97,6 +98,7 @@ export class AccountController {
   }
 
   @Put('changepassword')
+  @RequirePermissions([Permissions['001']])
   async changePassword(@Body() changePasswordInput: ChangePasswordInput) {
     try {
       return await this.accountService.changePassword(changePasswordInput);
