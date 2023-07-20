@@ -1,35 +1,19 @@
-<p align="center">
-  <a href="https://github.com/RoutinelyOrganization" target="blank">
-    <img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Routinely Logo" />
-  </a>
-</p>
+# Routinely API
 
-<p align="center">
-  <a href="https://github.com/RoutinelyOrganization/Routinely.API" target="_blank">Routinely.API</a> - initial setup.
-</p>
-
-<p align="center">
-  <a href="https://github.com/RoutinelyOrganization/Routinely.API" target="_blank">
-    <img src="https://img.shields.io/github/license/RoutinelyOrganization/Routinely.API" alt="License" />
-  </a>
-  <a href="https://github.com/RoutinelyOrganization/Routinely.API" target="_blank">
-    <img src="https://img.shields.io/badge/node--js-success" alt="Node version" />
-  </a>
-</p>
-
-## Description
-
-[Routinely](https://github.com/RoutinelyOrganization/Routinely.API) application TypeScript intial setup.
-
-## Installation
-
-```bash
-$ npm install
-```
+![version](https://img.shields.io/github/package-json/v/RoutinelyOrganization/Routinely.API?style=flat-square&labelColor=f2f2f2&color=white)
+![license](https://img.shields.io/github/license/RoutinelyOrganization/Routinely.API?style=flat-square&labelColor=f2f2f2&color=white)
+![main tool](https://img.shields.io/badge/Nest_JS-f2f2f2?logo=nestjs&logoColor=db1737&style=flat-square)
+![dev tool](https://img.shields.io/badge/Docker-f2f2f2?logo=docker&logoColor=blue&style=flat-square)
 
 ## Requirements
 
 - [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/)
+
+## Make a clone of the repository
+Create a folder on your computer and clone the repository:
+```bash
+git clone https://github.com/RoutinelyOrganization/routinely-api.git
+```
 
 ## Setup
 
@@ -77,40 +61,47 @@ e.g: equipe@routinely.com
 
 Recommended email service: [Mailtrap](https://mailtrap.io/)
 
-## Running the app
-
+## Install dependencies
+After cloning and whenever you synchronize the repository, run the command below to keep the dependencies up to date:
 ```bash
-# development watch mode
-$ npm run dev
+npm install
+```
 
-# development
-$ npm run start
+## Running the app
+**Development mode:**
+This command runs all the commands needed for docker configuration
+```bash
+npm run dev
+```
 
-# production mode
-$ npm run start:prod
+**Development in minimal mode:**<br>
+You must run normal mode at least once before using this mode
+```bash
+npm run dev:min
+```
+
+**Production mode:**
+```bash
+npm run start:prod
 ```
 
 ## Test
 
+**unit tests:**
 ```bash
-# unit tests
-$ npm run test
+npm run test
+```
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+**e2e tests:**
+```bash
+npm run test:e2e
 ```
 
 ## Support
-
 [Read more here](https://github.com/RoutinelyOrganization).
 
 ## Stay in touch
-
-- Author - [Routinely](https://github.com/RoutinelyOrganization)
+Author - [Routinely's backend team](https://github.com/RoutinelyOrganization)
 
 ## License
-
-Routinely.API is [MIT licensed](LICENSE).
+Routinely API is [MIT licensed](LICENSE).
