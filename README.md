@@ -96,6 +96,10 @@ npm run dev:min
 
 **Production mode:**
 ```bash
+# build
+npm run build
+
+# start
 npm run start:prod
 ```
 
