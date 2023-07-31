@@ -20,8 +20,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('', app, document);
 
-  await app.listen(process.env.PORT, () => {
-    console.info(`ONN: http://localhost:${process.env.PORT}/`);
-  });
+  await app.listen(process.env.PORT);
 }
 bootstrap();

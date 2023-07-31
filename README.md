@@ -63,8 +63,14 @@ POSTGRES_PASSWORD=[Postgres password]
 POSTGRES_DB=[Postgres database name]
 # e.g: api-dev
 
-DATABASE_URL=[Postgres connection url]
-# e.g: "postgresql://root:example@localhost:54320/api-dev?schema=public"
+POSTGRES_HOST=[Postgres host]
+# e.g: localhost
+
+POSTGRES_PORT=[Postgres port]
+# e.g: 5432
+
+DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
+# ! This value does not need to be changed, use it as is.
 ```
 
 Recommended email service: [Mailtrap](https://mailtrap.io/)
@@ -90,6 +96,10 @@ npm run dev:min
 
 **Production mode:**
 ```bash
+# build
+npm run build
+
+# start
 npm run start:prod
 ```
 
