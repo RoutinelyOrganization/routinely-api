@@ -10,5 +10,14 @@ services:
     ports:
       - 54320:5432
 
+  app:
+    image: node:lts-alpine
+    working_dir: /app
+    container_name: app_v1
+    volumes:
+      - .:/app
+    ports:
+      - 3000:35000
+    command:  ["yarn", "docker:dev"]
 volumes:
   postgres:

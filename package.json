@@ -21,6 +21,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/src/main",
+    "docker:dev": "yarn install && yarn prisma:migrate && yarn prisma:generate && yarn start:dev",
     "dev": "npm run docker:compose && npm run prisma:migrate && npm run prisma:generate && npm run start:dev",
     "dev:min": "npm run docker:compose && npm run start:dev",
     "docker:compose": "docker-compose -f docker-compose.dev.yml up -d",
@@ -35,8 +36,8 @@
     "test:staged": "npm test -- --findRelatedTests",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "prepare": "husky install"
+    "test:e2e": "jest --config ./test/jest-e2e.json"
+    //"prepare": "husky install"
   },
   "dependencies": {
     "@nestjs/common": "^9.0.0",
