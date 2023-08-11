@@ -1,26 +1,26 @@
-version: '3'
+version: "3"
 services:
   database:
     image: postgres:14-alpine
-    container_name: postgres_prod
+    container_name: postgres_hom
     env_file:
-      - .env.production
+      - .env.homologation
     volumes:
       - postgres:/var/lib/postgresql/data
-    expose:
-      - 5432
+    ports:
+      - 5432:5432
 
   app:
     image: node:lts-alpine
     working_dir: /app
-    container_name: app_prod
+    container_name: app_hom
     env_file:
-      - .env.production
+      - .env.homologation
     volumes:
       - .:/app
     ports:
       - 3000:35000
-    command: ["yarn", "docker:prod"]
+    command: ["yarn", "docker:hom"]
 
 volumes:
   postgres:
