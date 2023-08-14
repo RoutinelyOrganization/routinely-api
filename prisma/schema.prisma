@@ -65,3 +65,28 @@ model Session {
 
   @@map("sessions")
 }
+
+model Task {
+  id Int @id @default(autoincrement())
+  name String
+  date DateTime @db.Date
+  hour DateTime @db.Time()
+  description String
+  priority TaskPriorities
+  tag TaskTags
+}
+
+enum TaskPriorities {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskTags {
+  PERSONAL
+  STUDY
+  FINANCE
+  CAREER
+  HEALTH
+}
