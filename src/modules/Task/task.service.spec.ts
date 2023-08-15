@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskService } from './task.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateTaskInput, TaskPriorities, TaskTags } from './task.dtos';
-import { faker } from '@faker-js/faker';
 import { TaskRepository } from './task.repository';
+import { createTaskInput } from './tests/stubs/task.stubs';
 
 describe('TaskService Unit Tests', () => {
   let service: TaskService;
@@ -25,14 +24,6 @@ describe('TaskService Unit Tests', () => {
   });
 
   describe('#create', () => {
-    const createTaskInput: CreateTaskInput = {
-      name: faker.lorem.lines(1),
-      deadline: faker.date.soon(),
-      description: faker.lorem.paragraph(),
-      priority: TaskPriorities.low,
-      tag: TaskTags.finance,
-    };
-
     it('calls TaskRepository.create with correct params', async () => {
       const taskRepositorySpy = jest.spyOn(taskRepositoryMock, 'create');
 
@@ -40,6 +31,14 @@ describe('TaskService Unit Tests', () => {
 
       expect(taskRepositorySpy).toHaveBeenCalledTimes(1);
       expect(taskRepositorySpy).toHaveBeenCalledWith(createTaskInput);
+    });
+
+    it('returns correct response', async () => {
+      taskRepositoryMock.create.mockResolvedValue(createTaskInput);
+
+      const response = await service.create(createTaskInput);
+
+      expect(response).toEqual(createTaskInput);
     });
   });
 });

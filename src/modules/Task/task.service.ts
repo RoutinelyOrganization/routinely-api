@@ -6,6 +6,7 @@ import { TaskRepository } from './task.repository';
 export class TaskService {
   constructor(private repository: TaskRepository) {}
   async create(createTaskInput: CreateTaskInput) {
-    await this.repository.create(createTaskInput);
+    const createdTask = await this.repository.create(createTaskInput);
+    return createdTask;
   }
 }
