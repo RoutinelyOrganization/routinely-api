@@ -15,7 +15,8 @@ export enum TaskTags {
 
 export class CreateTaskInput {
   name: string;
-  deadline: Date;
+  date: Date;
+  hour: Date;
   description: string;
   priority: TaskPriorities;
   tag: TaskTags;

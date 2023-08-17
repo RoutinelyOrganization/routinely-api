@@ -9,7 +9,8 @@ export class TaskRepository {
   async create(createTaskInput: CreateTaskInput) {
     return await this.prisma.task.create({
       data: {
-        deadline: createTaskInput.deadline,
+        date: createTaskInput.date,
+        hour: createTaskInput.hour,
         description: createTaskInput.description,
         name: createTaskInput.name,
         priority: createTaskInput.priority,

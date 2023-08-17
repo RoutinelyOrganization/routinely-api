@@ -69,7 +69,8 @@ model Session {
 model Task {
   id Int @id @default(autoincrement())
   name String
-  deadline DateTime
+  hour DateTime @db.Time()
+  date DateTime @db.Date
   description String
   priority TaskPriorities
   tag TaskTags
