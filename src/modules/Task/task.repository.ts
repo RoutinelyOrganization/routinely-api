@@ -15,6 +15,7 @@ export class TaskRepository {
         name: createTaskInput.name,
         priority: createTaskInput.priority,
         tag: createTaskInput.tag,
+        accountId: createTaskInput.accountId,
       },
     });
   }

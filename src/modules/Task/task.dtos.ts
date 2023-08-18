@@ -18,6 +18,7 @@ export class CreateTaskInput {
   date: Date;
   hour: Date;
   description: string;
+  accountId: string;
   priority: TaskPriorities;
   tag: TaskTags;
 }

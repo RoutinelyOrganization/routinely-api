@@ -20,6 +20,10 @@ export class TaskService {
 
     const responseHour = `${createdTask.hour.getHours()}:${createdTask.hour.getMinutes()}`;
     const responseDate = createdTask.date.toISOString().split('T')[0];
+    delete createdTask.createdAt;
+    delete createdTask.updatedAt;
+    delete createdTask.accountId;
+
     return { ...createdTask, hour: responseHour, date: responseDate };
   }
 }

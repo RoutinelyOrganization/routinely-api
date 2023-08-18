@@ -32,6 +32,11 @@ export const Permissions: AccessPermissions = {
   '201': 'read:profile',
   '202': 'update:profile',
   '203': 'delete:profile',
+  // Tasks
+  '300': 'create:task',
+  '301': 'read:task',
+  '302': 'update:task',
+  '303': 'delete:task',
 };
 
 function findManyPermissions(...keys: string[]) {
@@ -43,6 +48,16 @@ function findManyPermissions(...keys: string[]) {
 }
 
 export const RoleLevel = {
-  Standard: findManyPermissions('101', '102', '103', '201', '202'),
+  Standard: findManyPermissions(
+    '101',
+    '102',
+    '103',
+    '201',
+    '202',
+    '300',
+    '301',
+    '302',
+    '303'
+  ),
   Anonymous: findManyPermissions('100', '101'),
 };
