@@ -5,6 +5,7 @@ import {
   SessionModule,
   PasswordTokenModule,
   MailingModule,
+  TaskModule,
 } from './modules';
 
 @Module({
@@ -14,6 +15,7 @@ import {
     SessionModule,
     PasswordTokenModule,
     MailingModule,
+    TaskModule,
   ],
 })
 export class AppModule {}

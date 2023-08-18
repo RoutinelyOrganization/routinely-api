@@ -14,12 +14,14 @@ export class AccountRepository {
     email,
     password,
     name,
+    permissions,
   }: CreateAccountRepositoryInput): Promise<boolean> {
     const response = await this.prisma.account
       .create({
         data: {
           email,
           password,
+          permissions,
           profile: {
             create: {
               name,
