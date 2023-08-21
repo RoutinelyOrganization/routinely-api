@@ -7,6 +7,8 @@ import {
   UseGuards,
   Param,
   ForbiddenException,
+  Delete,
+  HttpCode,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskInput, UpdateTaskInput } from './task.dtos';
@@ -51,5 +53,21 @@ export class TaskController {
     });
 
     return updatedTask;
+  }
+
+  @Delete(':id')
+  @UseGuards(RolesGuard)
+  @RequirePermissions([Permissions['303']])
+  @HttpCode(200)
+  async deleteById(@Param('id') id: string, @Req() req: Request) {
+    const cred = req[CREDENTIALS_KEY];
+
+    const accountId = await this.taskService.getAccountById(id);
+
+    // Authorization
+    if (accountId != cred.accountId) throw new ForbiddenException();
+
+    await this.taskService.deleteById(id);
+    return;
   }
 }

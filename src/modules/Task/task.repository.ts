@@ -31,6 +31,10 @@ export class TaskRepository {
     return await this.prisma.task.findUnique({ where: { id: Number(id) } });
   }
 
+  async deleteById(id: string) {
+    return await this.prisma.task.delete({ where: { id: Number(id) } });
+  }
+
   async findAccountByTaskId(id: string) {
     const task = await this.prisma.task.findUnique({
       where: { id: Number(id) },
