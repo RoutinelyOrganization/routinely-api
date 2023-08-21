@@ -30,4 +30,12 @@ export class TaskRepository {
   async findById(id: string) {
     return await this.prisma.task.findUnique({ where: { id: Number(id) } });
   }
+
+  async findAccountByTaskId(id: string) {
+    const task = await this.prisma.task.findUnique({
+      where: { id: Number(id) },
+    });
+
+    return task.accountId;
+  }
 }

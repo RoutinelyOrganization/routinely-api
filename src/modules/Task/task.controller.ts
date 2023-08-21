@@ -6,6 +6,7 @@ import {
   Req,
   UseGuards,
   Param,
+  ForbiddenException,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskInput, UpdateTaskInput } from './task.dtos';
@@ -38,7 +39,12 @@ export class TaskController {
     @Req() req: Request
   ) {
     const cred = req[CREDENTIALS_KEY];
-    console.log(cred);
+
+    const accountId = await this.taskService.getAccountById(id);
+
+    // Authorization
+    if (accountId != cred.accountId) throw new ForbiddenException();
+
     const updatedTask = await this.taskService.updateById(id, {
       ...updateTaskInput,
       accountId: cred.accountId,

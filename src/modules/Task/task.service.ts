@@ -58,4 +58,8 @@ export class TaskService {
 
     return { ...updatedTask, hour: responseHour, date: responseDate };
   }
+
+  async getAccountById(id: string) {
+    return await this.repository.findAccountByTaskId(id);
+  }
 }
