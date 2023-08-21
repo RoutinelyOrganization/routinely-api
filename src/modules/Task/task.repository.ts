@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateTaskInput } from './task.dtos';
+import { CreateTaskInput, UpdateTaskInput } from './task.dtos';
 
 @Injectable()
 export class TaskRepository {
@@ -18,5 +18,16 @@ export class TaskRepository {
         accountId: createTaskInput.accountId,
       },
     });
+  }
+
+  async updateById(id: string, updateTaskInput: UpdateTaskInput) {
+    return await this.prisma.task.update({
+      where: { id: Number(id) },
+      data: updateTaskInput,
+    });
+  }
+
+  async findById(id: string) {
+    return await this.prisma.task.findUnique({ where: { id: Number(id) } });
   }
 }

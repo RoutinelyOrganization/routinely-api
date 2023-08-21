@@ -1,6 +1,14 @@
-import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Put,
+  Body,
+  Req,
+  UseGuards,
+  Param,
+} from '@nestjs/common';
 import { TaskService } from './task.service';
-import { CreateTaskInput } from './task.dtos';
+import { CreateTaskInput, UpdateTaskInput } from './task.dtos';
 import { CREDENTIALS_KEY } from 'src/config';
 import { RequirePermissions, Permissions, RolesGuard } from 'src/guards';
 
@@ -19,5 +27,23 @@ export class TaskController {
       accountId: cred.accountId,
     });
     return createdTask;
+  }
+
+  @Put(':id')
+  @UseGuards(RolesGuard)
+  @RequirePermissions([Permissions['302']])
+  async updateById(
+    @Param('id') id: string,
+    @Body() updateTaskInput: UpdateTaskInput,
+    @Req() req: Request
+  ) {
+    const cred = req[CREDENTIALS_KEY];
+    console.log(cred);
+    const updatedTask = await this.taskService.updateById(id, {
+      ...updateTaskInput,
+      accountId: cred.accountId,
+    });
+
+    return updatedTask;
   }
 }
