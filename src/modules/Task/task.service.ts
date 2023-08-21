@@ -5,13 +5,20 @@ import { TaskRepository } from './task.repository';
 @Injectable()
 export class TaskService {
   constructor(private repository: TaskRepository) {}
+
+  private extractHourString(date: Date): string {
+    const nowDateTime = date.toISOString();
+    const nowDate = nowDateTime.split('T')[0];
+    return nowDate;
+  }
+
   async create(createTaskInput: CreateTaskInput) {
     const date = new Date(createTaskInput.date);
     const now = new Date();
-    const nowDateTime = now.toISOString();
-    const nowDate = nowDateTime.split('T')[0];
+    const nowDate = this.extractHourString(now);
     const hms = createTaskInput.hour;
     const hour = new Date(nowDate + 'T' + hms);
+
     const createdTask = await this.repository.create({
       ...createTaskInput,
       date,
@@ -20,6 +27,10 @@ export class TaskService {
 
     const responseHour = `${createdTask.hour.getHours()}:${createdTask.hour.getMinutes()}`;
     const responseDate = createdTask.date.toISOString().split('T')[0];
+    delete createdTask.createdAt;
+    delete createdTask.updatedAt;
+    delete createdTask.accountId;
+
     return { ...createdTask, hour: responseHour, date: responseDate };
   }
 }

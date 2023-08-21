@@ -11,4 +11,5 @@ export const createTaskInput: CreateTaskInput = {
   description: faker.lorem.paragraph(),
   priority: TaskPriorities.low,
   tag: TaskTags.finance,
+  accountId: faker.string.uuid(),
 };

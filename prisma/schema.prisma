@@ -23,6 +23,7 @@ model Account {
   sessions      Session[]
   profile       Profile?
   resetPasswordToken ResetPasswordToken?
+  tasks Task[]
 
   @@map("accounts")
 }
@@ -74,6 +75,14 @@ model Task {
   description String
   priority TaskPriorities
   tag TaskTags
+  accountId String @map("account_id")
+
+  account Account @relation(fields: [accountId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("tasks")
 }
 
 enum TaskPriorities {
