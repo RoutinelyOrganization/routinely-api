@@ -1,6 +1,17 @@
-import { Controller, Post, Body, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Put,
+  Body,
+  Req,
+  UseGuards,
+  Param,
+  ForbiddenException,
+  Delete,
+  HttpCode,
+} from '@nestjs/common';
 import { TaskService } from './task.service';
-import { CreateTaskInput } from './task.dtos';
+import { CreateTaskInput, UpdateTaskInput } from './task.dtos';
 import { CREDENTIALS_KEY } from 'src/config';
 import { RequirePermissions, Permissions, RolesGuard } from 'src/guards';
 
@@ -19,5 +30,44 @@ export class TaskController {
       accountId: cred.accountId,
     });
     return createdTask;
+  }
+
+  @Put(':id')
+  @UseGuards(RolesGuard)
+  @RequirePermissions([Permissions['302']])
+  async updateById(
+    @Param('id') id: string,
+    @Body() updateTaskInput: UpdateTaskInput,
+    @Req() req: Request
+  ) {
+    const cred = req[CREDENTIALS_KEY];
+
+    const accountId = await this.taskService.getAccountById(id);
+
+    // Authorization
+    if (accountId != cred.accountId) throw new ForbiddenException();
+
+    const updatedTask = await this.taskService.updateById(id, {
+      ...updateTaskInput,
+      accountId: cred.accountId,
+    });
+
+    return updatedTask;
+  }
+
+  @Delete(':id')
+  @UseGuards(RolesGuard)
+  @RequirePermissions([Permissions['303']])
+  @HttpCode(200)
+  async deleteById(@Param('id') id: string, @Req() req: Request) {
+    const cred = req[CREDENTIALS_KEY];
+
+    const accountId = await this.taskService.getAccountById(id);
+
+    // Authorization
+    if (accountId != cred.accountId) throw new ForbiddenException();
+
+    await this.taskService.deleteById(id);
+    return;
   }
 }
