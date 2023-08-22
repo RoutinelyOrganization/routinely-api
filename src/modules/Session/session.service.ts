@@ -8,6 +8,7 @@ import { SessionRepository } from './session.repository';
 import {
   CreateSessionServiceInput,
   CreateSessionServiceOutput,
+  ExcludeSessionsServiceInput,
   FindSessionServiceOutput,
   RefreshTokenServiceOutput,
 } from './session.dtos';
@@ -157,5 +158,15 @@ export class SessionService {
       refreshToken: randomRefreshToken.original,
       expiresIn: sessionExpiresIn,
     };
+  }
+
+  async closeSession(closeSessionInput: ExcludeSessionsServiceInput) {
+    if (closeSessionInput.closeAllSessions) {
+      await this.sessionRepository.excludeAllSessions(closeSessionInput);
+      return { message: 'Closed sessions' };
+    }
+
+    await this.sessionRepository.excludeSession(closeSessionInput);
+    return { message: 'Session closed' };
   }
 }
