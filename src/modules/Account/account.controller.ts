@@ -15,6 +15,7 @@ import {
   RefreshSessionControllerInput,
   ResetPasswordInput,
   ChangePasswordInput,
+  DisconnectAccountControllerInput,
 } from './account.dtos';
 import { AccountService } from './account.service';
 import { SessionService } from '../Session/session.service';
@@ -85,6 +86,24 @@ export class AccountController {
     });
 
     return sessionData;
+  }
+
+  @Post('disconnect')
+  @HttpCode(200)
+  @RequirePermissions([Permissions['101'], Permissions['102']])
+  async disconnect(
+    @Body() { closeAllSessions }: DisconnectAccountControllerInput,
+    @Req() request: Request
+  ) {
+    const { sessionToken, accountId } = request[CREDENTIALS_KEY];
+
+    const response = await this.sessionService.closeSession({
+      closeAllSessions: !!closeAllSessions,
+      sessionToken,
+      accountId,
+    });
+
+    return response;
   }
 
   @Post('resetpassword')
