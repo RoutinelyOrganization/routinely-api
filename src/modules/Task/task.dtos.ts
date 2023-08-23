@@ -56,10 +56,6 @@ export class UpdateTaskInput extends PickType(CreateTaskInput, [
   'tag',
 ]) {}
 
-export class FindTasksControllerInput {
-  year: number;
-}
-
 export class FindTasksRepositoryInput {
   filters: Array<{
     [key: string]: string | Array<unknown> | object;
