@@ -9,6 +9,9 @@ import {
   ForbiddenException,
   Delete,
   HttpCode,
+  Get,
+  ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskInput, UpdateTaskInput } from './task.dtos';
@@ -69,5 +72,23 @@ export class TaskController {
 
     await this.taskService.deleteById(id);
     return;
+  }
+
+  @Get()
+  @HttpCode(200)
+  @UseGuards(RolesGuard)
+  @RequirePermissions([Permissions['301']])
+  async accountTasks(
+    @Query('month', ParseIntPipe) month: number,
+    @Query('year', ParseIntPipe) year: number,
+    @Req() request: Request
+  ) {
+    const { accountId } = request[CREDENTIALS_KEY];
+
+    return await this.taskService.findAccountTasks({
+      month,
+      year,
+      accountId,
+    });
   }
 }

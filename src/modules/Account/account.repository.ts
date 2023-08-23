@@ -79,20 +79,24 @@ export class AccountRepository {
         },
       })
       .then((result) => {
-        return result;
+        if (result) {
+          const name = result.profile.name;
+          delete result.profile;
+
+          return {
+            ...result,
+            name,
+          };
+        }
+
+        return null;
       })
       .catch(() => {
         // todo: logger ({ location: 'SRC:MODULES:ACCOUNT:ACCOUNT_REPOSITORY::FIND_ACCOUNT_BY_EMAIL' );
         throw new InternalServerErrorException();
       });
 
-    const name = account.profile.name;
-    delete account.profile;
-
-    return {
-      ...account,
-      name,
-    };
+    return account;
   }
 
   async changePassword(data: ChangePasswordRepositoryInput) {

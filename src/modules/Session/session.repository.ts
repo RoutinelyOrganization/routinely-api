@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
   CreateSessionRepositoryInput,
+  ExcludeSessionRepositoryInput,
   FindExpiredSessionRepositoryInput,
   FindExpiredSessionRepositoryOutput,
   FindSessionRepositoryInput,
@@ -12,6 +13,42 @@ import {
 @Injectable()
 export class SessionRepository {
   constructor(private prisma: PrismaService) {}
+
+  async excludeSession({
+    sessionToken,
+  }: ExcludeSessionRepositoryInput): Promise<boolean> {
+    return await this.prisma.session
+      .delete({
+        where: {
+          sessionToken,
+        },
+      })
+      .then(() => {
+        return true;
+      })
+      .catch(() => {
+        // todo: logger ({ location: 'SRC:MODULES:SESSION:SESSION_REPOSITORY::EXCLUDE_SESSION' );
+        throw new InternalServerErrorException();
+      });
+  }
+
+  async excludeAllSessions({
+    accountId,
+  }: ExcludeSessionRepositoryInput): Promise<boolean> {
+    return await this.prisma.session
+      .deleteMany({
+        where: {
+          accountId,
+        },
+      })
+      .then(() => {
+        return true;
+      })
+      .catch(() => {
+        // todo: logger ({ location: 'SRC:MODULES:SESSION:SESSION_REPOSITORY::EXCLUDE_ALL_SESSION' );
+        throw new InternalServerErrorException();
+      });
+  }
 
   async createSession({
     sessionToken,

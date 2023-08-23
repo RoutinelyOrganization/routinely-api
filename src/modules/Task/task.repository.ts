@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateTaskInput, UpdateTaskInput } from './task.dtos';
+import {
+  CreateTaskInput,
+  FindTasksRepositoryInput,
+  UpdateTaskInput,
+} from './task.dtos';
 
 @Injectable()
 export class TaskRepository {
@@ -41,5 +45,24 @@ export class TaskRepository {
     });
 
     return task.accountId;
+  }
+
+  async findTasks(filters: FindTasksRepositoryInput['filters']) {
+    const tasks = await this.prisma.task.findMany({
+      where: {
+        AND: filters,
+      },
+      select: {
+        id: true,
+        name: true,
+        date: true,
+        hour: true,
+        tag: true,
+        priority: true,
+        description: true,
+      },
+    });
+
+    return tasks;
   }
 }

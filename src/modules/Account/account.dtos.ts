@@ -81,6 +81,13 @@ export class AccessAccountServiceOutput extends PickType(AccountBaseDto, [
   name: string;
 }
 
+// Disconnect
+export class DisconnectAccountControllerInput {
+  @IsBoolean()
+  @ApiProperty()
+  closeAllSessions: boolean;
+}
+
 // Refresh
 export class RefreshSessionControllerInput {
   @IsNotEmpty()

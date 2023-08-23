@@ -102,6 +102,7 @@ export class RolesGuard implements CanActivate {
     }
 
     request[CREDENTIALS_KEY] = {
+      sessionToken: token ?? '',
       accountId: this.credentials.accountId,
       permissions: this.credentials.permissions,
     };

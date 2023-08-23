@@ -73,3 +73,12 @@ export class RefreshTokenServiceOutput extends OmitType(
   CreateSessionServiceOutput,
   ['name', 'permissions']
 ) {}
+
+export class ExcludeSessionRepositoryInput extends PickType(SessionBaseDto, [
+  'accountId',
+  'sessionToken',
+]) {}
+
+export class ExcludeSessionsServiceInput extends ExcludeSessionRepositoryInput {
+  closeAllSessions: boolean;
+}

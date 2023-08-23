@@ -1,11 +1,5 @@
 import { PickType } from '@nestjs/swagger';
-import {
-  IsDateString,
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export enum TaskPriorities {
   low = 'low',
@@ -61,3 +55,15 @@ export class UpdateTaskInput extends PickType(CreateTaskInput, [
   'priority',
   'tag',
 ]) {}
+
+export class FindTasksRepositoryInput {
+  filters: Array<{
+    [key: string]: string | Array<unknown> | object;
+  }>;
+}
+
+export class FindTasksServiceInput {
+  month: number;
+  year: number;
+  accountId: string;
+}

@@ -1,5 +1,10 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { CreateTaskInput, UpdateTaskInput } from './task.dtos';
+import {
+  CreateTaskInput,
+  FindTasksRepositoryInput,
+  FindTasksServiceInput,
+  UpdateTaskInput,
+} from './task.dtos';
 import { TaskRepository } from './task.repository';
 
 @Injectable()
@@ -65,5 +70,28 @@ export class TaskService {
 
   async getAccountById(id: string) {
     return await this.repository.findAccountByTaskId(id);
+  }
+
+  async findAccountTasks({ month, year, accountId }: FindTasksServiceInput) {
+    if (month > 12) month = 12;
+    else if (month < 1) month = 1;
+
+    const nextMonth = month + 1 > 12 ? 1 : month + 1;
+    const nextMonthYear = nextMonth < month ? year + 1 : year;
+
+    const startThisMonth = new Date(`${year}/${month}`);
+    const startNextMonth = new Date(`${nextMonthYear}/${nextMonth}`);
+
+    const filters: FindTasksRepositoryInput['filters'] = [{ accountId }];
+
+    filters.push({
+      date: {
+        gte: startThisMonth,
+        lt: startNextMonth,
+      },
+    });
+
+    const tasks = await this.repository.findTasks(filters);
+    return tasks;
   }
 }

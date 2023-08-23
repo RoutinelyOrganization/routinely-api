@@ -16,12 +16,16 @@ type AccessPermissions = {
  * - 201: read:profile
  * - 202: update:profile
  * - 203: delete:profile
+ * #### Tasks
+ * - 300: create:task
+ * - 301: read:task
+ * - 302: update:task
+ * - 303: delete:task
  */
 export const Permissions: AccessPermissions = {
   // Customized
   '000': 'refresh:session',
   '001': 'reset:password',
-
   //Account
   '100': 'create:account',
   '101': 'read:account',
