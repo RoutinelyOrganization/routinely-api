@@ -9,8 +9,6 @@ import { TaskRepository } from './task.repository';
 
 @Injectable()
 export class TaskService {
-  private aDay = 864e5;
-
   constructor(private repository: TaskRepository) {}
 
   private extractHourString(date: Date): string {
