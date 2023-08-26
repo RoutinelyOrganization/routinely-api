@@ -124,6 +124,8 @@ Author - [Routinely's backend team](https://github.com/RoutinelyOrganization)
 ## License
 Routinely API is [MIT licensed](LICENSE).
 
-## Render
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)]([https://render.com/deploy](https://routinely-api-dev.onrender.com)https://routinely-api-dev.onrender.com)
+## Render Deploy
+<a href="https://render.com/deploy?repo=[https://github.com/render-examples/mattermost](https://github.com/RoutinelyOrganization/routinely-api.git)/tree/develop">
+<img src="https://render.com/images/deploy-to-render-button.svg" alt="Deploy to Render" />
+</a>
 
