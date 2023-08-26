@@ -123,3 +123,7 @@ Author - [Routinely's backend team](https://github.com/RoutinelyOrganization)
 
 ## License
 Routinely API is [MIT licensed](LICENSE).
+
+## Render
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)]([https://render.com/deploy](https://routinely-api-dev.onrender.com)https://routinely-api-dev.onrender.com)
+
