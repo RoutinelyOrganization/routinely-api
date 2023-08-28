@@ -1,0 +1,14 @@
+name: Deploy homologation environment
+
+on:
+  push:
+    branches:
+      - homologation
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Execute cURL
+        run: |
+          curl -X POST ${{ secrets.DEPLOY_HOMOLOGATION_URL }}
