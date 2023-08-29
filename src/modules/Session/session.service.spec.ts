@@ -2,16 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SessionService } from './session.service';
 import { SessionRepository } from './session.repository';
 
-import { faker } from '@faker-js/faker';
-import { CreateSessionServiceInput } from './session.dtos';
-import { RoleLevel } from 'src/guards';
-
-const createServiceInput: CreateSessionServiceInput = {
-  accountId: faker.string.uuid(),
-  name: faker.person.fullName(),
-  permissions: RoleLevel.Standard,
-  remember: faker.datatype.boolean(),
-};
+import * as constants from 'src/utils/constants';
+import * as stubs from './session.stubs.test';
 
 describe('SessionService unit test', () => {
   let service: SessionService;
@@ -43,11 +35,13 @@ describe('SessionService unit test', () => {
 
   describe('Create session', () => {
     it('Happy path - should return a SessionServiceOutput', async () => {
-      const actual = await service.createSession(createServiceInput);
-      const { name, remember, permissions } = createServiceInput;
-      const diff = remember ? 36e5 * 24 * 7 : 36e5;
+      const actual = await service.createSession(stubs.createInput);
+      const { name, remember, permissions } = stubs.createInput;
+      const diff = remember
+        ? constants.expirationWhenRememberIsOnn
+        : constants.expirationWhenRememberIsOff;
       const expiresInExpected = new Date(new Date().getTime() + diff);
-      const hexadecimalRegex = /^[a-f0-9]+$/;
+      const hexadecimalRegex = constants.hexadecimalRegex;
 
       expect(actual.name).toEqual(name);
       expect(actual.token).toMatch(hexadecimalRegex);

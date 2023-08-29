@@ -20,7 +20,7 @@ import {
 import { AccountService } from './account.service';
 import { SessionService } from '../Session/session.service';
 import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
-import { CREDENTIALS_KEY } from 'src/config';
+import { CREDENTIALS_KEY } from 'src/utils/constants';
 
 @UseGuards(RolesGuard)
 @ApiTags('Authentication routes')
