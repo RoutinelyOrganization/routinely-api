@@ -4,14 +4,17 @@ import { SessionRepository } from './session.repository';
 
 import * as constants from 'src/utils/constants';
 import * as stubs from './tests/session.stubs';
-import { InternalServerErrorException } from '@nestjs/common';
+import {
+  InternalServerErrorException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 describe('SessionService unit test', () => {
   let service: SessionService;
 
   const sessionRepositoryMock = {
     createSession: jest.fn().mockResolvedValue(true),
-    findSessionByToken: jest.fn(),
+    findSessionByToken: jest.fn().mockResolvedValue(stubs.findByTokenOutput),
     findExpiredSessionByToken: jest.fn(),
     updateSession: jest.fn(),
     excludeAllSessions: jest.fn(),
@@ -67,6 +70,29 @@ describe('SessionService unit test', () => {
         await service.createSession(stubs.createInput);
       } catch (actual) {
         expect(actual).toBeInstanceOf(InternalServerErrorException);
+      }
+    });
+  });
+
+  describe('Find session by token', () => {
+    it('Happy path - should return a FindSessionServiceOutput', async () => {
+      const actual = await service.findSessionToken(
+        stubs.findByTokenInput.token
+      );
+
+      expect(actual).toEqual(stubs.findByTokenOutput);
+    });
+
+    it('Unhappy path - should return a UnauthorizedException', async () => {
+      jest
+        .spyOn(sessionRepositoryMock, 'findSessionByToken')
+        .mockResolvedValueOnce(false);
+
+      try {
+        await service.findSessionToken(stubs.findByTokenInput.token);
+      } catch (actual) {
+        expect(actual.message).toEqual('Session expired');
+        expect(actual).toBeInstanceOf(UnauthorizedException);
       }
     });
   });
