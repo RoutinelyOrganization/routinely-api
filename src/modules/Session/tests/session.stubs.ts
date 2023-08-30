@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { CreateSessionServiceInput } from './session.dtos';
+import { CreateSessionServiceInput } from '../session.dtos';
 import { RoleLevel } from 'src/guards';
 
 export const createInput: CreateSessionServiceInput = {

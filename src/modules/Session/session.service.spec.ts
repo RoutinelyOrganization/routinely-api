@@ -3,7 +3,7 @@ import { SessionService } from './session.service';
 import { SessionRepository } from './session.repository';
 
 import * as constants from 'src/utils/constants';
-import * as stubs from './session.stubs.test';
+import * as stubs from './tests/session.stubs';
 import { InternalServerErrorException } from '@nestjs/common';
 
 describe('SessionService unit test', () => {
