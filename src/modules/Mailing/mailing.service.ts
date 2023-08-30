@@ -23,7 +23,7 @@ export class MailingService {
       join(__dirname, '../../../templates/', createEmailInput.template),
       'utf8'
     );
-    console.log();
+
     const compiledTemplate = handlebars.compile(source);
 
     const emailData = {
