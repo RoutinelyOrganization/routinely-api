@@ -5,10 +5,13 @@ import {
   FindSessionServiceOutput,
 } from '../session.dtos';
 
+const accountId = faker.string.uuid();
+const permissions = RoleLevel.Standard;
+
 export const createInput: CreateSessionServiceInput = {
-  accountId: faker.string.uuid(),
+  accountId,
+  permissions,
   name: faker.person.fullName(),
-  permissions: RoleLevel.Standard,
   remember: faker.datatype.boolean(),
 };
 
@@ -17,6 +20,6 @@ export const findByTokenInput = {
 };
 
 export const findByTokenOutput: FindSessionServiceOutput = {
-  accountId: faker.string.uuid(),
-  permissions: RoleLevel.Standard,
+  accountId,
+  permissions,
 };
