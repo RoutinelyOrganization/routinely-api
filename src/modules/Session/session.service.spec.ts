@@ -4,9 +4,19 @@ import { SessionRepository } from './session.repository';
 
 import * as constants from 'src/utils/constants';
 import * as stubs from './session.stubs.test';
+import { InternalServerErrorException } from '@nestjs/common';
 
 describe('SessionService unit test', () => {
   let service: SessionService;
+
+  const sessionRepositoryMock = {
+    createSession: jest.fn().mockResolvedValue(true),
+    findSessionByToken: jest.fn(),
+    findExpiredSessionByToken: jest.fn(),
+    updateSession: jest.fn(),
+    excludeAllSessions: jest.fn(),
+    excludeSession: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -14,14 +24,7 @@ describe('SessionService unit test', () => {
         SessionService,
         {
           provide: SessionRepository,
-          useValue: {
-            createSession: jest.fn().mockResolvedValue(true),
-            findSessionByToken: jest.fn(),
-            findExpiredSessionByToken: jest.fn(),
-            updateSession: jest.fn(),
-            excludeAllSessions: jest.fn(),
-            excludeSession: jest.fn(),
-          },
+          useValue: sessionRepositoryMock,
         },
       ],
     }).compile();
@@ -53,6 +56,18 @@ describe('SessionService unit test', () => {
       expect(actual.expiresIn.getTime()).toBeGreaterThanOrEqual(
         expiresInExpected.getTime() - 10
       );
+    });
+
+    it('Unhappy path - should return a InternalServerError', async () => {
+      jest
+        .spyOn(sessionRepositoryMock, 'createSession')
+        .mockResolvedValueOnce(false);
+
+      try {
+        await service.createSession(stubs.createInput);
+      } catch (actual) {
+        expect(actual).toBeInstanceOf(InternalServerErrorException);
+      }
     });
   });
 });
