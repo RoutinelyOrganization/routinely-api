@@ -85,7 +85,7 @@ describe('SessionService unit test', () => {
       expect(actual).toEqual(stubs.findByTokenOutput);
     });
 
-    it('Unhappy path - should return a UnauthorizedException', async () => {
+    it(`Unhappy path - should return a error message: "${stubs.expectedMessages.sessionExpired}"`, async () => {
       jest
         .spyOn(sessionRepositoryMock, 'findSessionByToken')
         .mockResolvedValueOnce(false);
@@ -93,7 +93,7 @@ describe('SessionService unit test', () => {
       try {
         await service.findSessionToken(stubs.findByTokenInput.token);
       } catch (actual) {
-        expect(actual.message).toEqual('Session expired');
+        expect(actual.message).toEqual(stubs.expectedMessages.sessionExpired);
         expect(actual).toBeInstanceOf(UnauthorizedException);
       }
     });
@@ -115,7 +115,7 @@ describe('SessionService unit test', () => {
       expect(actual.refreshToken).not.toEqual(refreshToken);
     });
 
-    it('Unhappy path - should return a a error message: "This session has expired or does not exist"', async () => {
+    it(`Unhappy path - should return a error message: "${stubs.expectedMessages.expiredOrDeleted}"`, async () => {
       jest
         .spyOn(sessionRepositoryMock, 'findExpiredSessionByToken')
         .mockResolvedValueOnce(null);
@@ -123,21 +123,21 @@ describe('SessionService unit test', () => {
       try {
         await service.findExpiredSessionByTokenAndRefreshToken('', '');
       } catch (actual) {
-        expect(actual.message).toEqual(
-          'This session has expired or does not exist'
-        );
+        expect(actual.message).toEqual(stubs.expectedMessages.expiredOrDeleted);
         expect(actual).toBeInstanceOf(UnauthorizedException);
       }
     });
 
-    it('Unhappy path - should return a error message: "Invalid credentials"', async () => {
+    it(`Unhappy path - should return a error message: "${stubs.expectedMessages.invalidCredentials}"`, async () => {
       try {
         await service.findExpiredSessionByTokenAndRefreshToken(
           stubs.findExpiredByTokenInput.token,
           'invalidtoken'
         );
       } catch (actual) {
-        expect(actual.message).toEqual('Invalid credentials');
+        expect(actual.message).toEqual(
+          stubs.expectedMessages.invalidCredentials
+        );
         expect(actual).toBeInstanceOf(UnauthorizedException);
       }
     });

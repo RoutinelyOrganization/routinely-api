@@ -15,6 +15,12 @@ const refreshToken = faker.string.hexadecimal({ length: 20 });
 const remember = faker.datatype.boolean();
 const username = faker.person.fullName();
 
+export const expectedMessages = {
+  sessionExpired: 'Session expired',
+  invalidCredentials: 'Invalid credentials',
+  expiredOrDeleted: 'This session has expired or does not exist',
+};
+
 export const createInput: CreateSessionServiceInput = {
   accountId,
   permissions,
