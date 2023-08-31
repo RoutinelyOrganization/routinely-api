@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { RoleLevel } from 'src/guards';
 import {
   CreateSessionServiceInput,
+  ExcludeSessionsServiceInput,
   FindExpiredSessionRepositoryOutput,
   FindSessionRepositoryOutpout,
 } from '../session.dtos';
@@ -19,6 +20,8 @@ export const expectedMessages = {
   sessionExpired: 'Session expired',
   invalidCredentials: 'Invalid credentials',
   expiredOrDeleted: 'This session has expired or does not exist',
+  manySessionClosed: 'Closed sessions',
+  aClosedSession: 'Session closed',
 };
 
 export const createInput: CreateSessionServiceInput = {
@@ -44,4 +47,15 @@ export const findExpiredByTokenOutput: FindExpiredSessionRepositoryOutput = {
   id: sessionId,
   refreshToken: hashData(refreshToken, process.env.SALT_SESSION),
   remember,
+};
+
+export const closeASessionInput: ExcludeSessionsServiceInput = {
+  accountId,
+  sessionToken: token,
+  closeAllSessions: false,
+};
+
+export const closeManySessionInput = {
+  ...closeASessionInput,
+  closeAllSessions: true,
 };

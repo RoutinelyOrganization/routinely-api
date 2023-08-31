@@ -142,4 +142,20 @@ describe('SessionService unit test', () => {
       }
     });
   });
+
+  describe('Close sessions', () => {
+    it(`Happy path - should return a message: "${stubs.expectedMessages.aClosedSession}"`, async () => {
+      const actual = await service.closeSession(stubs.closeASessionInput);
+
+      expect(actual).toBeInstanceOf(Object);
+      expect(actual.message).toEqual(stubs.expectedMessages.aClosedSession);
+    });
+
+    it(`Happy path - should return a message: "${stubs.expectedMessages.manySessionClosed}"`, async () => {
+      const actual = await service.closeSession(stubs.closeManySessionInput);
+
+      expect(actual).toBeInstanceOf(Object);
+      expect(actual.message).toEqual(stubs.expectedMessages.manySessionClosed);
+    });
+  });
 });
