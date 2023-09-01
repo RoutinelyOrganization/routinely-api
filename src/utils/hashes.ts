@@ -1,14 +1,17 @@
 import { createHash } from 'node:crypto';
 
+const algorithm = 'sha256';
+const digest = 'hex';
+
 export function hashDataAsync(
   unhashedData: string,
   salt: string
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     try {
-      const hashedData = createHash('sha256')
+      const hashedData = createHash(algorithm)
         .update(unhashedData + salt)
-        .digest('hex');
+        .digest(digest);
 
       resolve(hashedData);
     } catch (error) {
@@ -16,4 +19,10 @@ export function hashDataAsync(
       reject(null);
     }
   });
+}
+
+export function hashData(unhashedData: string, salt: string): string {
+  return createHash(algorithm)
+    .update(unhashedData + salt)
+    .digest(digest);
 }

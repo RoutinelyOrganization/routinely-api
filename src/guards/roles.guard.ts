@@ -10,7 +10,7 @@ import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { SessionService } from 'src/modules/Session/session.service';
 import { RoleLevel, Permissions } from './roles.config';
-import { CREDENTIALS_KEY } from 'src/config';
+import { CREDENTIALS_KEY } from 'src/utils/constants';
 
 @Injectable()
 export class RolesGuard implements CanActivate {

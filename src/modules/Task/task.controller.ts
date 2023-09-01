@@ -15,7 +15,7 @@ import {
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskInput, UpdateTaskInput } from './task.dtos';
-import { CREDENTIALS_KEY } from 'src/config';
+import { CREDENTIALS_KEY } from 'src/utils/constants';
 import { RequirePermissions, Permissions, RolesGuard } from 'src/guards';
 
 @Controller('tasks')
