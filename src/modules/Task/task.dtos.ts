@@ -1,4 +1,4 @@
-import { PickType } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator';
 
 export enum TaskPriorities {
@@ -17,29 +17,36 @@ export enum TaskTags {
 }
 
 export class CreateTaskInput {
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   name: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsDateString()
   date: Date;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   hour: Date;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   description: string;
 
+  @ApiProperty()
   accountId: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   @IsEnum(TaskPriorities)
   priority: TaskPriorities;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
   @IsEnum(TaskTags)
