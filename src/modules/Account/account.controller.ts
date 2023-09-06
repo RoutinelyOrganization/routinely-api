@@ -8,7 +8,7 @@ import {
   HttpCode,
   Req,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import {
   CreateAccountControllerInput,
   AccessAccountControllerInput,
@@ -23,7 +23,6 @@ import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
 import { CREDENTIALS_KEY } from 'src/utils/constants';
 
 @UseGuards(RolesGuard)
-@ApiTags('Authentication routes')
 @Controller('auth')
 export class AccountController {
   constructor(
@@ -31,42 +30,7 @@ export class AccountController {
     private sessionService: SessionService
   ) {}
 
-  @Post('register')
-  @RequirePermissions([Permissions['100']])
-  async create(
-    @Body()
-    { name, email, password, acceptedTerms }: CreateAccountControllerInput
-  ) {
-    const { message } = await this.accountService.createAccount({
-      name,
-      email,
-      password,
-      acceptedTerms,
-    });
-
-    return {
-      message,
-    };
-  }
-
-  @Post('refresh')
-  @HttpCode(200)
-  @RequirePermissions([Permissions['000']])
-  async refresh(
-    @Body() { refreshToken }: RefreshSessionControllerInput,
-    @Req() request: Request
-  ) {
-    const { sessionToken } = request[CREDENTIALS_KEY];
-
-    const newSession =
-      await this.sessionService.findExpiredSessionByTokenAndRefreshToken(
-        sessionToken,
-        refreshToken
-      );
-
-    return newSession;
-  }
-
+  @ApiTags('Authentication')
   @Post('')
   @HttpCode(200)
   @RequirePermissions([Permissions['101']])
@@ -88,6 +52,47 @@ export class AccountController {
     return sessionData;
   }
 
+  @ApiTags('Authentication')
+  @Post('register')
+  @RequirePermissions([Permissions['100']])
+  async create(
+    @Body()
+    { name, email, password, acceptedTerms }: CreateAccountControllerInput
+  ) {
+    const { message } = await this.accountService.createAccount({
+      name,
+      email,
+      password,
+      acceptedTerms,
+    });
+
+    return {
+      message,
+    };
+  }
+
+  @ApiTags('Authentication')
+  @ApiBearerAuth()
+  @Post('refresh')
+  @HttpCode(200)
+  @RequirePermissions([Permissions['000']])
+  async refresh(
+    @Body() { refreshToken }: RefreshSessionControllerInput,
+    @Req() request: Request
+  ) {
+    const { sessionToken } = request[CREDENTIALS_KEY];
+
+    const newSession =
+      await this.sessionService.findExpiredSessionByTokenAndRefreshToken(
+        sessionToken,
+        refreshToken
+      );
+
+    return newSession;
+  }
+
+  @ApiTags('Authentication')
+  @ApiBearerAuth()
   @Post('disconnect')
   @HttpCode(200)
   @RequirePermissions([Permissions['101'], Permissions['102']])
@@ -106,6 +111,7 @@ export class AccountController {
     return response;
   }
 
+  @ApiTags('Password reset')
   @Post('resetpassword')
   @RequirePermissions([Permissions['001']])
   async resetPassword(@Body() resetPasswordInput: ResetPasswordInput) {
@@ -116,6 +122,7 @@ export class AccountController {
     }
   }
 
+  @ApiTags('Password reset')
   @Put('changepassword')
   @RequirePermissions([Permissions['001']])
   async changePassword(@Body() changePasswordInput: ChangePasswordInput) {
