@@ -13,6 +13,7 @@ import {
   ParseIntPipe,
   Query,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { TaskService } from './task.service';
 import { CreateTaskInput, UpdateTaskInput } from './task.dtos';
 import { CREDENTIALS_KEY } from 'src/utils/constants';
@@ -22,6 +23,8 @@ import { RequirePermissions, Permissions, RolesGuard } from 'src/guards';
 export class TaskController {
   constructor(private taskService: TaskService) {}
 
+  @ApiTags('Tasks')
+  @ApiBearerAuth()
   @Post()
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['301']])
@@ -35,6 +38,8 @@ export class TaskController {
     return createdTask;
   }
 
+  @ApiTags('Tasks')
+  @ApiBearerAuth()
   @Put(':id')
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['302']])
@@ -58,6 +63,8 @@ export class TaskController {
     return updatedTask;
   }
 
+  @ApiTags('Tasks')
+  @ApiBearerAuth()
   @Delete(':id')
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['303']])
@@ -74,6 +81,8 @@ export class TaskController {
     return;
   }
 
+  @ApiTags('Tasks')
+  @ApiBearerAuth()
   @Get()
   @HttpCode(200)
   @UseGuards(RolesGuard)
