@@ -22,12 +22,12 @@ export class CreateTaskInput {
   @IsString()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '2023-09-14' })
   @IsNotEmpty()
   @IsDateString()
   date: Date;
 
-  @ApiProperty()
+  @ApiProperty({ example: '15:30' })
   @IsNotEmpty()
   @IsString()
   hour: Date;
@@ -40,13 +40,13 @@ export class CreateTaskInput {
   @ApiProperty()
   accountId: string;
 
-  @ApiProperty()
+  @ApiProperty({ enum: TaskPriorities, example: 'medium' })
   @IsNotEmpty()
   @IsString()
   @IsEnum(TaskPriorities)
   priority: TaskPriorities;
 
-  @ApiProperty()
+  @ApiProperty({ enum: TaskTags, example: 'personal' })
   @IsNotEmpty()
   @IsString()
   @IsEnum(TaskTags)
