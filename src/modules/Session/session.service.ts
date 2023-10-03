@@ -13,12 +13,13 @@ import {
   RefreshTokenServiceOutput,
 } from './session.dtos';
 import { hashDataAsync } from 'src/utils/hashes';
+import {
+  expirationWhenRememberIsOnn,
+  expirationWhenRememberIsOff,
+} from 'src/utils/constants';
 
 @Injectable()
 export class SessionService {
-  private expiresInAHour = 36e5;
-  private expiresInAWeek = 36e5 * 24 * 7;
-
   constructor(private sessionRepository: SessionRepository) {}
 
   private randomToken = async (
@@ -44,10 +45,12 @@ export class SessionService {
 
   private calcTokensExpirationDate = (remember = false) => {
     const sessionTokenExpiresIn = remember
-      ? this.expiresInAWeek
-      : this.expiresInAHour;
+      ? expirationWhenRememberIsOnn
+      : expirationWhenRememberIsOff;
     const refreshTokenExpiresIn = sessionTokenExpiresIn * (remember ? 4 : 1.5); // 1 month : 1h 30min
     const now = new Date().getTime();
+
+    console.log('calcTokensExpirationDate', process.env.NODE_ENV);
 
     return {
       sessionExpiresIn: new Date(now + sessionTokenExpiresIn),
