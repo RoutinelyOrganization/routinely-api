@@ -24,6 +24,7 @@ model Account {
   profile       Profile?
   resetPasswordToken ResetPasswordToken?
   tasks Task[]
+  goals Goals[]
 
   @@map("accounts")
 }
@@ -83,6 +84,37 @@ model Task {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("tasks")
+}
+
+model Goals {
+  id Int @id @default(autoincrement())
+  description String
+  goal String
+  start_date DateTime @db.Date
+  end_date DateTime @db.Date
+  periodicity GoalPeriodicity
+  type GoalType
+
+  accountId String @map("account_id")
+  account Account @relation(fields: [accountId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("goals")
+}
+
+enum GoalPeriodicity {
+  daily
+  weekly
+  biweekly
+  monthly
+  bimonthly
+}
+
+enum GoalType {
+  personal
+  profissional
 }
 
 enum TaskPriorities {
