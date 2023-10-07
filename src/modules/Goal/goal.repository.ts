@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CreateGoalInput } from './goal.dto';
+import { CreateGoalInput, UpdateGoalInput } from './goal.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class GoalRepository {
   constructor(private prisma: PrismaService) {}
+
   async create(createGoalInput: CreateGoalInput) {
     return await this.prisma.goals.create({
       data: {
@@ -17,5 +18,20 @@ export class GoalRepository {
         accountId: createGoalInput.accountId,
       },
     });
+  }
+
+  async updateById(id: string, updateGoalInput: UpdateGoalInput) {
+    return await this.prisma.goals.update({
+      where: { id: Number(id) },
+      data: updateGoalInput,
+    });
+  }
+
+  async findAccountByGoalId(id: string) {
+    const goal = await this.prisma.goals.findUnique({
+      where: { id: Number(id) },
+    });
+
+    return goal.accountId;
   }
 }

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateGoalInput } from './goal.dto';
+import { CreateGoalInput, UpdateGoalInput } from './goal.dto';
 import { GoalRepository } from './goal.repository';
 
 @Injectable()
@@ -17,5 +17,22 @@ export class GoalService {
     });
 
     return createdGoal;
+  }
+
+  async updateById(id: string, updateGoalInput: UpdateGoalInput) {
+    const start_date = new Date(updateGoalInput.start_date);
+    const end_date = new Date(updateGoalInput.end_date);
+
+    const updatedGoal = await this.repository.updateById(id, {
+      ...updateGoalInput,
+      start_date,
+      end_date,
+    });
+
+    return updatedGoal;
+  }
+
+  async getAccountById(id: string) {
+    return await this.repository.findAccountByGoalId(id);
   }
 }

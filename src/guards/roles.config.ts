@@ -43,6 +43,9 @@ export const Permissions: AccessPermissions = {
   '303': 'delete:task',
   // Goals
   '400': 'create:goal',
+  '401': 'read:goal',
+  '402': 'update:goal',
+  '403': 'delete:goal',
 };
 
 function findManyPermissions(...keys: string[]) {
@@ -64,7 +67,10 @@ export const RoleLevel = {
     '301',
     '302',
     '303',
-    '400'
+    '400',
+    '401',
+    '402',
+    '403'
   ),
   Anonymous: findManyPermissions('100', '101'),
 };

@@ -1,7 +1,8 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { GoalPeriodicity, GoalType } from '@prisma/client';
 import { IsDateString, IsEnum, MaxLength } from 'class-validator';
 import { IsEarlierDateThan } from 'src/utils/decorators/isEarlierDate';
+
 export class CreateGoalInput {
   @ApiProperty({ maxLength: 1000 })
   @MaxLength(1000)
@@ -31,3 +32,13 @@ export class CreateGoalInput {
   @ApiProperty()
   accountId: string;
 }
+
+export class UpdateGoalInput extends PickType(CreateGoalInput, [
+  'accountId',
+  'description',
+  'goal',
+  'periodicity',
+  'type',
+  'start_date',
+  'end_date',
+]) {}
