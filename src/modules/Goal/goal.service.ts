@@ -32,6 +32,10 @@ export class GoalService {
     return updatedGoal;
   }
 
+  async deleteById(id: string) {
+    return await this.repository.deleteById(id);
+  }
+
   async getAccountById(id: string) {
     return await this.repository.findAccountByGoalId(id);
   }

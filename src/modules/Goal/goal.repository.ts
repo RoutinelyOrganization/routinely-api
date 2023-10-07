@@ -27,6 +27,10 @@ export class GoalRepository {
     });
   }
 
+  async deleteById(id: string) {
+    return await this.prisma.goals.delete({ where: { id: Number(id) } });
+  }
+
   async findAccountByGoalId(id: string) {
     const goal = await this.prisma.goals.findUnique({
       where: { id: Number(id) },

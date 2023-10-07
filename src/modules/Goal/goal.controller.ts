@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   ForbiddenException,
   Param,
   Post,
@@ -39,7 +40,7 @@ export class GoalController {
   @ApiBearerAuth()
   @Put(':id')
   @UseGuards(RolesGuard)
-  @RequirePermissions([Permissions['401']])
+  @RequirePermissions([Permissions['402']])
   async updateById(
     @Param('id') id: string,
     @Body() updateGoalInput: UpdateGoalInput,
@@ -56,5 +57,20 @@ export class GoalController {
     });
 
     return updatedGoal;
+  }
+
+  @ApiTags('Goals')
+  @ApiBearerAuth()
+  @Delete(':id')
+  @UseGuards(RolesGuard)
+  @RequirePermissions([Permissions['403']])
+  async deleteById(@Param('id') id: string, @Req() req: Request) {
+    const cred = req[CREDENTIALS_KEY];
+
+    const accountId = await this.goalService.getAccountById(id);
+    if (accountId != cred.accountId) throw new ForbiddenException();
+
+    await this.goalService.deleteById(id);
+    return;
   }
 }
