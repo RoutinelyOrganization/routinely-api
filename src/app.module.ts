@@ -6,6 +6,7 @@ import {
   PasswordTokenModule,
   MailingModule,
   TaskModule,
+  GoalModule,
 } from './modules';
 
 @Module({
@@ -16,6 +17,7 @@ import {
     PasswordTokenModule,
     MailingModule,
     TaskModule,
+    GoalModule,
   ],
 })
 export class AppModule {}
