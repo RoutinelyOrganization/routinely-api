@@ -29,7 +29,6 @@ export class CreateGoalInput {
   @IsEnum(GoalType)
   type: GoalType;
 
-  @ApiProperty()
   accountId: string;
 }
 

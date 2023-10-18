@@ -37,7 +37,6 @@ export class CreateTaskInput {
   @IsString()
   description: string;
 
-  @ApiProperty()
   accountId: string;
 
   @ApiProperty({ enum: TaskPriorities, example: 'medium' })
