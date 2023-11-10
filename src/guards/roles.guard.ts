@@ -60,7 +60,9 @@ export class RolesGuard implements CanActivate {
     const firstRequiredRole = requiredRoles?.length && requiredRoles[0];
 
     if (!firstRequiredRole) {
-      throw new InternalServerErrorException('unspecified permissions');
+      throw new InternalServerErrorException(
+        'As permissões necessárias não foram definidas'
+      );
     }
 
     const isResetPasswordRequest = firstRequiredRole === Permissions['001'];
@@ -70,13 +72,13 @@ export class RolesGuard implements CanActivate {
     }
 
     if (token && !this.isHexString(token)) {
-      throw new BadRequestException('Access token has a type error');
+      throw new BadRequestException('O formato do token não está correto');
     }
 
     const isRefreshTokenRequest = firstRequiredRole === Permissions['000'];
 
     if (isRefreshTokenRequest && !token) {
-      throw new BadRequestException('Original access token is required');
+      throw new BadRequestException('O token de acesso é necessário');
     }
 
     if (isRefreshTokenRequest) {
@@ -97,7 +99,7 @@ export class RolesGuard implements CanActivate {
 
     if (isInvalid) {
       throw new ForbiddenException(
-        'You do not have permission to perform this action.'
+        'Você não tem permissão para realizar esta ação.'
       );
     }
 

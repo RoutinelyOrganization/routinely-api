@@ -10,6 +10,6 @@ export const swaggerDocumentConfig = new DocumentBuilder()
   )
   .addBearerAuth({
     type: 'http',
-    description: 'Get the `token` property after logging in',
+    description: 'Use o `token` adquirido ao acessar a conta',
   })
   .build();

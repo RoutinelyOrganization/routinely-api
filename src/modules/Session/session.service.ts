@@ -32,7 +32,7 @@ export class SessionService {
       hashedToken = await hashDataAsync(token, process.env.SALT_SESSION);
 
       if (!hashedToken) {
-        throw new InternalServerErrorException('Error on try create session');
+        throw new InternalServerErrorException('Erro ao tentar criar a sessão');
       }
     }
 
@@ -103,7 +103,7 @@ export class SessionService {
     });
 
     if (!sessionOutput) {
-      throw new UnauthorizedException('Session expired');
+      throw new UnauthorizedException('Sessão expirada');
     }
 
     return sessionOutput;
@@ -120,7 +120,7 @@ export class SessionService {
 
     if (!expiredSession) {
       throw new UnauthorizedException(
-        'This session has expired or does not exist'
+        'Essa sessão está expirada ou foi finalizada'
       );
     }
 
@@ -130,11 +130,13 @@ export class SessionService {
     );
 
     if (!hashedRefreshToken) {
-      throw new InternalServerErrorException('Error on try verify session');
+      throw new InternalServerErrorException(
+        'Erro ao tentar verificar a sessão'
+      );
     }
 
     if (hashedRefreshToken !== expiredSession.refreshToken) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('Credenciais inválidas');
     }
 
     const randomSessionToken = await this.randomToken();
@@ -163,10 +165,10 @@ export class SessionService {
   async closeSession(closeSessionInput: ExcludeSessionsServiceInput) {
     if (closeSessionInput.closeAllSessions) {
       await this.sessionRepository.excludeAllSessions(closeSessionInput);
-      return { message: 'Closed sessions' };
+      return { message: 'Sessões finalizadas' };
     }
 
     await this.sessionRepository.excludeSession(closeSessionInput);
-    return { message: 'Session closed' };
+    return { message: 'Sessão finalizada' };
   }
 }

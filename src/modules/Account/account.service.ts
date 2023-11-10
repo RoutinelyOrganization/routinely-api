@@ -45,7 +45,7 @@ export class AccountService {
     createAccountInput: CreateAccountControllerInput
   ): Promise<CreateAccountServiceOutput> {
     if (createAccountInput.acceptedTerms !== true) {
-      throw new BadRequestException('Please accept our privacy policies');
+      throw new BadRequestException('Por favor, aceite nossos termos de uso');
     }
 
     const hashedEmail = await hashDataAsync(
@@ -54,7 +54,7 @@ export class AccountService {
     );
 
     if (!hashedEmail) {
-      throw new UnprocessableEntityException('Unknown error');
+      throw new UnprocessableEntityException('Erro desconhecido');
     }
 
     const alreadyExists = await this.accountRepository.alreadyExists(
@@ -62,7 +62,9 @@ export class AccountService {
     );
 
     if (alreadyExists) {
-      throw new UnprocessableEntityException('This e-mail already exists');
+      throw new UnprocessableEntityException(
+        'O e-mail já existe na base de dados'
+      );
     }
 
     const hashedPassword = await this.hashPassword(createAccountInput.password);
@@ -75,7 +77,7 @@ export class AccountService {
 
     if (created) {
       return {
-        message: 'Account created!',
+        message: 'Conta criada!',
       };
     }
 
@@ -106,7 +108,7 @@ export class AccountService {
       await this.mailingService.sendEmail({
         from: process.env.FROM_EMAIL,
         to: resetPasswordInput.email,
-        subject: 'Reset Password - Routinely',
+        subject: 'Alterar senha Routinely',
         payload: { name: account.name, code: createdCode.code },
         template: 'resetPassword.handlebars',
       });
@@ -148,7 +150,7 @@ export class AccountService {
       await this.accountRepository.findAccountByEmail(hashedEmail);
 
     if (!credentialFromDatabase) {
-      throw new UnauthorizedException('Invalid credentials. Please try again.');
+      throw new UnauthorizedException('Credenciais inválidas');
     }
 
     const validatePass = await this.comparePassword(
@@ -157,7 +159,7 @@ export class AccountService {
     );
 
     if (!validatePass) {
-      throw new UnauthorizedException('Invalid credentials. Please try again.');
+      throw new UnauthorizedException('Credenciais inválidas');
     }
 
     return {
