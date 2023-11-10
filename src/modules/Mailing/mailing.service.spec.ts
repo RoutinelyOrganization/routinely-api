@@ -4,8 +4,8 @@ import * as nodemailer from 'nodemailer';
 import * as handlebars from 'handlebars';
 import { CreateEmailInput } from './mailing.dtos';
 import { faker } from '@faker-js/faker';
-import { SendEmailError } from './mailing.errors';
 import * as fs from 'fs';
+import { InternalServerError } from 'src/config/exceptions';
 
 describe('MailingService Unit Tests', () => {
   let service: MailingService;
@@ -104,7 +104,7 @@ describe('MailingService Unit Tests', () => {
 
       const promise = service.sendEmail(createEmailInput);
 
-      await expect(promise).rejects.toThrow(new SendEmailError());
+      await expect(promise).rejects.toThrow(new InternalServerError({}));
     });
   });
 });

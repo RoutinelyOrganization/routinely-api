@@ -1,4 +1,4 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import {
   CreateTaskInput,
   FindTasksRepositoryInput,
@@ -6,6 +6,7 @@ import {
   UpdateTaskInput,
 } from './task.dtos';
 import { TaskRepository } from './task.repository';
+import { UnprocessableEntityError } from 'src/config/exceptions';
 
 @Injectable()
 export class TaskService {
@@ -41,7 +42,7 @@ export class TaskService {
 
   async updateById(id: string, updateTaskInput: UpdateTaskInput) {
     const taskExist = await this.repository.findById(id);
-    if (taskExist === null) throw new UnprocessableEntityException();
+    if (taskExist === null) throw new UnprocessableEntityError({});
 
     const date = new Date(updateTaskInput.date);
     const now = new Date();

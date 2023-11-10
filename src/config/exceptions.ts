@@ -1,8 +1,8 @@
 import { HttpException } from '@nestjs/common';
 
 type iCustomException = {
-  property: string;
-  message: string;
+  property?: string | undefined;
+  message?: string | undefined;
 };
 
 export class CustomException extends HttpException {
@@ -43,6 +43,13 @@ export class PermissionError extends CustomException {
       403,
       props.property
     );
+  }
+}
+
+// 404
+export class NotFoundError extends CustomException {
+  constructor(props: iCustomException) {
+    super(props.message || 'Informação não encontrada', 404, props.property);
   }
 }
 

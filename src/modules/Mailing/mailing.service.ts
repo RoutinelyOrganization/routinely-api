@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 import { CreateEmailInput } from './mailing.dtos';
-import { SendEmailError } from './mailing.errors';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import * as handlebars from 'handlebars';
+import { InternalServerError } from 'src/config/exceptions';
 
 @Injectable()
 export class MailingService {
@@ -36,8 +36,7 @@ export class MailingService {
     try {
       await transporter.sendMail(emailData);
     } catch (e) {
-      console.log(e, 'mailing service');
-      throw new SendEmailError();
+      throw new InternalServerError({});
     }
   }
 }
