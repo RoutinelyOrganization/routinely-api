@@ -103,6 +103,7 @@ export class RefreshSessionControllerInput {
 
 // password
 export class ResetPasswordInput {
+  @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
   email: string;
@@ -113,18 +114,22 @@ export class ResetPasswordOutput {
 }
 
 export class ChangePasswordInput {
+  @ApiProperty()
   @IsNotEmpty()
   @IsStrongPassword()
   password: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsStrongPassword()
   @IsEqualTo('password')
   repeatPassword: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   code: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   accountId: string;
 }
