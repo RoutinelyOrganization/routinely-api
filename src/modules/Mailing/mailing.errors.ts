@@ -1,6 +1,6 @@
 export class SendEmailError extends Error {
   constructor() {
-    super('Nodemailer failed at sending email');
+    super('Erro ao tentar enviar o e-mail de recuperação');
     this.name = 'SendEmailError';
   }
 }

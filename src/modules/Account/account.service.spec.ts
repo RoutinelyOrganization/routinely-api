@@ -246,7 +246,7 @@ describe('AccountService Unit Tests', () => {
       expect(mailingServiceSpy).toHaveBeenCalledWith({
         from: process.env.FROM_EMAIL,
         to: resetPasswordInput.email,
-        subject: 'Reset Password - Routinely',
+        subject: 'Alterar senha Routinely',
         payload: { code: '123789', name: accountStub.name },
         template: resetPasswordTemplatePath,
       });
