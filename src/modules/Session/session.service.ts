@@ -1,9 +1,5 @@
 import { randomBytes } from 'node:crypto';
-import {
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SessionRepository } from './session.repository';
 import {
   CreateSessionServiceInput,
@@ -13,6 +9,7 @@ import {
   RefreshTokenServiceOutput,
 } from './session.dtos';
 import { hashDataAsync } from 'src/utils/hashes';
+import { AuthorizationError, InternalServerError } from 'src/config/exceptions';
 
 @Injectable()
 export class SessionService {
@@ -32,7 +29,9 @@ export class SessionService {
       hashedToken = await hashDataAsync(token, process.env.SALT_SESSION);
 
       if (!hashedToken) {
-        throw new InternalServerErrorException('Error on try create session');
+        throw new InternalServerError({
+          message: 'Erro ao tentar criar a sessão',
+        });
       }
     }
 
@@ -83,7 +82,7 @@ export class SessionService {
     );
 
     if (!sessionSaved) {
-      throw new InternalServerErrorException();
+      throw new InternalServerError({});
     }
 
     return {
@@ -103,7 +102,9 @@ export class SessionService {
     });
 
     if (!sessionOutput) {
-      throw new UnauthorizedException('Session expired');
+      throw new AuthorizationError({
+        message: 'Sessão expirada',
+      });
     }
 
     return sessionOutput;
@@ -119,9 +120,9 @@ export class SessionService {
       });
 
     if (!expiredSession) {
-      throw new UnauthorizedException(
-        'This session has expired or does not exist'
-      );
+      throw new AuthorizationError({
+        message: 'Essa sessão está expirada ou foi finalizada',
+      });
     }
 
     const hashedRefreshToken = await hashDataAsync(
@@ -130,11 +131,13 @@ export class SessionService {
     );
 
     if (!hashedRefreshToken) {
-      throw new InternalServerErrorException('Error on try verify session');
+      throw new InternalServerError({
+        message: 'Erro ao tentar verificar a sessão',
+      });
     }
 
     if (hashedRefreshToken !== expiredSession.refreshToken) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new AuthorizationError({});
     }
 
     const randomSessionToken = await this.randomToken();
@@ -163,10 +166,10 @@ export class SessionService {
   async closeSession(closeSessionInput: ExcludeSessionsServiceInput) {
     if (closeSessionInput.closeAllSessions) {
       await this.sessionRepository.excludeAllSessions(closeSessionInput);
-      return { message: 'Closed sessions' };
+      return { message: 'Sessões finalizadas' };
     }
 
     await this.sessionRepository.excludeSession(closeSessionInput);
-    return { message: 'Session closed' };
+    return { message: 'Sessão finalizada' };
   }
 }

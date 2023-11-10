@@ -6,8 +6,10 @@ import {
   IsStrongPassword,
   IsBoolean,
   IsHexadecimal,
+  IsString,
 } from 'class-validator';
 import { IsEqualTo } from 'src/utils/decorators/isEqualTo';
+import { responses } from 'src/config/responses';
 
 class AccountBaseDto {
   id: string;
@@ -20,26 +22,29 @@ class AccountBaseDto {
   updatedAt: Date;
 }
 
-// Create
+const nameRegex = /^[a-zA-ZÀ-ÿ ]+$/;
+
 export class CreateAccountControllerInput {
-  @IsNotEmpty()
-  @Matches(/^[a-zA-ZÀ-ÿ ]+$/)
-  @ApiProperty()
+  @ApiProperty({ example: 'John Doe' })
+  @IsNotEmpty({ message: responses.notEmpty })
+  @IsString({ message: responses.string })
+  @Matches(nameRegex, { message: responses.fullname })
   name: string;
 
-  @IsNotEmpty()
-  @IsEmail()
-  @ApiProperty()
+  @ApiProperty({ example: 'example@string.com' })
+  @IsNotEmpty({ message: responses.notEmpty })
+  @IsString({ message: responses.string })
+  @IsEmail({}, { message: responses.email })
   email: string;
 
-  @IsNotEmpty()
-  @IsStrongPassword()
-  @ApiProperty()
+  @ApiProperty({ example: 'strW#3' })
+  @IsNotEmpty({ message: responses.notEmpty })
+  @IsStrongPassword({ minLength: 6 }, { message: responses.strongPassword })
   password: string;
 
-  @IsNotEmpty()
-  @IsBoolean()
   @ApiProperty()
+  @IsNotEmpty({ message: responses.notEmpty })
+  @IsBoolean({ message: responses.boolean })
   acceptedTerms?: boolean;
 }
 
@@ -98,6 +103,7 @@ export class RefreshSessionControllerInput {
 
 // password
 export class ResetPasswordInput {
+  @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
   email: string;
@@ -108,18 +114,22 @@ export class ResetPasswordOutput {
 }
 
 export class ChangePasswordInput {
+  @ApiProperty()
   @IsNotEmpty()
   @IsStrongPassword()
   password: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   @IsStrongPassword()
   @IsEqualTo('password')
   repeatPassword: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   code: string;
 
+  @ApiProperty()
   @IsNotEmpty()
   accountId: string;
 }

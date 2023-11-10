@@ -10,11 +10,14 @@ import {
   createAccountInput,
   resetPasswordInput,
 } from './tests/stubs/account.stubs';
-import { AccountNotFoundError, InvalidCodeError } from './account.errors';
 import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
 import { faker } from '@faker-js/faker';
 import { MailingService } from '../Mailing/mailing.service';
-import { SendEmailError } from '../Mailing/mailing.errors';
+import {
+  AuthorizationError,
+  InternalServerError,
+  NotFoundError,
+} from 'src/config/exceptions';
 
 describe('AccountService Unit Tests', () => {
   let service: AccountService;
@@ -207,7 +210,7 @@ describe('AccountService Unit Tests', () => {
 
       const promise = service.resetPassword(resetPasswordInput);
 
-      await expect(promise).rejects.toThrow(new AccountNotFoundError());
+      await expect(promise).rejects.toThrow(new NotFoundError({}));
     });
 
     it('should call AccountRepository.find with correct params', async () => {
@@ -246,7 +249,7 @@ describe('AccountService Unit Tests', () => {
       expect(mailingServiceSpy).toHaveBeenCalledWith({
         from: process.env.FROM_EMAIL,
         to: resetPasswordInput.email,
-        subject: 'Reset Password - Routinely',
+        subject: 'Alterar senha Routinely',
         payload: { code: '123789', name: accountStub.name },
         template: resetPasswordTemplatePath,
       });
@@ -255,12 +258,16 @@ describe('AccountService Unit Tests', () => {
     it('should throw error if MailingService.sendEmail throws', async () => {
       accountRepositoryMock.alreadyExists.mockResolvedValue(true);
       jest.spyOn(mailingServiceMock, 'sendEmail').mockImplementation(() => {
-        throw new SendEmailError();
+        throw new InternalServerError({
+          message: 'Erro ao tentar enviar e-mail',
+        });
       });
 
       const promise = service.resetPassword(resetPasswordInput);
 
-      await expect(promise).rejects.toThrow(new SendEmailError());
+      await expect(promise).rejects.toThrow(
+        new InternalServerError({ message: 'Erro ao tentar enviar e-mail' })
+      );
     });
 
     it.todo('check if user already has token');
@@ -302,7 +309,11 @@ describe('AccountService Unit Tests', () => {
 
       const promise = service.changePassword(changePasswordInput);
 
-      await expect(promise).rejects.toThrow(new InvalidCodeError());
+      await expect(promise).rejects.toThrow(
+        new AuthorizationError({
+          message: 'Código inválido',
+        })
+      );
     });
 
     it('calls AccountRepository.changePassword with correct data', async () => {

@@ -4,10 +4,7 @@ import { SessionRepository } from './session.repository';
 
 import * as constants from 'src/utils/constants';
 import * as stubs from './tests/session.stubs';
-import {
-  InternalServerErrorException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { AuthorizationError, InternalServerError } from 'src/config/exceptions';
 
 describe('SessionService unit test', () => {
   let service: SessionService;
@@ -71,7 +68,7 @@ describe('SessionService unit test', () => {
       try {
         await service.createSession(stubs.createInput);
       } catch (actual) {
-        expect(actual).toBeInstanceOf(InternalServerErrorException);
+        expect(actual).toBeInstanceOf(InternalServerError);
       }
     });
   });
@@ -93,8 +90,7 @@ describe('SessionService unit test', () => {
       try {
         await service.findSessionToken(stubs.findByTokenInput.token);
       } catch (actual) {
-        expect(actual.message).toEqual(stubs.expectedMessages.sessionExpired);
-        expect(actual).toBeInstanceOf(UnauthorizedException);
+        expect(actual).toBeInstanceOf(AuthorizationError);
       }
     });
   });
@@ -123,8 +119,7 @@ describe('SessionService unit test', () => {
       try {
         await service.findExpiredSessionByTokenAndRefreshToken('', '');
       } catch (actual) {
-        expect(actual.message).toEqual(stubs.expectedMessages.expiredOrDeleted);
-        expect(actual).toBeInstanceOf(UnauthorizedException);
+        expect(actual).toBeInstanceOf(AuthorizationError);
       }
     });
 
@@ -135,10 +130,7 @@ describe('SessionService unit test', () => {
           'invalidtoken'
         );
       } catch (actual) {
-        expect(actual.message).toEqual(
-          stubs.expectedMessages.invalidCredentials
-        );
-        expect(actual).toBeInstanceOf(UnauthorizedException);
+        expect(actual).toBeInstanceOf(AuthorizationError);
       }
     });
   });

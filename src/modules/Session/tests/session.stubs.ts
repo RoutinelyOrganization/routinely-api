@@ -17,11 +17,11 @@ const remember = faker.datatype.boolean();
 const username = faker.person.fullName();
 
 export const expectedMessages = {
-  sessionExpired: 'Session expired',
-  invalidCredentials: 'Invalid credentials',
-  expiredOrDeleted: 'This session has expired or does not exist',
-  manySessionClosed: 'Closed sessions',
-  aClosedSession: 'Session closed',
+  sessionExpired: 'Sessão expirada',
+  invalidCredentials: 'Credenciais inválidas',
+  expiredOrDeleted: 'Essa sessão está expirada ou foi finalizada',
+  manySessionClosed: 'Sessões finalizadas',
+  aClosedSession: 'Sessão finalizada',
 };
 
 export const createInput: CreateSessionServiceInput = {

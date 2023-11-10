@@ -1,10 +1,5 @@
 import { hash, compare } from 'bcrypt';
-import {
-  Injectable,
-  BadRequestException,
-  UnprocessableEntityException,
-  UnauthorizedException,
-} from '@nestjs/common/';
+import { Injectable } from '@nestjs/common/';
 import {
   AccessAccountControllerInput,
   CreateAccountServiceOutput,
@@ -15,12 +10,17 @@ import {
   ResetPasswordInput,
 } from './account.dtos';
 import { AccountRepository } from './account.repository';
-import { AccountNotFoundError, InvalidCodeError } from './account.errors';
 import { hashDataAsync } from 'src/utils/hashes';
 import { RoleLevel } from 'src/guards';
 import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
 import { MailingService } from '../Mailing/mailing.service';
-import { SendEmailError } from '../Mailing/mailing.errors';
+import {
+  AuthorizationError,
+  DataValidationError,
+  InternalServerError,
+  NotFoundError,
+  UnprocessableEntityError,
+} from 'src/config/exceptions';
 
 @Injectable()
 export class AccountService {
@@ -45,7 +45,10 @@ export class AccountService {
     createAccountInput: CreateAccountControllerInput
   ): Promise<CreateAccountServiceOutput> {
     if (createAccountInput.acceptedTerms !== true) {
-      throw new BadRequestException('Please accept our privacy policies');
+      throw new DataValidationError({
+        message: 'Por favor, aceite nossos termos de uso',
+        property: 'acceptedTerms',
+      });
     }
 
     const hashedEmail = await hashDataAsync(
@@ -54,7 +57,9 @@ export class AccountService {
     );
 
     if (!hashedEmail) {
-      throw new UnprocessableEntityException('Unknown error');
+      throw new UnprocessableEntityError({
+        message: 'Erro desconhecido',
+      });
     }
 
     const alreadyExists = await this.accountRepository.alreadyExists(
@@ -62,7 +67,10 @@ export class AccountService {
     );
 
     if (alreadyExists) {
-      throw new UnprocessableEntityException('This e-mail already exists');
+      throw new UnprocessableEntityError({
+        property: 'email',
+        message: 'O e-mail já existe na base de dados',
+      });
     }
 
     const hashedPassword = await this.hashPassword(createAccountInput.password);
@@ -75,7 +83,7 @@ export class AccountService {
 
     if (created) {
       return {
-        message: 'Account created!',
+        message: 'Conta criada!',
       };
     }
 
@@ -93,7 +101,8 @@ export class AccountService {
     const accountExists = await this.accountRepository.alreadyExists(
       hashedEmail
     );
-    if (!accountExists) throw new AccountNotFoundError();
+    if (!accountExists)
+      throw new NotFoundError({ message: 'Conta não encontrada' });
     const account = await this.accountRepository.findAccountByEmail(
       hashedEmail
     );
@@ -106,13 +115,13 @@ export class AccountService {
       await this.mailingService.sendEmail({
         from: process.env.FROM_EMAIL,
         to: resetPasswordInput.email,
-        subject: 'Reset Password - Routinely',
+        subject: 'Alterar senha Routinely',
         payload: { name: account.name, code: createdCode.code },
         template: 'resetPassword.handlebars',
       });
       return { accountId: account.id };
     } catch (e) {
-      throw new SendEmailError();
+      throw new InternalServerError({});
     }
   }
 
@@ -133,7 +142,9 @@ export class AccountService {
       });
 
       await this.tokenService.deleteToken(changePasswordInput.accountId);
-    } else throw new InvalidCodeError();
+    } else {
+      throw new AuthorizationError({ message: 'Código inválido' });
+    }
     return;
   }
 
@@ -148,7 +159,7 @@ export class AccountService {
       await this.accountRepository.findAccountByEmail(hashedEmail);
 
     if (!credentialFromDatabase) {
-      throw new UnauthorizedException('Invalid credentials. Please try again.');
+      throw new AuthorizationError({});
     }
 
     const validatePass = await this.comparePassword(
@@ -157,7 +168,7 @@ export class AccountService {
     );
 
     if (!validatePass) {
-      throw new UnauthorizedException('Invalid credentials. Please try again.');
+      throw new AuthorizationError({});
     }
 
     return {
