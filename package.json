@@ -22,7 +22,7 @@
     "start:prod": "node dist/src/main",
     "dev": "npm run docker:compose && npm run prisma:migrate && npm run prisma:generate && npm run start:dev",
     "dev:min": "npm run docker:compose && npm run start:dev",
-    "docker:compose": "docker-compose -f docker-compose.dev.yml up -d",
+    "docker:compose": "docker compose -f docker-compose.dev.yml up -d",
     "prisma:seed": "npx prisma db seed",
     "prisma:push": "npx prisma db push",
     "prisma:generate": "npx prisma generate",
