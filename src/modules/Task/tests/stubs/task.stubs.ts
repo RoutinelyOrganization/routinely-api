@@ -1,6 +1,6 @@
 import { CreateTaskInput } from '../../task.dtos';
 import { faker } from '@faker-js/faker';
-import { TaskPriorities, TaskTags } from '../../task.dtos';
+import { TaskPriorities, TaskTags, TaskCategories } from '@prisma/client';
 
 const datetime = faker.date.recent().toISOString().split('T');
 
@@ -10,6 +10,7 @@ export const createTaskInput: CreateTaskInput = {
   hour: new Date(datetime[1]),
   description: faker.lorem.paragraph(),
   priority: TaskPriorities.low,
-  tag: TaskTags.finance,
+  tag: TaskTags.account,
+  category: TaskCategories.finance,
   accountId: faker.string.uuid(),
 };
