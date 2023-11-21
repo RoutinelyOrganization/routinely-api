@@ -60,6 +60,7 @@ export class TaskRepository {
         hour: true,
         tag: true,
         priority: true,
+        category: true,
         description: true,
       },
     });
