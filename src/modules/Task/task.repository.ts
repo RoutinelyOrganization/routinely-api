@@ -19,6 +19,7 @@ export class TaskRepository {
         name: createTaskInput.name,
         priority: createTaskInput.priority,
         tag: createTaskInput.tag,
+        category: createTaskInput.category,
         accountId: createTaskInput.accountId,
       },
     });
@@ -59,6 +60,7 @@ export class TaskRepository {
         hour: true,
         tag: true,
         priority: true,
+        category: true,
         description: true,
       },
     });

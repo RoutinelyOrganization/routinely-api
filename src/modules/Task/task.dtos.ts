@@ -1,20 +1,6 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator';
-
-export enum TaskPriorities {
-  low = 'low',
-  medium = 'medium',
-  high = 'high',
-  urgent = 'urgent',
-}
-
-export enum TaskTags {
-  personal = 'personal',
-  study = 'study',
-  finance = 'finance',
-  career = 'career',
-  health = 'health',
-}
+import { TaskPriorities, TaskTags, TaskCategories } from '@prisma/client';
 
 export class CreateTaskInput {
   @ApiProperty()
@@ -45,11 +31,17 @@ export class CreateTaskInput {
   @IsEnum(TaskPriorities)
   priority: TaskPriorities;
 
-  @ApiProperty({ enum: TaskTags, example: 'personal' })
+  @ApiProperty({ enum: TaskTags, example: TaskTags['literature'] })
   @IsNotEmpty()
   @IsString()
   @IsEnum(TaskTags)
   tag: TaskTags;
+
+  @ApiProperty({ enum: TaskCategories, example: TaskCategories['personal'] })
+  @IsNotEmpty()
+  @IsString()
+  @IsEnum(TaskCategories)
+  category: TaskCategories;
 }
 
 export class UpdateTaskInput extends PickType(CreateTaskInput, [
@@ -60,6 +52,7 @@ export class UpdateTaskInput extends PickType(CreateTaskInput, [
   'name',
   'priority',
   'tag',
+  'category',
 ]) {}
 
 export class FindTasksRepositoryInput {
