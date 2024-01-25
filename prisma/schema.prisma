@@ -120,7 +120,7 @@ enum TaskPriorities {
 enum TaskTags {
   application
   account
-  excercise
+  exercise
   beauty
   literature
 }
