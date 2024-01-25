@@ -62,6 +62,7 @@ export class TaskRepository {
         priority: true,
         category: true,
         description: true,
+        checked: true,
       },
     });
 
