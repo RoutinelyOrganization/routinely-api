@@ -73,6 +73,7 @@ model Task {
   priority    TaskPriorities
   tag         TaskTags
   category    TaskCategories
+  checked     Boolean        @default(false)
   accountId   String         @map("account_id")
   account     Account        @relation(fields: [accountId], references: [id])
   createdAt   DateTime       @default(now()) @map("created_at")
@@ -120,7 +121,7 @@ enum TaskPriorities {
 enum TaskTags {
   application
   account
-  excercise
+  exercise
   beauty
   literature
 }

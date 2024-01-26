@@ -10,12 +10,16 @@ import {
   Delete,
   HttpCode,
   Get,
-  ParseIntPipe,
   Query,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { TaskService } from './task.service';
-import { CreateTaskInput, UpdateTaskInput } from './task.dtos';
+import {
+  CreateTaskInput,
+  FindATaskControllerDto,
+  FindTasksControllerDto,
+  UpdateTaskInput,
+} from './task.dtos';
 import { CREDENTIALS_KEY } from 'src/utils/constants';
 import { RequirePermissions, Permissions, RolesGuard } from 'src/guards';
 
@@ -44,7 +48,7 @@ export class TaskController {
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['302']])
   async updateById(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() updateTaskInput: UpdateTaskInput,
     @Req() req: Request
   ) {
@@ -69,7 +73,7 @@ export class TaskController {
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['303']])
   @HttpCode(200)
-  async deleteById(@Param('id') id: string, @Req() req: Request) {
+  async deleteById(@Param('id') id: number, @Req() req: Request) {
     const cred = req[CREDENTIALS_KEY];
 
     const accountId = await this.taskService.getAccountById(id);
@@ -88,15 +92,32 @@ export class TaskController {
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['301']])
   async accountTasks(
-    @Query('month', ParseIntPipe) month: number,
-    @Query('year', ParseIntPipe) year: number,
+    @Query() input: FindTasksControllerDto,
     @Req() request: Request
   ) {
     const { accountId } = request[CREDENTIALS_KEY];
 
     return await this.taskService.findAccountTasks({
-      month,
-      year,
+      month: input.month,
+      year: input.year,
+      accountId,
+    });
+  }
+
+  @ApiTags('Tasks')
+  @ApiBearerAuth()
+  @Get('/:taskId')
+  @HttpCode(200)
+  @UseGuards(RolesGuard)
+  @RequirePermissions([Permissions['301']])
+  async getATaskInfo(
+    @Param() input: FindATaskControllerDto,
+    @Req() request: Request
+  ) {
+    const { accountId } = request[CREDENTIALS_KEY];
+
+    return await this.taskService.findTaskByid({
+      taskId: input.id,
       accountId,
     });
   }

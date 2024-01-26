@@ -25,24 +25,36 @@ export class TaskRepository {
     });
   }
 
-  async updateById(id: string, updateTaskInput: UpdateTaskInput) {
+  async updateById(id: number, updateTaskInput: UpdateTaskInput) {
     return await this.prisma.task.update({
-      where: { id: Number(id) },
+      where: {
+        id: id,
+      },
       data: updateTaskInput,
     });
   }
 
-  async findById(id: string) {
-    return await this.prisma.task.findUnique({ where: { id: Number(id) } });
+  async findById(id: number) {
+    return await this.prisma.task.findUnique({
+      where: {
+        id: id,
+      },
+    });
   }
 
-  async deleteById(id: string) {
-    return await this.prisma.task.delete({ where: { id: Number(id) } });
+  async deleteById(id: number) {
+    return await this.prisma.task.delete({
+      where: {
+        id: id,
+      },
+    });
   }
 
-  async findAccountByTaskId(id: string) {
+  async findAccountByTaskId(id: number) {
     const task = await this.prisma.task.findUnique({
-      where: { id: Number(id) },
+      where: {
+        id: id,
+      },
     });
 
     return task.accountId;
@@ -62,9 +74,32 @@ export class TaskRepository {
         priority: true,
         category: true,
         description: true,
+        checked: true,
       },
     });
 
     return tasks;
+  }
+
+  async findUserTaskById(taskId: number) {
+    const task = await this.prisma.task.findUnique({
+      where: {
+        id: taskId,
+      },
+      select: {
+        id: true,
+        name: true,
+        date: true,
+        hour: true,
+        tag: true,
+        priority: true,
+        category: true,
+        description: true,
+        checked: true,
+        accountId: true,
+      },
+    });
+
+    return task;
   }
 }
