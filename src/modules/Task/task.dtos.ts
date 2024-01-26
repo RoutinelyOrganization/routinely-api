@@ -90,3 +90,11 @@ export class FindTasksControllerDto {
   @Min(2023)
   year: number;
 }
+
+export class FindATaskControllerDto {
+  @IsNotEmpty()
+  @Transform((params) => Number(params.value))
+  @IsNumber()
+  @Min(1)
+  taskId: number;
+}

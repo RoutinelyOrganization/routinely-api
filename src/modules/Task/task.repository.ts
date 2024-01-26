@@ -80,4 +80,26 @@ export class TaskRepository {
 
     return tasks;
   }
+
+  async findUserTaskById(taskId: number) {
+    const task = await this.prisma.task.findUnique({
+      where: {
+        id: taskId,
+      },
+      select: {
+        id: true,
+        name: true,
+        date: true,
+        hour: true,
+        tag: true,
+        priority: true,
+        category: true,
+        description: true,
+        checked: true,
+        accountId: true,
+      },
+    });
+
+    return task;
+  }
 }

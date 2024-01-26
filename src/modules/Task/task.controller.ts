@@ -16,6 +16,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { TaskService } from './task.service';
 import {
   CreateTaskInput,
+  FindATaskControllerDto,
   FindTasksControllerDto,
   UpdateTaskInput,
 } from './task.dtos';
@@ -99,6 +100,24 @@ export class TaskController {
     return await this.taskService.findAccountTasks({
       month: input.month,
       year: input.year,
+      accountId,
+    });
+  }
+
+  @ApiTags('Tasks')
+  @ApiBearerAuth()
+  @Get('/:taskId')
+  @HttpCode(200)
+  @UseGuards(RolesGuard)
+  @RequirePermissions([Permissions['301']])
+  async getATaskInfo(
+    @Param() input: FindATaskControllerDto,
+    @Req() request: Request
+  ) {
+    const { accountId } = request[CREDENTIALS_KEY];
+
+    return await this.taskService.findTaskByid({
+      taskId: input.taskId,
       accountId,
     });
   }
