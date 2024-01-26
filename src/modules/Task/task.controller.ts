@@ -117,7 +117,7 @@ export class TaskController {
     const { accountId } = request[CREDENTIALS_KEY];
 
     return await this.taskService.findTaskByid({
-      taskId: input.taskId,
+      taskId: input.id,
       accountId,
     });
   }

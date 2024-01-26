@@ -77,6 +77,7 @@ export class FindTasksServiceInput {
 }
 
 export class FindTasksControllerDto {
+  @ApiProperty()
   @IsNotEmpty()
   @Transform((params) => Number(params.value))
   @IsNumber()
@@ -84,6 +85,7 @@ export class FindTasksControllerDto {
   @Max(12)
   month: number;
 
+  @ApiProperty()
   @IsNotEmpty()
   @Transform((params) => Number(params.value))
   @IsNumber()
@@ -92,9 +94,10 @@ export class FindTasksControllerDto {
 }
 
 export class FindATaskControllerDto {
+  @ApiProperty()
   @IsNotEmpty()
   @Transform((params) => Number(params.value))
   @IsNumber()
   @Min(1)
-  taskId: number;
+  id: number;
 }
