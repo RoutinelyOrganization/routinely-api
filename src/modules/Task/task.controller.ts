@@ -16,7 +16,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { TaskService } from './task.service';
 import {
   CreateTaskInput,
-  FindATaskControllerDto,
+  TarkIdDto,
   FindTasksControllerDto,
   UpdateTaskInput,
 } from './task.dtos';
@@ -44,22 +44,22 @@ export class TaskController {
 
   @ApiTags('Tasks')
   @ApiBearerAuth()
-  @Put(':id')
+  @Put('/:id')
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['302']])
   async updateById(
-    @Param('id') id: number,
+    @Param() input: TarkIdDto,
     @Body() updateTaskInput: UpdateTaskInput,
     @Req() req: Request
   ) {
     const cred = req[CREDENTIALS_KEY];
 
-    const accountId = await this.taskService.getAccountById(id);
+    const accountId = await this.taskService.getAccountById(input.id);
 
     // Authorization
     if (accountId != cred.accountId) throw new ForbiddenException();
 
-    const updatedTask = await this.taskService.updateById(id, {
+    const updatedTask = await this.taskService.updateById(input.id, {
       ...updateTaskInput,
       accountId: cred.accountId,
     });
@@ -69,19 +69,19 @@ export class TaskController {
 
   @ApiTags('Tasks')
   @ApiBearerAuth()
-  @Delete(':id')
+  @Delete('/:id')
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['303']])
   @HttpCode(200)
-  async deleteById(@Param('id') id: number, @Req() req: Request) {
+  async deleteById(@Param() input: TarkIdDto, @Req() req: Request) {
     const cred = req[CREDENTIALS_KEY];
 
-    const accountId = await this.taskService.getAccountById(id);
+    const accountId = await this.taskService.getAccountById(input.id);
 
     // Authorization
     if (accountId != cred.accountId) throw new ForbiddenException();
 
-    await this.taskService.deleteById(id);
+    await this.taskService.deleteById(input.id);
     return;
   }
 
@@ -106,14 +106,11 @@ export class TaskController {
 
   @ApiTags('Tasks')
   @ApiBearerAuth()
-  @Get('/:taskId')
+  @Get('/:id')
   @HttpCode(200)
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['301']])
-  async getATaskInfo(
-    @Param() input: FindATaskControllerDto,
-    @Req() request: Request
-  ) {
+  async getATaskInfo(@Param() input: TarkIdDto, @Req() request: Request) {
     const { accountId } = request[CREDENTIALS_KEY];
 
     return await this.taskService.findTaskByid({
