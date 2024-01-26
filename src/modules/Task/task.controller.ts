@@ -17,7 +17,7 @@ import { ThrottlerGuard } from '@nestjs/throttler';
 import { TaskService } from './task.service';
 import {
   CreateTaskInput,
-  TarkIdDto,
+  TaskIdDto,
   FindTasksControllerDto,
   UpdateTaskInput,
 } from './task.dtos';
@@ -50,7 +50,7 @@ export class TaskController {
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['302']])
   async updateById(
-    @Param() input: TarkIdDto,
+    @Param() input: TaskIdDto,
     @Body() updateTaskInput: UpdateTaskInput,
     @Req() req: Request
   ) {
@@ -75,7 +75,7 @@ export class TaskController {
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['303']])
   @HttpCode(200)
-  async deleteById(@Param() input: TarkIdDto, @Req() req: Request) {
+  async deleteById(@Param() input: TaskIdDto, @Req() req: Request) {
     const cred = req[CREDENTIALS_KEY];
 
     const accountId = await this.taskService.getAccountById(input.id);
@@ -112,7 +112,7 @@ export class TaskController {
   @HttpCode(200)
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['301']])
-  async getATaskInfo(@Param() input: TarkIdDto, @Req() request: Request) {
+  async getATaskInfo(@Param() input: TaskIdDto, @Req() request: Request) {
     const { accountId } = request[CREDENTIALS_KEY];
 
     return await this.taskService.findTaskByid({

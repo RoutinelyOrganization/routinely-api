@@ -93,7 +93,7 @@ export class FindTasksControllerDto {
   year: number;
 }
 
-export class TarkIdDto {
+export class TaskIdDto {
   @ApiProperty()
   @IsNotEmpty()
   @Transform((params) => Number(params.value))
