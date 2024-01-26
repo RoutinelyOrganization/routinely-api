@@ -15,7 +15,9 @@ import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
 import { Request } from 'express';
 import { CREDENTIALS_KEY } from 'src/utils/constants';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
+@UseGuards(ThrottlerGuard)
 @Controller('goals')
 export class GoalController {
   constructor(private goalService: GoalService) {}

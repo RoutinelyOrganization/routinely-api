@@ -51,13 +51,20 @@ export class TaskRepository {
   }
 
   async findAccountByTaskId(id: number) {
-    const task = await this.prisma.task.findUnique({
-      where: {
-        id: id,
-      },
-    });
+    const accountId = await this.prisma.task
+      .findUnique({
+        where: {
+          id: id,
+        },
+        select: {
+          accountId: true,
+        },
+      })
+      .then((result) => {
+        return result?.accountId;
+      });
 
-    return task.accountId;
+    return accountId;
   }
 
   async findTasks(filters: FindTasksRepositoryInput['filters']) {
