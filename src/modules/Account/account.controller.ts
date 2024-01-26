@@ -9,6 +9,7 @@ import {
   Req,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import {
   CreateAccountControllerInput,
   AccessAccountControllerInput,
@@ -22,7 +23,7 @@ import { SessionService } from '../Session/session.service';
 import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
 import { CREDENTIALS_KEY } from 'src/utils/constants';
 
-@UseGuards(RolesGuard)
+@UseGuards(ThrottlerGuard, RolesGuard)
 @Controller('auth')
 export class AccountController {
   constructor(

@@ -13,6 +13,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { TaskService } from './task.service';
 import {
   CreateTaskInput,
@@ -23,6 +24,7 @@ import {
 import { CREDENTIALS_KEY } from 'src/utils/constants';
 import { RequirePermissions, Permissions, RolesGuard } from 'src/guards';
 
+@UseGuards(ThrottlerGuard)
 @Controller('tasks')
 export class TaskController {
   constructor(private taskService: TaskService) {}
