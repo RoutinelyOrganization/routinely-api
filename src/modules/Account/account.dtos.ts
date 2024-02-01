@@ -138,3 +138,15 @@ export class ChangePasswordRepositoryInput {
   password: string;
   accountId: string;
 }
+
+export class ValidateTokenInput {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  code: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  accountId: string;
+}
