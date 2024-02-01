@@ -21,6 +21,7 @@ import {
   NotFoundError,
   UnprocessableEntityError,
 } from 'src/config/exceptions';
+import { VerifyCodeInput } from '../PasswordToken/passwordToken.dtos';
 
 @Injectable()
 export class AccountService {
@@ -90,6 +91,17 @@ export class AccountService {
     // todo: logger ({ location: 'SRC:MODULES:ACCOUNT:ACCOUNT_SERVICE::CREATE_ACCOUNT' });
   }
 
+  async validateCode(verifyCodeInput: VerifyCodeInput) {
+    const result = await this.tokenService.verifyToken(verifyCodeInput);
+    if (!result) {
+      throw new NotFoundError({
+        message: 'Código inválido! - Tente novamente com um código diferente',
+      });
+    }
+
+    return result;
+  }
+
   async resetPassword(
     resetPasswordInput: ResetPasswordInput
   ): Promise<ResetPasswordOutput> {
@@ -128,24 +140,16 @@ export class AccountService {
   async changePassword(
     changePasswordInput: ChangePasswordInput
   ): Promise<void> {
-    const isValid = await this.tokenService.verifyToken({
-      code: changePasswordInput.code,
-      accountId: changePasswordInput.accountId,
-    });
-    if (isValid) {
-      const hashedPassword = await this.hashPassword(
-        changePasswordInput.password
-      );
-      await this.accountRepository.changePassword({
-        password: hashedPassword,
-        accountId: changePasswordInput.accountId,
-      });
+    const { accountId, password } = changePasswordInput;
 
-      await this.tokenService.deleteToken(changePasswordInput.accountId);
-    } else {
-      throw new AuthorizationError({ message: 'Código inválido' });
-    }
-    return;
+    const hashedPassword = await this.hashPassword(password);
+
+    await this.accountRepository.changePassword({
+      password: hashedPassword,
+      accountId,
+    });
+
+    await this.tokenService.deleteToken(accountId);
   }
 
   async accessAccount(
