@@ -1,3 +1,4 @@
+import { VerifyCodeInput } from './../PasswordToken/passwordToken.dtos';
 import { Request } from 'express';
 import {
   Controller,
@@ -7,6 +8,8 @@ import {
   UseGuards,
   HttpCode,
   Req,
+  Get,
+  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import {
@@ -123,11 +126,23 @@ export class AccountController {
   }
 
   @ApiTags('Password reset')
+  @Get('validatecode')
+  @RequirePermissions([Permissions['001']])
+  async validateCode(@Query() verifyCodeInput: VerifyCodeInput) {
+    try {
+      return await this.accountService.validateCode(verifyCodeInput);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  @ApiTags('Password reset')
   @Put('changepassword')
   @RequirePermissions([Permissions['001']])
   async changePassword(@Body() changePasswordInput: ChangePasswordInput) {
     try {
-      return await this.accountService.changePassword(changePasswordInput);
+      await this.accountService.changePassword(changePasswordInput);
+      return { message: 'Senha alterada com sucesso' };
     } catch (e) {
       throw e;
     }
