@@ -116,14 +116,8 @@ export class ResetPasswordOutput {
 export class ChangePasswordInput {
   @ApiProperty()
   @IsNotEmpty()
-  @IsStrongPassword()
+  @IsStrongPassword({minLength: 6})
   password: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsStrongPassword()
-  @IsEqualTo('password')
-  repeatPassword: string;
 
   @ApiProperty()
   @IsNotEmpty()
