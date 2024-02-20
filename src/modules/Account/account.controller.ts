@@ -19,6 +19,7 @@ import {
   ResetPasswordInput,
   ChangePasswordInput,
   DisconnectAccountControllerInput,
+  ValidateTokenInput,
 } from './account.dtos';
 import { AccountService } from './account.service';
 import { SessionService } from '../Session/session.service';
@@ -125,12 +126,13 @@ export class AccountController {
     }
   }
 
-  @ApiTags('Password reset')
-  @Get('validatecode')
+  @ApiTags('Validate code')
+  @Post('validatecode')
   @RequirePermissions([Permissions['001']])
-  async validateCode(@Query() verifyCodeInput: VerifyCodeInput) {
+  async validateCode(@Body() validateTokenInput: ValidateTokenInput) {
     try {
-      return await this.accountService.validateCode(verifyCodeInput);
+      await this.accountService.validateCode(validateTokenInput);
+      return {message: 'Validação bem-sucedida!'}
     } catch (e) {
       throw e;
     }
