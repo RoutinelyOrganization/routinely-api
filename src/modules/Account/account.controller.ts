@@ -1,4 +1,3 @@
-import { VerifyCodeInput } from './../PasswordToken/passwordToken.dtos';
 import { Request } from 'express';
 import {
   Controller,
@@ -8,8 +7,6 @@ import {
   UseGuards,
   HttpCode,
   Req,
-  Get,
-  Query,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import {
@@ -132,7 +129,7 @@ export class AccountController {
   async validateCode(@Body() validateTokenInput: ValidateTokenInput) {
     try {
       await this.accountService.validateCode(validateTokenInput);
-      return {message: 'Validação bem-sucedida!'}
+      return { message: 'Validação bem-sucedida!' };
     } catch (e) {
       throw e;
     }

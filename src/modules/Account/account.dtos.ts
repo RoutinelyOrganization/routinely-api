@@ -8,7 +8,6 @@ import {
   IsHexadecimal,
   IsString,
 } from 'class-validator';
-import { IsEqualTo } from 'src/utils/decorators/isEqualTo';
 import { responses } from 'src/config/responses';
 
 class AccountBaseDto {
@@ -116,7 +115,7 @@ export class ResetPasswordOutput {
 export class ChangePasswordInput {
   @ApiProperty()
   @IsNotEmpty()
-  @IsStrongPassword({minLength: 6})
+  @IsStrongPassword({ minLength: 6 })
   password: string;
 
   @ApiProperty()
