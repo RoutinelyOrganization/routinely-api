@@ -277,7 +277,6 @@ describe('AccountService Unit Tests', () => {
     const changePasswordInput = {
       code: '123789',
       password: 'new_password',
-      repeatPassword: 'new_password',
       accountId: faker.string.uuid(),
     };
     jest.spyOn(tokenServiceMock, 'verifyToken').mockResolvedValue(true);
