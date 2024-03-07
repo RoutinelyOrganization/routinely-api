@@ -17,6 +17,7 @@ import {
   ResetPasswordInput,
   ChangePasswordInput,
   DisconnectAccountControllerInput,
+  ValidateTokenInput,
 } from './account.dtos';
 import { AccountService } from './account.service';
 import { SessionService } from '../Session/session.service';
@@ -123,12 +124,25 @@ export class AccountController {
     }
   }
 
+  @ApiTags('Validate code')
+  @Post('validatecode')
+  @RequirePermissions([Permissions['001']])
+  async validateCode(@Body() validateTokenInput: ValidateTokenInput) {
+    try {
+      await this.accountService.validateCode(validateTokenInput);
+      return { message: 'Validação bem-sucedida!' };
+    } catch (e) {
+      throw e;
+    }
+  }
+
   @ApiTags('Password reset')
   @Put('changepassword')
   @RequirePermissions([Permissions['001']])
   async changePassword(@Body() changePasswordInput: ChangePasswordInput) {
     try {
-      return await this.accountService.changePassword(changePasswordInput);
+      await this.accountService.changePassword(changePasswordInput);
+      return { message: 'Senha alterada com sucesso' };
     } catch (e) {
       throw e;
     }
