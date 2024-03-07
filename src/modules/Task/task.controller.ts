@@ -10,15 +10,21 @@ import {
   Delete,
   HttpCode,
   Get,
-  ParseIntPipe,
   Query,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { TaskService } from './task.service';
-import { CreateTaskInput, UpdateTaskInput } from './task.dtos';
+import {
+  CreateTaskInput,
+  TaskIdDto,
+  FindTasksControllerDto,
+  UpdateTaskInput,
+} from './task.dtos';
 import { CREDENTIALS_KEY } from 'src/utils/constants';
 import { RequirePermissions, Permissions, RolesGuard } from 'src/guards';
 
+@UseGuards(ThrottlerGuard)
 @Controller('tasks')
 export class TaskController {
   constructor(private taskService: TaskService) {}
@@ -40,22 +46,22 @@ export class TaskController {
 
   @ApiTags('Tasks')
   @ApiBearerAuth()
-  @Put(':id')
+  @Put('/:id')
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['302']])
   async updateById(
-    @Param('id') id: string,
+    @Param() input: TaskIdDto,
     @Body() updateTaskInput: UpdateTaskInput,
     @Req() req: Request
   ) {
     const cred = req[CREDENTIALS_KEY];
 
-    const accountId = await this.taskService.getAccountById(id);
+    const accountId = await this.taskService.getAccountById(input.id);
 
     // Authorization
     if (accountId != cred.accountId) throw new ForbiddenException();
 
-    const updatedTask = await this.taskService.updateById(id, {
+    const updatedTask = await this.taskService.updateById(input.id, {
       ...updateTaskInput,
       accountId: cred.accountId,
     });
@@ -65,19 +71,19 @@ export class TaskController {
 
   @ApiTags('Tasks')
   @ApiBearerAuth()
-  @Delete(':id')
+  @Delete('/:id')
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['303']])
   @HttpCode(200)
-  async deleteById(@Param('id') id: string, @Req() req: Request) {
+  async deleteById(@Param() input: TaskIdDto, @Req() req: Request) {
     const cred = req[CREDENTIALS_KEY];
 
-    const accountId = await this.taskService.getAccountById(id);
+    const accountId = await this.taskService.getAccountById(input.id);
 
     // Authorization
     if (accountId != cred.accountId) throw new ForbiddenException();
 
-    await this.taskService.deleteById(id);
+    await this.taskService.deleteById(input.id);
     return;
   }
 
@@ -88,15 +94,29 @@ export class TaskController {
   @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['301']])
   async accountTasks(
-    @Query('month', ParseIntPipe) month: number,
-    @Query('year', ParseIntPipe) year: number,
+    @Query() input: FindTasksControllerDto,
     @Req() request: Request
   ) {
     const { accountId } = request[CREDENTIALS_KEY];
 
     return await this.taskService.findAccountTasks({
-      month,
-      year,
+      month: input.month,
+      year: input.year,
+      accountId,
+    });
+  }
+
+  @ApiTags('Tasks')
+  @ApiBearerAuth()
+  @Get('/:id')
+  @HttpCode(200)
+  @UseGuards(RolesGuard)
+  @RequirePermissions([Permissions['301']])
+  async getATaskInfo(@Param() input: TaskIdDto, @Req() request: Request) {
+    const { accountId } = request[CREDENTIALS_KEY];
+
+    return await this.taskService.findTaskByid({
+      taskId: input.id,
       accountId,
     });
   }

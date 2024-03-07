@@ -1,6 +1,15 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
-import { IsDateString, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsDateString,
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  Max,
+  Min,
+} from 'class-validator';
 import { TaskPriorities, TaskTags, TaskCategories } from '@prisma/client';
+import { Transform } from 'class-transformer';
 
 export class CreateTaskInput {
   @ApiProperty()
@@ -65,4 +74,30 @@ export class FindTasksServiceInput {
   month: number;
   year: number;
   accountId: string;
+}
+
+export class FindTasksControllerDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform((params) => Number(params.value))
+  @IsNumber()
+  @Min(1)
+  @Max(12)
+  month: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform((params) => Number(params.value))
+  @IsNumber()
+  @Min(2023)
+  year: number;
+}
+
+export class TaskIdDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @Transform((params) => Number(params.value))
+  @IsNumber()
+  @Min(1)
+  id: number;
 }

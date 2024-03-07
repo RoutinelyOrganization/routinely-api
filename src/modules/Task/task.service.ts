@@ -40,7 +40,7 @@ export class TaskService {
     return { ...createdTask, hour: responseHour, date: responseDate };
   }
 
-  async updateById(id: string, updateTaskInput: UpdateTaskInput) {
+  async updateById(id: number, updateTaskInput: UpdateTaskInput) {
     const taskExist = await this.repository.findById(id);
     if (taskExist === null) throw new UnprocessableEntityError({});
 
@@ -65,11 +65,11 @@ export class TaskService {
     return { ...updatedTask, hour: responseHour, date: responseDate };
   }
 
-  async deleteById(id: string) {
+  async deleteById(id: number) {
     return await this.repository.deleteById(id);
   }
 
-  async getAccountById(id: string) {
+  async getAccountById(id: number) {
     return await this.repository.findAccountByTaskId(id);
   }
 
@@ -94,5 +94,17 @@ export class TaskService {
 
     const tasks = await this.repository.findTasks(filters);
     return tasks;
+  }
+
+  async findTaskByid(input: { taskId: number; accountId: string }) {
+    const task = await this.repository.findUserTaskById(input.taskId);
+
+    if (task && task.accountId === input.accountId) {
+      return task;
+    }
+
+    return {
+      message: 'Nada encontrado',
+    };
   }
 }
