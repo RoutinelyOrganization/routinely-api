@@ -140,9 +140,20 @@ export class AccountService {
   async changePassword(
     changePasswordInput: ChangePasswordInput
   ): Promise<void> {
-    const { accountId, password } = changePasswordInput;
+    const { accountId, password, code } = changePasswordInput;
 
     const hashedPassword = await this.hashPassword(password);
+
+    const isValid = await this.tokenService.verifyToken({
+      code,
+      accountId,
+    });
+
+    if (!isValid) {
+      throw new AuthorizationError({
+        message: 'Código inválido',
+      });
+    }
 
     await this.accountRepository.changePassword({
       password: hashedPassword,
