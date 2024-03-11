@@ -1,123 +1,56 @@
 import {
-  Controller,
-  Post,
-  Put,
   Body,
-  Req,
-  UseGuards,
-  Param,
-  ForbiddenException,
+  Controller,
   Delete,
-  HttpCode,
   Get,
-  Query,
+  HttpCode,
+  Patch,
+  Post,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { ApiTags } from '@nestjs/swagger';
+import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
+import { CreateOneDto } from './task.dto';
+import { AccountId } from 'src/utils/decorators/accountid.decorator';
 import { TaskService } from './task.service';
-import {
-  CreateTaskInput,
-  TaskIdDto,
-  FindTasksControllerDto,
-  UpdateTaskInput,
-} from './task.dtos';
-import { CREDENTIALS_KEY } from 'src/utils/constants';
-import { RequirePermissions, Permissions, RolesGuard } from 'src/guards';
 
-@UseGuards(ThrottlerGuard)
-@Controller('tasks')
+@ApiTags('Tarefas')
+@UseGuards(RolesGuard)
+@Controller('/tasks')
 export class TaskController {
-  constructor(private taskService: TaskService) {}
+  constructor(private readonly taskService: TaskService) {}
 
-  @ApiTags('Tasks')
-  @ApiBearerAuth()
   @Post()
-  @UseGuards(RolesGuard)
-  @RequirePermissions([Permissions['301']])
-  async create(@Body() createTaskInput: CreateTaskInput, @Req() req: Request) {
-    const cred = req[CREDENTIALS_KEY];
-
-    const createdTask = await this.taskService.create({
-      ...createTaskInput,
-      accountId: cred.accountId,
-    });
-    return createdTask;
-  }
-
-  @ApiTags('Tasks')
-  @ApiBearerAuth()
-  @Put('/:id')
-  @UseGuards(RolesGuard)
-  @RequirePermissions([Permissions['302']])
-  async updateById(
-    @Param() input: TaskIdDto,
-    @Body() updateTaskInput: UpdateTaskInput,
-    @Req() req: Request
-  ) {
-    const cred = req[CREDENTIALS_KEY];
-
-    const accountId = await this.taskService.getAccountById(input.id);
-
-    // Authorization
-    if (accountId != cred.accountId) throw new ForbiddenException();
-
-    const updatedTask = await this.taskService.updateById(input.id, {
-      ...updateTaskInput,
-      accountId: cred.accountId,
+  @HttpCode(201)
+  @RequirePermissions([Permissions['300']])
+  async createOne(@Body() input: CreateOneDto, @AccountId() accountId: string) {
+    await this.taskService.saveOne({
+      ...input,
+      accountId: accountId,
     });
 
-    return updatedTask;
+    return {
+      message: 'Tarefa criada com sucesso!',
+    };
   }
 
-  @ApiTags('Tasks')
-  @ApiBearerAuth()
-  @Delete('/:id')
-  @UseGuards(RolesGuard)
-  @RequirePermissions([Permissions['303']])
-  @HttpCode(200)
-  async deleteById(@Param() input: TaskIdDto, @Req() req: Request) {
-    const cred = req[CREDENTIALS_KEY];
-
-    const accountId = await this.taskService.getAccountById(input.id);
-
-    // Authorization
-    if (accountId != cred.accountId) throw new ForbiddenException();
-
-    await this.taskService.deleteById(input.id);
-    return;
-  }
-
-  @ApiTags('Tasks')
-  @ApiBearerAuth()
   @Get()
-  @HttpCode(200)
-  @UseGuards(RolesGuard)
-  @RequirePermissions([Permissions['301']])
-  async accountTasks(
-    @Query() input: FindTasksControllerDto,
-    @Req() request: Request
-  ) {
-    const { accountId } = request[CREDENTIALS_KEY];
-
-    return await this.taskService.findAccountTasks({
-      month: input.month,
-      year: input.year,
-      accountId,
-    });
+  async readMany() {
+    return { message: 'Ler muitos' };
   }
 
-  @ApiTags('Tasks')
-  @ApiBearerAuth()
   @Get('/:id')
-  @HttpCode(200)
-  @UseGuards(RolesGuard)
-  @RequirePermissions([Permissions['301']])
-  async getATaskInfo(@Param() input: TaskIdDto, @Req() request: Request) {
-    const { accountId } = request[CREDENTIALS_KEY];
+  async readOne() {
+    return { message: 'Ler um' };
+  }
 
-    return await this.taskService.findTaskByid({
-      taskId: input.id,
-      accountId,
-    });
+  @Patch('/:id')
+  async updateOne() {
+    return { message: 'Editar um' };
+  }
+
+  @Delete('/:id')
+  async deleteOne() {
+    return { message: 'Deletar um' };
   }
 }

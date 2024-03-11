@@ -1,112 +1,38 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { InternalServerError } from 'src/config/exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
-import {
-  CreateTaskInput,
-  FindTasksRepositoryInput,
-  UpdateTaskInput,
-} from './task.dtos';
+import type { InsertOneInput } from './task.types';
 
 @Injectable()
 export class TaskRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createTaskInput: CreateTaskInput) {
-    return await this.prisma.task.create({
-      data: {
-        date: createTaskInput.date,
-        hour: createTaskInput.hour,
-        description: createTaskInput.description,
-        name: createTaskInput.name,
-        priority: createTaskInput.priority,
-        tag: createTaskInput.tag,
-        category: createTaskInput.category,
-        accountId: createTaskInput.accountId,
-      },
-    });
-  }
-
-  async updateById(id: number, updateTaskInput: UpdateTaskInput) {
-    return await this.prisma.task.update({
-      where: {
-        id: id,
-      },
-      data: updateTaskInput,
-    });
-  }
-
-  async findById(id: number) {
-    return await this.prisma.task.findUnique({
-      where: {
-        id: id,
-      },
-    });
-  }
-
-  async deleteById(id: number) {
-    return await this.prisma.task.delete({
-      where: {
-        id: id,
-      },
-    });
-  }
-
-  async findAccountByTaskId(id: number) {
-    const accountId = await this.prisma.task
-      .findUnique({
-        where: {
-          id: id,
-        },
-        select: {
-          accountId: true,
+  async insertOne(input: InsertOneInput): Promise<void> {
+    await this.prismaService.task
+      .create({
+        data: {
+          name: input.name,
+          description: input.description,
+          date: input.date,
+          tag: input.tag,
+          priority: input.priority,
+          category: input.category,
+          account: {
+            connect: {
+              id: input.accountId,
+            },
+          },
         },
       })
-      .then((result) => {
-        return result?.accountId;
+      .catch((error: unknown) => {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new InternalServerError({
+            message: 'Erro desconhecido :: '.concat(error.code),
+          });
+        }
+
+        throw new InternalServerError({});
       });
-
-    return accountId;
-  }
-
-  async findTasks(filters: FindTasksRepositoryInput['filters']) {
-    const tasks = await this.prisma.task.findMany({
-      where: {
-        AND: filters,
-      },
-      select: {
-        id: true,
-        name: true,
-        date: true,
-        hour: true,
-        tag: true,
-        priority: true,
-        category: true,
-        description: true,
-        checked: true,
-      },
-    });
-
-    return tasks;
-  }
-
-  async findUserTaskById(taskId: number) {
-    const task = await this.prisma.task.findUnique({
-      where: {
-        id: taskId,
-      },
-      select: {
-        id: true,
-        name: true,
-        date: true,
-        hour: true,
-        tag: true,
-        priority: true,
-        category: true,
-        description: true,
-        checked: true,
-        accountId: true,
-      },
-    });
-
-    return task;
   }
 }
