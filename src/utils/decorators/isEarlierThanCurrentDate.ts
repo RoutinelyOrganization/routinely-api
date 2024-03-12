@@ -1,4 +1,5 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
+import { TimezonePtBR } from 'src/config/constants';
 
 export function IsEarlierThanCurrentDate(
   property: string,
@@ -6,7 +7,7 @@ export function IsEarlierThanCurrentDate(
 ) {
   return function (object: object, propertyName: string) {
     registerDecorator({
-      name: 'isEarlierDateThan',
+      name: 'isEarlierThanCurrentDate',
       target: object.constructor,
       propertyName: propertyName,
       constraints: [property],
@@ -15,7 +16,7 @@ export function IsEarlierThanCurrentDate(
         validate(value: any) {
           try {
             const now = new Date().getTime();
-            const input = new Date(value.concat(' GMT-0300')).getTime();
+            const input = new Date(value.concat(' ', TimezonePtBR)).getTime();
 
             return now < input;
           } catch (_) {
