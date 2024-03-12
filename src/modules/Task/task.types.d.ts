@@ -19,6 +19,16 @@ export type GetOneInput = {
   id: string;
 };
 
+export type UpdateInput = Partial<
+  Pick<
+    Task,
+    'name' | 'description' | 'tag' | 'priority' | 'category' | 'checked'
+  >
+> &
+  Pick<Task, 'id' | 'accountId'> & {
+    date?: string | undefined;
+  };
+
 // Repository
 export type InsertOneInput = Pick<
   Task,
@@ -31,7 +41,7 @@ export type InsertOneInput = Pick<
   | 'accountId'
 >;
 
-export type FindOneInput = Task['id'];
+export type TaskId = Task['id'];
 
 export type FindOneOutput = Pick<
   Task,
@@ -56,3 +66,17 @@ export type FindManyInput = {
 };
 
 export type FindManyOutput = Array<FindOneOutput>;
+
+export type UpdateOneInput = Partial<
+  Pick<
+    Task,
+    | 'name'
+    | 'description'
+    | 'tag'
+    | 'priority'
+    | 'category'
+    | 'checked'
+    | 'date'
+  >
+> &
+  Pick<Task, 'id'>;

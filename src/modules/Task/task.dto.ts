@@ -1,10 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { TaskCategories, TaskPriorities, TaskTags } from '@prisma/client';
 import {
+  IsBoolean,
   IsDateString,
   IsEnum,
+  IsInt,
   IsNotEmpty,
   IsNumberString,
+  IsOptional,
   IsString,
   Matches,
   MaxLength,
@@ -72,4 +75,16 @@ export class ReadOneDto {
   @IsNotEmpty({ message: responses.notEmpty })
   @IsNumberString({ no_symbols: true }, { message: responses.integer })
   id: string;
+}
+
+export class UpdateOneDto extends PartialType(CreateOneDto) {
+  @ApiProperty({ example: 1 })
+  @IsNotEmpty({ message: responses.notEmpty })
+  @IsInt({ message: responses.integer })
+  id: number;
+
+  @ApiProperty({ example: false })
+  @IsBoolean({ message: responses.boolean })
+  @IsOptional()
+  checked: boolean;
 }

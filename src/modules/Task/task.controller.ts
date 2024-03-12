@@ -12,7 +12,12 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
-import { CreateOneDto, ReadManyDto, ReadOneDto } from './task.dto';
+import {
+  CreateOneDto,
+  ReadManyDto,
+  ReadOneDto,
+  UpdateOneDto,
+} from './task.dto';
 import { AccountId } from 'src/utils/decorators/accountid.decorator';
 import { TaskService } from './task.service';
 
@@ -71,9 +76,25 @@ export class TaskController {
     };
   }
 
-  @Patch('/:id')
-  async updateOne() {
-    return { message: 'Editar um' };
+  @Patch()
+  @HttpCode(200)
+  @RequirePermissions([Permissions['302']])
+  async updateOne(@Body() input: UpdateOneDto, @AccountId() accountId: string) {
+    await this.taskService.update({
+      id: input.id,
+      accountId: accountId,
+      name: input.name,
+      description: input.description,
+      date: input.date,
+      priority: input.priority,
+      category: input.category,
+      tag: input.tag,
+      checked: input.checked,
+    });
+
+    return {
+      updated: true,
+    };
   }
 
   @Delete('/:id')

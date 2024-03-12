@@ -4,16 +4,26 @@ import type {
   GetManyInput,
   GetOneInput,
   SaveOneInput,
+  UpdateInput,
 } from './task.types';
 import { TaskRepository } from './task.repository';
 import { TimezonePtBR } from 'src/config/constants';
+import {
+  DataValidationError,
+  NotFoundError,
+  UnprocessableEntityError,
+} from 'src/config/exceptions';
 
 @Injectable()
 export class TaskService {
   constructor(private readonly taskRepository: TaskRepository) {}
 
+  private transformDate(date: string): Date {
+    return new Date(date.concat(' ', TimezonePtBR));
+  }
+
   async saveOne(input: SaveOneInput) {
-    const localeDate = new Date((<string>input.date).concat(' ', TimezonePtBR));
+    const localeDate = this.transformDate(input.date);
 
     await this.taskRepository.insertOne({
       ...input,
@@ -49,5 +59,50 @@ export class TaskService {
     const task = isOwner ? (delete result.accountId, result) : null;
 
     return task;
+  }
+
+  async update(input: UpdateInput) {
+    if (
+      !input.name &&
+      !input.description &&
+      !input.date &&
+      !input.tag &&
+      !input.priority &&
+      !input.category &&
+      !input.checked
+    ) {
+      throw new DataValidationError({
+        message: 'Modifique ao menos uma informação',
+      });
+    }
+
+    const currentAccountId = await this.taskRepository.findAccountIdByTaskId(
+      input.id
+    );
+
+    if (!currentAccountId) {
+      throw new NotFoundError({
+        message: 'Tarefa (id: ' + String(input.id) + ') não foi encontrada.',
+      });
+    }
+
+    const isOwner = currentAccountId === input.accountId;
+
+    if (!isOwner) {
+      throw new UnprocessableEntityError({});
+    }
+
+    const date = input.date && this.transformDate(<string>input.date);
+
+    await this.taskRepository.updateOne({
+      id: input.id,
+      name: input.name ?? undefined,
+      description: input.description ?? undefined,
+      date: date ?? undefined,
+      tag: input.tag ?? undefined,
+      priority: input.priority ?? undefined,
+      category: input.category ?? undefined,
+      checked: input.checked ?? undefined,
+    });
   }
 }

@@ -5,9 +5,10 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import type {
   FindManyInput,
   FindManyOutput,
-  FindOneInput,
   FindOneOutput,
   InsertOneInput,
+  TaskId,
+  UpdateOneInput,
 } from './task.types';
 
 @Injectable()
@@ -92,7 +93,7 @@ export class TaskRepository {
       });
   }
 
-  async findOne(taskId: FindOneInput): Promise<FindOneOutput> {
+  async findOne(taskId: TaskId): Promise<FindOneOutput> {
     return await this.prismaService.task
       .findUnique({
         where: {
@@ -111,6 +112,65 @@ export class TaskRepository {
         },
       })
       .catch((error: unknown) => {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new InternalServerError({
+            message: 'Erro desconhecido :: '.concat(error.code),
+          });
+        }
+
+        throw new InternalServerError({});
+      });
+  }
+
+  async findAccountIdByTaskId(taskId: TaskId): Promise<string | null> {
+    return await this.prismaService.task
+      .findUniqueOrThrow({
+        where: {
+          id: taskId,
+        },
+        select: {
+          accountId: true,
+        },
+      })
+      .then((response) => {
+        return response.accountId ?? null;
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === 'P2025') {
+            return null;
+          }
+
+          throw new InternalServerError({
+            message: 'Erro desconhecido :: '.concat(error.code),
+          });
+        }
+
+        throw new InternalServerError({});
+      });
+  }
+
+  async updateOne(input: UpdateOneInput) {
+    await this.prismaService.task
+      .update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          description: input.description,
+          date: input.date,
+          tag: input.tag,
+          priority: input.priority,
+          category: input.category,
+          checked: input.checked,
+        },
+        select: {
+          id: true,
+        },
+      })
+      .catch((error: unknown) => {
+        console.log(error);
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
           throw new InternalServerError({
             message: 'Erro desconhecido :: '.concat(error.code),
