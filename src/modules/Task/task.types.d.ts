@@ -1,4 +1,4 @@
-import { Task } from '@prisma/client';
+import { Account, Task } from '@prisma/client';
 
 // Service
 export type SaveOneInput = Pick<
@@ -9,9 +9,14 @@ export type SaveOneInput = Pick<
 };
 
 export type GetManyInput = {
-  accountId: string;
+  accountId: Account['id'];
   month: string;
   year: string;
+};
+
+export type GetOneInput = {
+  accountId: Account['id'];
+  id: string;
 };
 
 // Repository
@@ -26,6 +31,22 @@ export type InsertOneInput = Pick<
   | 'accountId'
 >;
 
+export type FindOneInput = Task['id'];
+
+export type FindOneOutput = Pick<
+  Task,
+  | 'id'
+  | 'name'
+  | 'description'
+  | 'tag'
+  | 'priority'
+  | 'category'
+  | 'date'
+  | 'checked'
+> & {
+  accountId?: Account['id'];
+};
+
 export type FindManyInput = {
   accountId: string;
   dateRange: {
@@ -34,16 +55,4 @@ export type FindManyInput = {
   };
 };
 
-export type FindManyOutput = Array<
-  Pick<
-    Task,
-    | 'id'
-    | 'name'
-    | 'description'
-    | 'tag'
-    | 'priority'
-    | 'category'
-    | 'date'
-    | 'checked'
-  >
->;
+export type FindManyOutput = Array<FindOneOutput>;

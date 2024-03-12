@@ -5,6 +5,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import type {
   FindManyInput,
   FindManyOutput,
+  FindOneInput,
+  FindOneOutput,
   InsertOneInput,
 } from './task.types';
 
@@ -78,6 +80,35 @@ export class TaskRepository {
       })
       .then((response) => {
         return response ?? [];
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new InternalServerError({
+            message: 'Erro desconhecido :: '.concat(error.code),
+          });
+        }
+
+        throw new InternalServerError({});
+      });
+  }
+
+  async findOne(taskId: FindOneInput): Promise<FindOneOutput> {
+    return await this.prismaService.task
+      .findUnique({
+        where: {
+          id: taskId,
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          date: true,
+          tag: true,
+          priority: true,
+          category: true,
+          checked: true,
+          accountId: true,
+        },
       })
       .catch((error: unknown) => {
         if (error instanceof Prisma.PrismaClientKnownRequestError) {

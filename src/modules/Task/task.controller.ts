@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  Param,
   Patch,
   Post,
   Query,
@@ -11,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
-import { CreateOneDto, ReadManyDto } from './task.dto';
+import { CreateOneDto, ReadManyDto, ReadOneDto } from './task.dto';
 import { AccountId } from 'src/utils/decorators/accountid.decorator';
 import { TaskService } from './task.service';
 
@@ -57,8 +58,17 @@ export class TaskController {
   }
 
   @Get('/:id')
-  async readOne() {
-    return { message: 'Ler um' };
+  @HttpCode(200)
+  @RequirePermissions([Permissions['301']])
+  async readOne(@Param() input: ReadOneDto, @AccountId() accountId: string) {
+    const task = await this.taskService.getOne({
+      accountId: accountId,
+      id: input.id,
+    });
+
+    return {
+      task: task,
+    };
   }
 
   @Patch('/:id')

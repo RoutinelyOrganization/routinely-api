@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import type { FindManyOutput, GetManyInput, SaveOneInput } from './task.types';
+import type {
+  FindManyOutput,
+  GetManyInput,
+  GetOneInput,
+  SaveOneInput,
+} from './task.types';
 import { TaskRepository } from './task.repository';
 import { TimezonePtBR } from 'src/config/constants';
 
@@ -35,5 +40,14 @@ export class TaskService {
     });
 
     return result;
+  }
+
+  async getOne(input: GetOneInput) {
+    const taskId = Number(input.id);
+    const result = await this.taskRepository.findOne(taskId);
+    const isOwner = result && result.accountId === input.accountId;
+    const task = isOwner ? (delete result.accountId, result) : null;
+
+    return task;
   }
 }

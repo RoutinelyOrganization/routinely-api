@@ -66,3 +66,10 @@ export class ReadManyDto {
   @Matches(YearRegex, { message: responses.yearPattern })
   year: string;
 }
+
+export class ReadOneDto {
+  @ApiProperty({ example: 1 })
+  @IsNotEmpty({ message: responses.notEmpty })
+  @IsNumberString({ no_symbols: true }, { message: responses.integer })
+  id: string;
+}
