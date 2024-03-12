@@ -88,3 +88,5 @@ export class UpdateOneDto extends PartialType(CreateOneDto) {
   @IsOptional()
   checked: boolean;
 }
+
+export class DeleteOneDto extends ReadOneDto {}

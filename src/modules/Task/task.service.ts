@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type {
+  ExcludeOneInput,
   FindManyOutput,
   GetManyInput,
   GetOneInput,
@@ -104,5 +105,27 @@ export class TaskService {
       category: input.category ?? undefined,
       checked: input.checked ?? undefined,
     });
+  }
+
+  async excludeOne(input: ExcludeOneInput) {
+    const taskId = Number(input.id);
+
+    const currentAccountId = await this.taskRepository.findAccountIdByTaskId(
+      taskId
+    );
+
+    if (!currentAccountId) {
+      throw new NotFoundError({
+        message: 'Tarefa (id: ' + String(input.id) + ') não foi encontrada.',
+      });
+    }
+
+    const isOwner = currentAccountId === input.accountId;
+
+    if (!isOwner) {
+      throw new UnprocessableEntityError({});
+    }
+
+    await this.taskRepository.deleteOne(taskId);
   }
 }

@@ -180,4 +180,26 @@ export class TaskRepository {
         throw new InternalServerError({});
       });
   }
+
+  async deleteOne(taskId: TaskId) {
+    await this.prismaService.task
+      .delete({
+        where: {
+          id: taskId,
+        },
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === 'P2025') {
+            return null;
+          }
+
+          throw new InternalServerError({
+            message: 'Erro desconhecido :: '.concat(error.code),
+          });
+        }
+
+        throw new InternalServerError({});
+      });
+  }
 }

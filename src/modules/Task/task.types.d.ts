@@ -19,6 +19,8 @@ export type GetOneInput = {
   id: string;
 };
 
+export type ExcludeOneInput = GetOneInput;
+
 export type UpdateInput = Partial<
   Pick<
     Task,
@@ -80,3 +82,5 @@ export type UpdateOneInput = Partial<
   >
 > &
   Pick<Task, 'id'>;
+
+export type DeleteOneInput = Pick<Task, 'id' | 'accountId'>;

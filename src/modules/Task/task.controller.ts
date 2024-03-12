@@ -14,6 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
 import {
   CreateOneDto,
+  DeleteOneDto,
   ReadManyDto,
   ReadOneDto,
   UpdateOneDto,
@@ -98,7 +99,19 @@ export class TaskController {
   }
 
   @Delete('/:id')
-  async deleteOne() {
-    return { message: 'Deletar um' };
+  @HttpCode(200)
+  @RequirePermissions([Permissions['303']])
+  async deleteOne(
+    @Param() input: DeleteOneDto,
+    @AccountId() accountId: string
+  ) {
+    await this.taskService.excludeOne({
+      id: input.id,
+      accountId: accountId,
+    });
+
+    return {
+      deleted: true,
+    };
   }
 }
