@@ -6,11 +6,12 @@ import {
   HttpCode,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
-import { CreateOneDto } from './task.dto';
+import { CreateOneDto, ReadManyDto } from './task.dto';
 import { AccountId } from 'src/utils/decorators/accountid.decorator';
 import { TaskService } from './task.service';
 
@@ -25,7 +26,12 @@ export class TaskController {
   @RequirePermissions([Permissions['300']])
   async createOne(@Body() input: CreateOneDto, @AccountId() accountId: string) {
     await this.taskService.saveOne({
-      ...input,
+      name: input.name,
+      description: input.description,
+      date: input.date,
+      tag: input.tag,
+      priority: input.priority,
+      category: input.category,
       accountId: accountId,
     });
 
@@ -35,8 +41,19 @@ export class TaskController {
   }
 
   @Get()
-  async readMany() {
-    return { message: 'Ler muitos' };
+  @HttpCode(200)
+  @RequirePermissions([Permissions['301']])
+  async readMany(@Query() input: ReadManyDto, @AccountId() accountId: string) {
+    const tasks = await this.taskService.getMany({
+      accountId: accountId,
+      month: input.month,
+      year: input.year,
+    });
+
+    return {
+      count: tasks.length,
+      tasks: tasks,
+    };
   }
 
   @Get('/:id')

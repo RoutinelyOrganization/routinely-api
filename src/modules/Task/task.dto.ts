@@ -4,13 +4,15 @@ import {
   IsDateString,
   IsEnum,
   IsNotEmpty,
+  IsNumberString,
   IsString,
   Matches,
   MaxLength,
 } from 'class-validator';
-import { DateRegex } from 'src/config/constants';
+import { DateRegex, MonthRegex, YearRegex } from 'src/config/constants';
 import { responses } from 'src/config/responses';
 import { IsEarlierThanCurrentDate } from 'src/utils/decorators/isEarlierThanCurrentDate';
+import { IsValidMonth } from 'src/utils/decorators/isValidMonth';
 
 export class CreateOneDto {
   @ApiProperty({ example: 'Uma atividade normal' })
@@ -50,4 +52,17 @@ export class CreateOneDto {
   @IsString({ message: responses.string })
   @IsEnum(TaskCategories, { message: responses.enum })
   category: TaskCategories;
+}
+
+export class ReadManyDto {
+  @ApiProperty({ example: '03' })
+  @IsNumberString({ no_symbols: true }, { message: responses.monthPattern })
+  @Matches(MonthRegex, { message: responses.monthPattern })
+  @IsValidMonth('month', { message: responses.monthPattern })
+  month: string;
+
+  @ApiProperty({ example: '2024' })
+  @IsNumberString({ no_symbols: true }, { message: responses.yearPattern })
+  @Matches(YearRegex, { message: responses.yearPattern })
+  year: string;
 }
