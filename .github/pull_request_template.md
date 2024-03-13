@@ -1,35 +1,41 @@
 # :octocat: Mudança
-<!--
-# 🛃 RECOMENDAÇÕES
-# - Crie PRs pequenos;
-# - Forneça testes para as alterações
-# - Use o padrão de commit convencional
-# - Atualize todas as documentações necessárias
- -->
 
-**Tipo de PR:**
-<!-- Marque todos os necessários -->
-- [ ] Bug fix
-- [ ] Documentation
-- [ ] Feature
-- [ ] Refactor
-- [ ] Tests (E2E)
-- [ ] Tests (unit)
+RECOMENDAÇÕES
 
-**:pushpin: Objetivo:**
-<!-- Descreva aqui o objetivo das alterações. -->
+- Crie PRs pequenos;
+- Forneça testes para as alterações
+- Use o padrão de commit convencional
+- tualize todas as documentações necessárias
 
-**:newspaper: Alterações:**
+## Tipo de PR
+
+Marque todos os necessários
+
+- [ ] Bug fix: Conserta uma fucionalidade
+- [ ] Documentation: Altera a documentação
+- [ ] Feature: Adiciona novas funcionalidades
+- [ ] Refactor: Altera o código sem alterar a funcionalidade
+- [ ] Tests E2E: Simula requisições
+- [ ] Tests unit: Comportamento dos métodos
+
+## 🎯 Objetivo
+<!-- Descreva o objetivo das alterações. -->
+
+## Alterações
 <!-- Liste todas as mudanças feitas. -->
 
-**:pencil: Requisitos de aceite:**
+## Requisitos de aceite
 <!-- Quais os pontos de validação do que foi feito? -->
 
-**:construction: Testes:**
+## Testes
 <!-- Adicionou testes e2e/unitários? -->
 
-**:triangular_flag_on_post: Tarefas pós-implantação:**
-<!--
-# O que precisamos fazer após baixar a branch para teste?
-# - Dependências, variáveis de ambiente, etc...
--->
+## Tarefas pós-implantação
+<!-- Algo precisa ser feito após implanter a branch? -->
+
+## 🛃 Para controle
+
+- [ ] Testei as mudanças
+- [ ] Atendeu aos [requisitos de aceite](#requisitos-de-aceite)
+- [ ] Está sincronizada com a _branch **develop**_
+- [ ] Conflitos de _branches_ resolvidos
