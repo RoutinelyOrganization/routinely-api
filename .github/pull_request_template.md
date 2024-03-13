@@ -1,11 +1,12 @@
-# :octocat: Mudança
+# Mudanças
 
-> [!note]\
+<!--
 > RECOMENDAÇÕES
 > - Crie PRs pequenos;
 > - Forneça testes para as alterações;
 > - Use o padrão de commit convencional;
 > - tualize todas as documentações necessárias;
+-->
 
 ## Tipo de PR
 
