@@ -1,22 +1,22 @@
 # :octocat: Mudança
 
-RECOMENDAÇÕES
-
-- Crie PRs pequenos;
-- Forneça testes para as alterações
-- Use o padrão de commit convencional
-- tualize todas as documentações necessárias
+> [!note]\
+> RECOMENDAÇÕES
+> - Crie PRs pequenos;
+> - Forneça testes para as alterações;
+> - Use o padrão de commit convencional;
+> - tualize todas as documentações necessárias;
 
 ## Tipo de PR
 
 Marque todos os necessários
 
-- [ ] Bug fix: Conserta uma fucionalidade
-- [ ] Documentation: Altera a documentação
-- [ ] Feature: Adiciona novas funcionalidades
-- [ ] Refactor: Altera o código sem alterar a funcionalidade
-- [ ] Tests E2E: Simula requisições
-- [ ] Tests unit: Comportamento dos métodos
+- [ ] Bug fix <!-- Conserta uma fucionalidade -->
+- [ ] Documentation <!-- Altera a documentação -->
+- [ ] Feature <!-- Adiciona novas funcionalidades -->
+- [ ] Refactor <!-- Altera o código sem alterar a funcionalidade -->
+- [ ] Tests E2E <!-- Simula requisições -->
+- [ ] Tests unit <!-- Comportamento dos métodos -->
 
 ## 🎯 Objetivo
 <!-- Descreva o objetivo das alterações. -->
@@ -38,4 +38,4 @@ Marque todos os necessários
 - [ ] Testei as mudanças
 - [ ] Atendeu aos [requisitos de aceite](#requisitos-de-aceite)
 - [ ] Está sincronizada com a _branch **develop**_
-- [ ] Conflitos de _branches_ resolvidos
+- [ ] Conflitos entre _branches_ resolvidos
