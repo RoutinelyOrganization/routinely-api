@@ -1,0 +1,78 @@
+@baseUrl = http://localhost:5500
+@authToken = {{signIn.response.body.token}}
+@userEmail = rest@example.com
+@userEmail2 = rest2@example.com
+@userPassword = srtW#3
+
+###
+
+# @name signUp
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{userEmail}}",
+  "password": "{{userPassword}}",
+  "name": "Cosmo teste",
+  "acceptedTerms": true
+}
+
+###
+
+# @name signIn
+POST {{baseUrl}}/auth
+Content-Type: application/json
+
+{
+  "email": "{{userEmail}}",
+  "password": "{{userPassword}}",
+  "remember": true
+}
+
+###
+
+# @name createTask
+POST {{baseUrl}}/tasks
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "name": "Nome desta tarefa",
+  "description": "Descrição da tarefa",
+  "date": "2024-03-12 10:00",
+  "tag":  "exercise",
+  "priority": "urgent",
+  "category": "study"
+}
+
+###
+
+# @name findManyTasks
+GET {{baseUrl}}/tasks
+  ?month=3
+  &year=2024
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name findOneTask
+GET {{baseUrl}}/tasks/2
+Authorization: Bearer {{authToken}}
+
+###
+
+# @name updateOneTask
+PATCH {{baseUrl}}/tasks
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "id": 2,
+  "date": "2024-03-12 15:42"
+}
+
+###
+
+# @name deleteOneTask
+DELETE {{baseUrl}}/tasks/1233
+Authorization: Bearer {{authToken}}

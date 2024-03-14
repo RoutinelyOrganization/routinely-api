@@ -1,110 +1,131 @@
 import { Injectable } from '@nestjs/common';
-import {
-  CreateTaskInput,
-  FindTasksRepositoryInput,
-  FindTasksServiceInput,
-  UpdateTaskInput,
-} from './task.dtos';
+import type {
+  ExcludeOneInput,
+  FindManyOutput,
+  GetManyInput,
+  GetOneInput,
+  SaveOneInput,
+  UpdateInput,
+} from './task.types';
 import { TaskRepository } from './task.repository';
-import { UnprocessableEntityError } from 'src/config/exceptions';
+import { TimezonePtBR } from 'src/config/constants';
+import {
+  DataValidationError,
+  NotFoundError,
+  UnprocessableEntityError,
+} from 'src/config/exceptions';
 
 @Injectable()
 export class TaskService {
-  constructor(private repository: TaskRepository) {}
+  constructor(private readonly taskRepository: TaskRepository) {}
 
-  private extractHourString(date: Date): string {
-    const nowDateTime = date.toISOString();
-    const nowDate = nowDateTime.split('T')[0];
-    return nowDate;
+  private transformDate(date: string): Date {
+    return new Date(date.concat(' ', TimezonePtBR));
   }
 
-  async create(createTaskInput: CreateTaskInput) {
-    const date = new Date(createTaskInput.date);
-    const now = new Date();
-    const nowDate = this.extractHourString(now);
-    const hms = createTaskInput.hour;
-    const hour = new Date(nowDate + 'T' + hms);
+  async saveOne(input: SaveOneInput) {
+    const localeDate = this.transformDate(input.date);
 
-    const createdTask = await this.repository.create({
-      ...createTaskInput,
-      date,
-      hour: hour,
+    await this.taskRepository.insertOne({
+      ...input,
+      date: localeDate,
     });
-
-    const responseHour = `${createdTask.hour.getHours()}:${createdTask.hour.getMinutes()}`;
-    const responseDate = createdTask.date.toISOString().split('T')[0];
-    delete createdTask.createdAt;
-    delete createdTask.updatedAt;
-    delete createdTask.accountId;
-
-    return { ...createdTask, hour: responseHour, date: responseDate };
   }
 
-  async updateById(id: number, updateTaskInput: UpdateTaskInput) {
-    const taskExist = await this.repository.findById(id);
-    if (taskExist === null) throw new UnprocessableEntityError({});
-
-    const date = new Date(updateTaskInput.date);
-    const now = new Date();
-    const nowDate = this.extractHourString(now);
-    const hms = updateTaskInput.hour;
-    const hour = new Date(nowDate + 'T' + hms);
-
-    const updatedTask = await this.repository.updateById(id, {
-      ...updateTaskInput,
-      date,
-      hour,
-    });
-
-    const responseHour = `${updatedTask.hour.getHours()}:${updatedTask.hour.getMinutes()}`;
-    const responseDate = updatedTask.date.toISOString().split('T')[0];
-    delete updatedTask.createdAt;
-    delete updatedTask.updatedAt;
-    delete updatedTask.accountId;
-
-    return { ...updatedTask, hour: responseHour, date: responseDate };
-  }
-
-  async deleteById(id: number) {
-    return await this.repository.deleteById(id);
-  }
-
-  async getAccountById(id: number) {
-    return await this.repository.findAccountByTaskId(id);
-  }
-
-  async findAccountTasks({ month, year, accountId }: FindTasksServiceInput) {
-    if (month > 12) month = 12;
-    else if (month < 1) month = 1;
+  async getMany(input: GetManyInput): Promise<FindManyOutput> {
+    const month = Number(input.month);
+    const year = Number(input.year);
 
     const nextMonth = month + 1 > 12 ? 1 : month + 1;
-    const nextMonthYear = nextMonth < month ? year + 1 : year;
+    const nextYear = nextMonth < month ? year + 1 : year;
 
-    const startThisMonth = new Date(`${year}/${month}`);
-    const startNextMonth = new Date(`${nextMonthYear}/${nextMonth}`);
+    const start = new Date(`${year}/${month}`);
+    const end = new Date(`${nextYear}/${nextMonth}`);
 
-    const filters: FindTasksRepositoryInput['filters'] = [{ accountId }];
-
-    filters.push({
-      date: {
-        gte: startThisMonth,
-        lt: startNextMonth,
+    const result = await this.taskRepository.findMany({
+      accountId: input.accountId,
+      dateRange: {
+        start: start,
+        end: end,
       },
     });
 
-    const tasks = await this.repository.findTasks(filters);
-    return tasks;
+    return result;
   }
 
-  async findTaskByid(input: { taskId: number; accountId: string }) {
-    const task = await this.repository.findUserTaskById(input.taskId);
+  async getOne(input: GetOneInput) {
+    const taskId = Number(input.id);
+    const result = await this.taskRepository.findOne(taskId);
+    const isOwner = result && result.accountId === input.accountId;
+    const task = isOwner ? (delete result.accountId, result) : null;
 
-    if (task && task.accountId === input.accountId) {
-      return task;
+    return task;
+  }
+
+  async update(input: UpdateInput) {
+    if (
+      !input.name &&
+      !input.description &&
+      !input.date &&
+      !input.tag &&
+      !input.priority &&
+      !input.category &&
+      !input.checked
+    ) {
+      throw new DataValidationError({
+        message: 'Modifique ao menos uma informação',
+      });
     }
 
-    return {
-      message: 'Nada encontrado',
-    };
+    const currentAccountId = await this.taskRepository.findAccountIdByTaskId(
+      input.id
+    );
+
+    if (!currentAccountId) {
+      throw new NotFoundError({
+        message: 'Tarefa (id: ' + String(input.id) + ') não foi encontrada.',
+      });
+    }
+
+    const isOwner = currentAccountId === input.accountId;
+
+    if (!isOwner) {
+      throw new UnprocessableEntityError({});
+    }
+
+    const date = input.date && this.transformDate(<string>input.date);
+
+    await this.taskRepository.updateOne({
+      id: input.id,
+      name: input.name ?? undefined,
+      description: input.description ?? undefined,
+      date: date ?? undefined,
+      tag: input.tag ?? undefined,
+      priority: input.priority ?? undefined,
+      category: input.category ?? undefined,
+      checked: input.checked ?? undefined,
+    });
+  }
+
+  async excludeOne(input: ExcludeOneInput) {
+    const taskId = Number(input.id);
+
+    const currentAccountId = await this.taskRepository.findAccountIdByTaskId(
+      taskId
+    );
+
+    if (!currentAccountId) {
+      throw new NotFoundError({
+        message: 'Tarefa (id: ' + String(input.id) + ') não foi encontrada.',
+      });
+    }
+
+    const isOwner = currentAccountId === input.accountId;
+
+    if (!isOwner) {
+      throw new UnprocessableEntityError({});
+    }
+
+    await this.taskRepository.deleteOne(taskId);
   }
 }
