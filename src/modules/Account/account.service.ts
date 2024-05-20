@@ -114,7 +114,9 @@ export class AccountService {
       hashedEmail
     );
     if (!accountExists)
-      throw new NotFoundError({ message: 'Conta não encontrada' });
+      throw new NotFoundError({
+        message: 'E-mail não cadastrado. Verifique o e-mail digitado.',
+      });
     const account = await this.accountRepository.findAccountByEmail(
       hashedEmail
     );
@@ -151,7 +153,8 @@ export class AccountService {
 
     if (!isValid) {
       throw new AuthorizationError({
-        message: 'Código inválido',
+        message:
+          'O código de verificação que você inseriu não é válido. Verifique o código e tente novamente.',
       });
     }
 

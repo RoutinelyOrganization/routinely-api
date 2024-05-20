@@ -17,8 +17,8 @@ model Account {
   permissions        String[]
   verifiedAt         DateTime?           @map("verified_at")
   acceptedAt         DateTime            @default(now()) @map("accepted_at")
-  createdAt          DateTime            @default(now()) @map("created_at")
-  updatedAt          DateTime            @updatedAt @map("updated_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt          DateTime            @default(now()) @map("created_at") @db.Timestamptz(3)
   sessions           Session[]
   profile            Profile?
   resetPasswordToken ResetPasswordToken?
@@ -33,14 +33,14 @@ model ResetPasswordToken {
   token     String   @unique
   account   Account? @relation(fields: [accountId], references: [id], onDelete: Cascade)
   accountId String   @unique @map("account_id")
-  createdAt DateTime @default(now()) @map("created_at")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
 }
 
 model Profile {
   id        Int      @id @default(autoincrement())
   name      String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   accountId String   @unique @map("account_id")
   account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
@@ -57,8 +57,8 @@ model Session {
   remember         Boolean  @default(false)
   sessionExpiresIn DateTime @map("session_expires_in")
   refreshExpiresIn DateTime @map("refresh_expires_in")
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt        DateTime @updatedAt @map("updated_at")
+  updatedAt        DateTime @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(3)
   account          Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
@@ -67,8 +67,7 @@ model Session {
 model Task {
   id          Int            @id @default(autoincrement())
   name        String
-  hour        DateTime       @db.Time()
-  date        DateTime       @db.Date
+  date        DateTime
   description String
   priority    TaskPriorities
   tag         TaskTags
@@ -76,8 +75,8 @@ model Task {
   checked     Boolean        @default(false)
   accountId   String         @map("account_id")
   account     Account        @relation(fields: [accountId], references: [id])
-  createdAt   DateTime       @default(now()) @map("created_at")
-  updatedAt   DateTime       @updatedAt @map("updated_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
 
   @@map("tasks")
 }
@@ -92,8 +91,8 @@ model Goals {
   type        GoalType
   accountId   String          @map("account_id")
   account     Account         @relation(fields: [accountId], references: [id])
-  createdAt   DateTime        @default(now()) @map("created_at")
-  updatedAt   DateTime        @updatedAt @map("updated_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt   DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
 
   @@map("goals")
 }

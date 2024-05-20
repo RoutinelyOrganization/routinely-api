@@ -3,13 +3,13 @@ import type { iValidationResponses } from './types';
 export const responses: iValidationResponses = {
   notEmpty: 'Não pode estar vazio',
   boolean: 'Deve ser verdadeiro ou falso (true | false)',
-  string: 'Deve ser um texto',
+  string: 'Precisa ser um texto',
   arrayOfString: 'Deve ser uma lista de textos',
   number: 'Deve ser um número',
   integer: 'Deve ser um número inteiro',
   enum(validationArguments) {
     const enums = validationArguments.constraints[1];
-    return `Deve ser um texto entre essas opções: ${enums}`;
+    return `Escolha um dos seguintes valores: ${enums}`;
   },
   arrayMinSize(validationArguments) {
     const min = validationArguments.constraints[0];
@@ -25,7 +25,7 @@ export const responses: iValidationResponses = {
   },
   maxLength(validationArguments) {
     const max = validationArguments.constraints[0];
-    return `Deve ter no máximo ${max} caracteres`;
+    return `Quantidade de caracteres máximo, ${max}!`;
   },
   minValue(validationArguments) {
     const min = validationArguments.constraints[0];
@@ -39,6 +39,8 @@ export const responses: iValidationResponses = {
   strongPassword:
     'Deve conter no mínimo 6 caracteres com uma letra maiúscula, uma letra minúscula, um número e um símbolo',
   fullname: 'Deve conter apenas letras e espaço em branco entre palavras',
-  datePattern: 'Deve ser um texto nesse padrão, YYYY-MM-DD',
-  dateRange: 'O mês e o dia devem ser válidos',
+  datePattern: 'Use o padrão ISO 8601 (YYYY-MM-DD hh:mm)',
+  dateRange: 'A data não pode ser anterior à data atual',
+  monthPattern: 'Use o número relativo ao mês desejado. ex.: (1,2..12)',
+  yearPattern: 'O ano é composto por 4 números. ex.: 2021',
 };
