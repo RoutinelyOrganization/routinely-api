@@ -24,6 +24,7 @@ model Account {
   resetPasswordToken ResetPasswordToken?
   tasks              Task[]
   goals              Goals[]
+  customCategory     customCategory[]
 
   @@map("accounts")
 }
@@ -65,18 +66,21 @@ model Session {
 }
 
 model Task {
-  id          Int            @id @default(autoincrement())
-  name        String
-  date        DateTime
-  description String
-  priority    TaskPriorities
-  tag         TaskTags
-  category    TaskCategories
-  checked     Boolean        @default(false)
-  accountId   String         @map("account_id")
-  account     Account        @relation(fields: [accountId], references: [id])
-  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
-  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  id               Int             @id @default(autoincrement())
+  name             String
+  date             DateTime
+  typeTask         TaskType
+  category         TaskCategories
+  customCategoryId Int?
+  customCategory   customCategory? @relation(fields: [customCategoryId], references: [id])
+  description      String
+  frequencyDays    DaysOfWeek[]
+  quantityPerWeek  Int
+  end_task         DateTime        @db.Date
+  accountId        String          @map("account_id")
+  account          Account         @relation(fields: [accountId], references: [id])
+  updatedAt        DateTime        @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt        DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
 
   @@map("tasks")
 }
@@ -95,6 +99,14 @@ model Goals {
   createdAt   DateTime        @default(now()) @map("created_at") @db.Timestamptz(3)
 
   @@map("goals")
+}
+
+model customCategory {
+  id        Int     @id @default(autoincrement())
+  name      String
+  accountId String  @map("account_id")
+  account   Account @relation(fields: [accountId], references: [id])
+  tasks     Task[]
 }
 
 enum GoalPeriodicity {
@@ -126,9 +138,27 @@ enum TaskTags {
 }
 
 enum TaskCategories {
-  personal
-  study
-  finance
   career
+  finance
+  studies
   health
+  leisure
+  productivity
+  several
+}
+
+enum TaskType {
+  task
+  habit
+  project
+}
+
+enum DaysOfWeek {
+  sunday
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+  saturday
 }
