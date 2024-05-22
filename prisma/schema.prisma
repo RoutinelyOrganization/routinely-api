@@ -122,21 +122,6 @@ enum GoalType {
   profissional
 }
 
-enum TaskPriorities {
-  low
-  medium
-  high
-  urgent
-}
-
-enum TaskTags {
-  application
-  account
-  exercise
-  beauty
-  literature
-}
-
 enum TaskCategories {
   career
   finance
