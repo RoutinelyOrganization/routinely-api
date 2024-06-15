@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { SessionService } from 'src/modules/Session/session.service';
+import { SessionService } from '@/modules/domain/Session/session.service';
 import { RoleLevel, Permissions } from './roles.config';
 import { CREDENTIALS_KEY } from 'src/utils/constants';
 
@@ -29,7 +29,7 @@ export class RolesGuard implements CanActivate {
   }
 
   private validatePermissions(
-    requiredRoles = [],
+    requiredRoles: string[] = [],
     accountPermissions: string[]
   ): boolean {
     let response = true;
@@ -88,7 +88,9 @@ export class RolesGuard implements CanActivate {
     }
 
     if (token) {
-      credentials = await this.sessionService.findSessionToken(token);
+      const sessionToken = await this.sessionService.findSessionToken(token);
+
+      if (sessionToken) credentials = sessionToken;
     }
 
     const isInvalid = !this.validatePermissions(

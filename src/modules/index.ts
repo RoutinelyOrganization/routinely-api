@@ -1,6 +1,6 @@
-export { AccountModule } from './Account/account.module';
-export { SessionModule } from './Session/session.module';
-export { PasswordTokenModule } from './PasswordToken/passwordToken.module';
-export { MailingModule } from './Mailing/mailing.module';
-export { TaskModule } from './Task/task.module';
-export { GoalModule } from './Goal/goal.module';
+export { AccountModule } from './domain/Account/account.module';
+export { SessionModule } from './domain/Session/session.module';
+export { PasswordTokenModule } from './domain/PasswordToken/passwordToken.module';
+export { MailingModule } from './domain/Mailing/mailing.module';
+export { TaskModule } from './domain/Task/task.module';
+export { GoalModule } from './domain/Goal/goal.module';
