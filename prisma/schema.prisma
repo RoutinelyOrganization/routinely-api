@@ -65,18 +65,20 @@ model Session {
 }
 
 model Task {
-  id          Int            @id @default(autoincrement())
-  name        String
-  date        DateTime
-  description String
-  priority    TaskPriorities
-  tag         TaskTags
-  category    TaskCategories
-  checked     Boolean        @default(false)
-  accountId   String         @map("account_id")
-  account     Account        @relation(fields: [accountId], references: [id])
-  updatedAt   DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
-  createdAt   DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  id              Int            @id @default(autoincrement())
+  name            String
+  date            DateTime
+  description     String
+  checked         Boolean        @default(false)
+  quantityPerWeek Int
+  finallyDate     DateTime?
+  category        TaskCategories
+  type            TaskType
+  weekDays        DaysOfWeek[]
+  accountId       String         @map("account_id")
+  account         Account        @relation(fields: [accountId], references: [id])
+  updatedAt       DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+  createdAt       DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
 
   @@map("tasks")
 }
@@ -126,9 +128,26 @@ enum TaskTags {
 }
 
 enum TaskCategories {
-  personal
-  study
-  finance
-  career
-  health
+  Career
+  Finance
+  Studies
+  Health
+  Leisure
+  Productivity
+  Several
+}
+
+enum TaskType {
+  habit
+  task
+}
+
+enum DaysOfWeek {
+  Monday
+  Tuesday
+  Wednesday
+  Thursday
+  Friday
+  Saturday
+  Sunday
 }

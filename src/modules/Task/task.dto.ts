@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { TaskCategories, TaskPriorities, TaskTags } from '@prisma/client';
+import { DaysOfWeek, TaskCategories, TaskType } from '@prisma/client';
 import {
   IsBoolean,
   IsDateString,
@@ -41,20 +41,38 @@ export class CreateOneDto {
   @IsEarlierThanCurrentDate('date', { message: responses.dateRange })
   date: string;
 
-  @ApiProperty({ enum: TaskPriorities })
-  @IsString({ message: responses.string })
-  @IsEnum(TaskPriorities, { message: responses.enum })
-  priority: TaskPriorities;
-
-  @ApiProperty({ enum: TaskTags })
-  @IsString({ message: responses.string })
-  @IsEnum(TaskTags, { message: responses.enum })
-  tag: TaskTags;
-
   @ApiProperty({ enum: TaskCategories })
   @IsString({ message: responses.string })
   @IsEnum(TaskCategories, { message: responses.enum })
   category: TaskCategories;
+
+  @ApiProperty({
+    example: '2024-04-01 04:20',
+    description: <string>responses.datePattern,
+  })
+  @IsNotEmpty({ message: responses.notEmpty })
+  @IsString({ message: responses.string })
+  @Matches(DateRegex, { message: responses.datePattern })
+  @IsDateString({ strict: true }, { message: responses.datePattern })
+  @IsEarlierThanCurrentDate('date', { message: responses.dateRange })
+  finallyDate?: string;
+
+  @ApiProperty({
+    description: 'Quantidade de repetições da tarefa por semana',
+  })
+  @IsOptional()
+  @IsInt({ message: responses.integer })
+  quantityPerWeek?: number;
+
+  @ApiProperty({ enum: DaysOfWeek, isArray: true })
+  @IsOptional()
+  @IsEnum(DaysOfWeek, { each: true, message: responses.enum })
+  weekDays?: DaysOfWeek[];
+
+  @ApiProperty({ enum: TaskType })
+  @IsOptional()
+  @IsEnum(TaskType, { message: responses.enum })
+  type: TaskType;
 }
 
 export class ReadManyDto {

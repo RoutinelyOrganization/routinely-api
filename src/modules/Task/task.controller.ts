@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
+import { AccountId } from 'src/utils/decorators/accountid.decorator';
 import {
   CreateOneDto,
   DeleteOneDto,
@@ -19,7 +20,6 @@ import {
   ReadOneDto,
   UpdateOneDto,
 } from './task.dto';
-import { AccountId } from 'src/utils/decorators/accountid.decorator';
 import { TaskService } from './task.service';
 
 @ApiTags('Tarefas')
@@ -36,10 +36,12 @@ export class TaskController {
       name: input.name,
       description: input.description,
       date: input.date,
-      tag: input.tag,
-      priority: input.priority,
       category: input.category,
       accountId: accountId,
+      finallyDate: input.finallyDate,
+      quantityPerWeek: input.quantityPerWeek,
+      weekDays: input.weekDays,
+      type: input.type,
     });
 
     return {
@@ -87,10 +89,12 @@ export class TaskController {
       name: input.name,
       description: input.description,
       date: input.date,
-      priority: input.priority,
       category: input.category,
-      tag: input.tag,
       checked: input.checked,
+      finallyDate: input.finallyDate,
+      quantityPerWeek: input.quantityPerWeek,
+      weekDays: input.weekDays,
+      type: input.type,
     });
 
     return {

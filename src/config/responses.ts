@@ -40,7 +40,7 @@ export const responses: iValidationResponses = {
     'Deve conter no mínimo 6 caracteres com uma letra maiúscula, uma letra minúscula, um número e um símbolo',
   fullname: 'Deve conter apenas letras e espaço em branco entre palavras',
   datePattern: 'Use o padrão ISO 8601 (YYYY-MM-DD hh:mm)',
-  dateRange: 'A data não pode ser anterior à data atual',
+  dateRange: 'A data não pode ser posterior à data atual',
   monthPattern: 'Use o número relativo ao mês desejado. ex.: (1,2..12)',
   yearPattern: 'O ano é composto por 4 números. ex.: 2021',
 };
