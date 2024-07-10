@@ -29,15 +29,11 @@ export class TaskService {
       ? this.transformDate(input.finallyDate)
       : null;
 
-    try {
-      await this.taskRepository.insertOne({
-        ...input,
-        date: localeDate,
-        finallyDate: localeFinnalyDate,
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    await this.taskRepository.insertOne({
+      ...input,
+      date: localeDate,
+      finallyDate: localeFinnalyDate,
+    });
   }
 
   async getMany(input: GetManyInput): Promise<FindManyOutput> {

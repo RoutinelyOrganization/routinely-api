@@ -71,6 +71,8 @@ export type FindOneOutput = Pick<
   | 'category'
   | 'date'
   | 'checked'
+  | 'weekDays'
+  | 'type'
 > & {
   accountId?: Account['id'];
 };

@@ -68,6 +68,8 @@ export class TaskRepository {
           checked: true,
           finallyDate: true,
           quantityPerWeek: true,
+          weekDays: true,
+          type: true,
         },
         orderBy: [
           {
@@ -108,6 +110,8 @@ export class TaskRepository {
           accountId: true,
           finallyDate: true,
           quantityPerWeek: true,
+          weekDays: true,
+          type: true,
         },
       })
       .catch((error: unknown) => {
