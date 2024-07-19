@@ -1,4 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { TimezonePtBR } from 'src/config/constants';
+import {
+  DataValidationError,
+  NotFoundError,
+  UnprocessableEntityError,
+} from 'src/config/exceptions';
+import { TaskRepository } from './task.repository';
 import type {
   ExcludeOneInput,
   FindManyOutput,
@@ -7,13 +14,6 @@ import type {
   SaveOneInput,
   UpdateInput,
 } from './task.types';
-import { TaskRepository } from './task.repository';
-import { TimezonePtBR } from 'src/config/constants';
-import {
-  DataValidationError,
-  NotFoundError,
-  UnprocessableEntityError,
-} from 'src/config/exceptions';
 
 @Injectable()
 export class TaskService {
@@ -25,10 +25,14 @@ export class TaskService {
 
   async saveOne(input: SaveOneInput) {
     const localeDate = this.transformDate(input.date);
+    const localeFinnalyDate = input.finallyDate
+      ? this.transformDate(input.finallyDate)
+      : null;
 
     await this.taskRepository.insertOne({
       ...input,
       date: localeDate,
+      finallyDate: localeFinnalyDate,
     });
   }
 
@@ -67,10 +71,12 @@ export class TaskService {
       !input.name &&
       !input.description &&
       !input.date &&
-      !input.tag &&
-      !input.priority &&
       !input.category &&
-      !input.checked
+      !input.checked &&
+      !input.finallyDate &&
+      !input.quantityPerWeek &&
+      !input.weekDays &&
+      !input.type
     ) {
       throw new DataValidationError({
         message: 'Modifique ao menos uma informação',
@@ -94,15 +100,19 @@ export class TaskService {
     }
 
     const date = input.date && this.transformDate(<string>input.date);
+    const finallyDate =
+      input.finallyDate && this.transformDate(<string>input.finallyDate);
 
     await this.taskRepository.updateOne({
       id: input.id,
       name: input.name ?? undefined,
       description: input.description ?? undefined,
       date: date ?? undefined,
-      tag: input.tag ?? undefined,
-      priority: input.priority ?? undefined,
+      finallyDate: finallyDate ?? undefined,
       category: input.category ?? undefined,
+      quantityPerWeek: input.quantityPerWeek ?? undefined,
+      weekDays: input.weekDays ?? undefined,
+      type: input.type ?? undefined,
       checked: input.checked ?? undefined,
     });
   }

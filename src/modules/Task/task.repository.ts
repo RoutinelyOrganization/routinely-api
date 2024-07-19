@@ -22,9 +22,11 @@ export class TaskRepository {
           name: input.name,
           description: input.description,
           date: input.date,
-          tag: input.tag,
-          priority: input.priority,
           category: input.category,
+          finallyDate: input.finallyDate,
+          quantityPerWeek: input.quantityPerWeek,
+          weekDays: input.weekDays,
+          type: input.type,
           account: {
             connect: {
               id: input.accountId,
@@ -62,17 +64,16 @@ export class TaskRepository {
           name: true,
           description: true,
           date: true,
-          tag: true,
           category: true,
-          priority: true,
           checked: true,
+          finallyDate: true,
+          quantityPerWeek: true,
+          weekDays: true,
+          type: true,
         },
         orderBy: [
           {
             date: 'asc',
-          },
-          {
-            priority: 'desc',
           },
           {
             name: 'asc',
@@ -104,11 +105,13 @@ export class TaskRepository {
           name: true,
           description: true,
           date: true,
-          tag: true,
-          priority: true,
           category: true,
           checked: true,
           accountId: true,
+          finallyDate: true,
+          quantityPerWeek: true,
+          weekDays: true,
+          type: true,
         },
       })
       .catch((error: unknown) => {
@@ -160,8 +163,8 @@ export class TaskRepository {
           name: input.name,
           description: input.description,
           date: input.date,
-          tag: input.tag,
-          priority: input.priority,
+          finallyDate: input.finallyDate,
+          quantityPerWeek: input.quantityPerWeek,
           category: input.category,
           checked: input.checked,
         },

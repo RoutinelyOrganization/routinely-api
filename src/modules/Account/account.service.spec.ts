@@ -1,23 +1,23 @@
+import { faker } from '@faker-js/faker';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as crypto from 'crypto';
 import * as bcrypt from 'bcrypt';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { RoleLevel } from 'src/guards/roles.config';
-import { AccountService } from './account.service';
-import { AccountRepository } from './account.repository';
-import {
-  createAccountInput,
-  resetPasswordInput,
-} from './tests/stubs/account.stubs';
-import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
-import { faker } from '@faker-js/faker';
-import { MailingService } from '../Mailing/mailing.service';
+import * as crypto from 'crypto';
 import {
   AuthorizationError,
   InternalServerError,
   NotFoundError,
 } from 'src/config/exceptions';
+import { RoleLevel } from 'src/guards/roles.config';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { MailingService } from '../Mailing/mailing.service';
+import { PasswordTokenService } from '../PasswordToken/passwordToken.service';
+import { AccountRepository } from './account.repository';
+import { AccountService } from './account.service';
+import {
+  createAccountInput,
+  resetPasswordInput,
+} from './tests/stubs/account.stubs';
 
 describe('AccountService Unit Tests', () => {
   let service: AccountService;
