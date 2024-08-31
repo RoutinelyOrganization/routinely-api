@@ -10,7 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
 import { AccountId } from 'src/utils/decorators/accountid.decorator';
 import {
@@ -24,6 +24,7 @@ import { TaskService } from './task.service';
 
 @ApiTags('Tarefas')
 @UseGuards(RolesGuard)
+@ApiBearerAuth()
 @Controller('/tasks')
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}

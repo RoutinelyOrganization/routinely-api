@@ -46,6 +46,8 @@ export class TaskService {
     const start = new Date(`${year}/${month}`);
     const end = new Date(`${nextYear}/${nextMonth}`);
 
+    console.log(start);
+
     const result = await this.taskRepository.findMany({
       accountId: input.accountId,
       dateRange: {
