@@ -50,11 +50,12 @@ export class CreateOneDto {
     example: '2024-04-01 04:20',
     description: <string>responses.datePattern,
   })
+  @IsOptional()
   @IsNotEmpty({ message: responses.notEmpty })
   @IsString({ message: responses.string })
   @Matches(DateRegex, { message: responses.datePattern })
   @IsDateString({ strict: true }, { message: responses.datePattern })
-  @IsEarlierThanCurrentDate('date', { message: responses.dateRange })
+  @IsEarlierThanCurrentDate('finallyDate', { message: responses.dateRange })
   finallyDate?: string;
 
   @ApiProperty({

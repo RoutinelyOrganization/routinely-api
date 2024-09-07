@@ -173,7 +173,6 @@ export class TaskRepository {
         },
       })
       .catch((error: unknown) => {
-        console.log(error);
         if (error instanceof Prisma.PrismaClientKnownRequestError) {
           throw new InternalServerError({
             message: 'Erro desconhecido :: '.concat(error.code),

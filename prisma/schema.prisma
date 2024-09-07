@@ -70,7 +70,7 @@ model Task {
   date            DateTime
   description     String
   checked         Boolean        @default(false)
-  quantityPerWeek Int
+  quantityPerWeek Int?
   finallyDate     DateTime?
   category        TaskCategories
   type            TaskType
