@@ -50,25 +50,11 @@ export class SessionRepository {
       });
   }
 
-  async createSession({
-    sessionToken,
-    refreshToken,
-    sessionExpiresIn,
-    refreshExpiresIn,
-    accountId,
-    permissions,
-    name,
-  }: CreateSessionRepositoryInput): Promise<boolean> {
+  async createSession(data: CreateSessionRepositoryInput): Promise<boolean> {
     return await this.prisma.session
       .create({
         data: {
-          sessionToken,
-          refreshToken,
-          sessionExpiresIn,
-          refreshExpiresIn,
-          accountId,
-          permissions,
-          name,
+          ...data,
         },
       })
       .then(() => {
