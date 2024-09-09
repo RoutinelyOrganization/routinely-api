@@ -1,28 +1,28 @@
-import { Request } from 'express';
 import {
-  Controller,
   Body,
+  Controller,
+  HttpCode,
   Post,
   Put,
-  UseGuards,
-  HttpCode,
   Req,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
+import { Request } from 'express';
+import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
+import { CREDENTIALS_KEY } from 'src/utils/constants';
+import { SessionService } from '../Session/session.service';
 import {
-  CreateAccountControllerInput,
   AccessAccountControllerInput,
+  ChangePasswordInput,
+  CreateAccountControllerInput,
+  DisconnectAccountControllerInput,
   RefreshSessionControllerInput,
   ResetPasswordInput,
-  ChangePasswordInput,
-  DisconnectAccountControllerInput,
   ValidateTokenInput,
 } from './account.dtos';
 import { AccountService } from './account.service';
-import { SessionService } from '../Session/session.service';
-import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
-import { CREDENTIALS_KEY } from 'src/utils/constants';
 
 @UseGuards(ThrottlerGuard, RolesGuard)
 @Controller('auth')
