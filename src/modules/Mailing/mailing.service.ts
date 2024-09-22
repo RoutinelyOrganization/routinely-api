@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
-import { CreateEmailInput } from './mailing.dtos';
 import { readFileSync } from 'fs';
-import { join } from 'path';
 import * as handlebars from 'handlebars';
+import * as nodemailer from 'nodemailer';
+import { join } from 'path';
 import { InternalServerError } from 'src/config/exceptions';
+import { CreateEmailInput } from './mailing.dtos';
 
 @Injectable()
 export class MailingService {
@@ -30,7 +30,10 @@ export class MailingService {
       from: createEmailInput.from,
       to: createEmailInput.to,
       subject: createEmailInput.subject,
-      html: compiledTemplate(createEmailInput.payload),
+      html: compiledTemplate({
+        ...createEmailInput.payload,
+        year: new Date().getFullYear(),
+      }),
     };
 
     try {

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { randomBytes } from 'node:crypto';
 import * as bcrypt from 'bcrypt';
+import { randomBytes } from 'node:crypto';
 import {
   CreatePasswordCodeOutput,
   CreatePasswordTokenInput,

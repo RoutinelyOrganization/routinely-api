@@ -1,9 +1,10 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import {
-  CreateAccountRepositoryInput,
   AccessAccountRepositoryOutput,
   ChangePasswordRepositoryInput,
+  CreateAccountRepositoryInput,
+  UpdateAccountRepositoryInput,
 } from './account.dtos';
 
 @Injectable()
@@ -71,6 +72,7 @@ export class AccountRepository {
           email: true,
           password: true,
           permissions: true,
+          verifiedAt: true,
           profile: {
             select: {
               name: true,
@@ -104,6 +106,17 @@ export class AccountRepository {
       .update({
         where: { id: data.accountId },
         data: { password: data.password },
+      })
+      .catch(() => {
+        throw new InternalServerErrorException();
+      });
+  }
+
+  async updateAccount(data: UpdateAccountRepositoryInput) {
+    return await this.prisma.account
+      .update({
+        where: { id: data.id },
+        data: { ...data },
       })
       .catch(() => {
         throw new InternalServerErrorException();
