@@ -63,16 +63,11 @@ export class AccountController {
   @RequirePermissions([Permissions['100']])
   async create(
     @Body()
-    { name, email, password, acceptedTerms }: CreateAccountControllerInput,
+    data: CreateAccountControllerInput,
     @Query() { callBackUrl }: QueryCallBackUrl
   ) {
     const { message } = await this.accountService.createAccount(
-      {
-        name,
-        email,
-        password,
-        acceptedTerms,
-      },
+      data,
       callBackUrl
     );
 
