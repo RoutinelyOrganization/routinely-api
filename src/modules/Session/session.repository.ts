@@ -52,11 +52,7 @@ export class SessionRepository {
 
   async createSession(data: CreateSessionRepositoryInput): Promise<boolean> {
     return await this.prisma.session
-      .create({
-        data: {
-          ...data,
-        },
-      })
+      .create({ data })
       .then(() => {
         return true;
       })
