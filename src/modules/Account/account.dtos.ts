@@ -1,12 +1,12 @@
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import {
-  IsNotEmpty,
-  Matches,
-  IsEmail,
-  IsStrongPassword,
   IsBoolean,
+  IsEmail,
   IsHexadecimal,
+  IsNotEmpty,
   IsString,
+  IsStrongPassword,
+  Matches,
 } from 'class-validator';
 import { responses } from 'src/config/responses';
 
