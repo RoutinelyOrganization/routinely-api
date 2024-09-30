@@ -83,7 +83,7 @@ describe('AccountService Unit Tests', () => {
         .spyOn(crypto, 'createHash')
         .mockImplementationOnce(() => createHashMock);
 
-      await service.createAccount(createAccountInput);
+      await service.createAccount(createAccountInput, '');
 
       expect(createHashMock.update).toHaveBeenCalledWith(
         createAccountInput.email + salt
@@ -103,7 +103,7 @@ describe('AccountService Unit Tests', () => {
         'alreadyExists'
       );
 
-      await service.createAccount(createAccountInput);
+      await service.createAccount(createAccountInput, '');
 
       expect(accountRepositorySpy).toHaveBeenCalledWith('hashed_email');
     });
@@ -115,7 +115,7 @@ describe('AccountService Unit Tests', () => {
           throw new UnprocessableEntityException('This e-mail already exists');
         });
 
-      const promise = service.createAccount(createAccountInput);
+      const promise = service.createAccount(createAccountInput, '');
 
       await expect(promise).rejects.toThrow(
         new UnprocessableEntityException('This e-mail already exists')
@@ -130,7 +130,7 @@ describe('AccountService Unit Tests', () => {
         return new Promise((resolve) => resolve('hashed_password'));
       });
 
-      await service.createAccount(createAccountInput);
+      await service.createAccount(createAccountInput, '');
 
       expect(hashSpy).toHaveBeenCalledWith(
         createAccountInput.password,
@@ -152,7 +152,7 @@ describe('AccountService Unit Tests', () => {
         'createAccount'
       );
 
-      await service.createAccount(createAccountInput);
+      await service.createAccount(createAccountInput, '');
 
       expect(accountRepositorySpy).toHaveBeenCalledWith({
         email: 'hashed_email',

@@ -35,14 +35,39 @@
         font-weight: bolder;
         font-size: 44px;
       }
-      #sub-title {
+      #title {
         font-size: 24px;
         font-weight: bold;
       }
+      button {
+        max-width: 140px;
+        background-color: #5c59bb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+      section > button {
+        margin-bottom: 62px;
+      }
+
+      #container-img {
+        display: flex;
+        flex-direction: column;
+        align-items: end;
+      }
+      #container-img > img {
+        max-width: 700px;
+        width: 100%;
+      }
+      button > a {
+        display: block;
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+        padding: 12px 16px;
+      }
       footer {
-        max-width: 1024px;
-        position: relative;
-        bottom: 0;
         width: 100%;
       }
       footer > p {
@@ -58,19 +83,23 @@
           src="https://routnely-assets.vercel.app/logoHorizontalSecondary.svg"
           alt="logo Routnely"
         />
-        <span>Redefinir Senha</span>
+        <span>Criação de Conta Routinely</span>
       </header>
       <section>
-        <h2 id="sub-title">Olá, {{name}}! precisa alterar a sua senha?</h2>
-        <p>Aqui está o código de segurança da sua conta Routinely:</p>
-        <h1 id="code"><strong>{{code}}</strong></h1>
+        <h1 id="title">Seja Bem vindo(a) ao Routinely!</h1>
         <p>
-          Use o código acima para verificar a propriedade de sua conta. Como
-          medida de segurança, o código irá expirar em 15 minutos.
+          Sua conta foi criada com sucesso! Para ativá-la, confirme o seu login
+          de e-mail no botão abaixo.
         </p>
-        <p>
-          Se você não solicitou a alteração de senha, é só ignorar este e-mail.
-        </p>
+        <button type="button">
+          <a href="{{url}}" target="_blank">Vamos começar</a>
+        </button>
+        <div id="container-img">
+          <img
+            src="https://routnely-assets.vercel.app/signInPageImage.svg"
+            alt=""
+          />
+        </div>
       </section>
     </div>
     <footer>

@@ -1,4 +1,4 @@
-import { ApiProperty, PickType } from '@nestjs/swagger';
+import { ApiProperty, PartialType, PickType } from '@nestjs/swagger';
 import {
   IsBoolean,
   IsEmail,
@@ -55,6 +55,11 @@ export class CreateAccountRepositoryInput extends PickType(AccountBaseDto, [
   name: string;
 }
 
+export class UpdateAccountRepositoryInput extends PartialType(AccountBaseDto) {
+  id: string;
+  verifiedAt: Date | null;
+}
+
 export class CreateAccountServiceOutput {
   message: string;
 }
@@ -74,6 +79,7 @@ export class AccessAccountRepositoryOutput extends PickType(AccountBaseDto, [
   'email',
   'password',
   'permissions',
+  'verifiedAt',
 ]) {
   name: string;
 }
@@ -142,4 +148,11 @@ export class ValidateTokenInput {
   @IsNotEmpty()
   @IsString()
   accountId: string;
+}
+
+export class QueryCallBackUrl {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  callBackUrl: string;
 }

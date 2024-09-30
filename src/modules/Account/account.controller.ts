@@ -1,15 +1,18 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   Post,
   Put,
+  Query,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
 import { CREDENTIALS_KEY } from 'src/utils/constants';
 import { SessionService } from '../Session/session.service';
@@ -18,6 +21,7 @@ import {
   ChangePasswordInput,
   CreateAccountControllerInput,
   DisconnectAccountControllerInput,
+  QueryCallBackUrl,
   RefreshSessionControllerInput,
   ResetPasswordInput,
   ValidateTokenInput,
@@ -59,14 +63,13 @@ export class AccountController {
   @RequirePermissions([Permissions['100']])
   async create(
     @Body()
-    { name, email, password, acceptedTerms }: CreateAccountControllerInput
+    data: CreateAccountControllerInput,
+    @Query() { callBackUrl }: QueryCallBackUrl
   ) {
-    const { message } = await this.accountService.createAccount({
-      name,
-      email,
-      password,
-      acceptedTerms,
-    });
+    const { message } = await this.accountService.createAccount(
+      data,
+      callBackUrl
+    );
 
     return {
       message,
@@ -143,6 +146,20 @@ export class AccountController {
     try {
       await this.accountService.changePassword(changePasswordInput);
       return { message: 'Senha alterada com sucesso' };
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  @ApiTags('confirm email')
+  @Get('confirmemail')
+  @RequirePermissions([Permissions['001']])
+  async confirmEmail(@Query() confirmEmailquery: string, @Res() res: Response) {
+    try {
+      const { callBackUrl } = await this.accountService.confirmEmail(
+        confirmEmailquery
+      );
+      return res.redirect(callBackUrl);
     } catch (e) {
       throw e;
     }
