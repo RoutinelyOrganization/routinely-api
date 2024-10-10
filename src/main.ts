@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
+import { ConfigService } from '@nestjs/config';
 import helmet from 'helmet';
 
 import ValidationPipe from './config/validation-pipe';
@@ -9,6 +10,8 @@ import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  const configService = app.get(ConfigService);
+  const port = configService.get<string>('PORT');
 
   app.use(helmet());
   app.enableCors(corsOptionsConfig);
@@ -17,8 +20,8 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, swaggerDocumentConfig);
   SwaggerModule.setup('', app, document);
 
-  await app.listen(process.env.PORT, () => {
-    console.log(`[ONN] Port: ${process.env.PORT}`);
+  await app.listen(port, () => {
+    console.log(`[ONN] Port: ${port}`);
   });
 }
 

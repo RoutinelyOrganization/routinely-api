@@ -1,6 +1,11 @@
-import { randomBytes } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
-import { SessionRepository } from './session.repository';
+import { randomBytes } from 'node:crypto';
+import { AuthorizationError, InternalServerError } from 'src/config/exceptions';
+import {
+  expirationWhenRememberIsOff,
+  expirationWhenRememberIsOnn,
+} from 'src/utils/constants';
+import { hashDataAsync } from 'src/utils/hashes';
 import {
   CreateSessionServiceInput,
   CreateSessionServiceOutput,
@@ -8,12 +13,7 @@ import {
   FindSessionServiceOutput,
   RefreshTokenServiceOutput,
 } from './session.dtos';
-import { hashDataAsync } from 'src/utils/hashes';
-import { AuthorizationError, InternalServerError } from 'src/config/exceptions';
-import {
-  expirationWhenRememberIsOff,
-  expirationWhenRememberIsOnn,
-} from 'src/utils/constants';
+import { SessionRepository } from './session.repository';
 
 @Injectable()
 export class SessionService {
@@ -46,7 +46,7 @@ export class SessionService {
     const sessionTokenExpiresIn = remember
       ? expirationWhenRememberIsOnn
       : expirationWhenRememberIsOff;
-    const refreshTokenExpiresIn = sessionTokenExpiresIn * (remember ? 4 : 1.5);
+    const refreshTokenExpiresIn = sessionTokenExpiresIn * (remember ? 4 : 2);
     const now = new Date().getTime();
 
     return {

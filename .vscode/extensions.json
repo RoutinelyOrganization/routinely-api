@@ -6,5 +6,6 @@
     "dbaeumer.vscode-eslint",
     "ms-azuretools.vscode-docker",
     "Prisma.prisma",
+    "humao.rest-client"
   ]
 }

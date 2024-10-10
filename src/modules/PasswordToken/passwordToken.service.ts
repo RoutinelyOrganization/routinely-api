@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { randomBytes } from 'node:crypto';
 import * as bcrypt from 'bcrypt';
+import { randomBytes } from 'node:crypto';
 import {
   CreatePasswordCodeOutput,
   CreatePasswordTokenInput,
@@ -48,6 +48,11 @@ export class PasswordTokenService {
     const token = await this.repository.findByAccountId(
       verifyCodeInput.accountId
     );
+
+    if (!token) {
+      return false;
+    }
+
     const isEqual = await bcrypt.compare(verifyCodeInput.code, token.token);
 
     return isEqual;

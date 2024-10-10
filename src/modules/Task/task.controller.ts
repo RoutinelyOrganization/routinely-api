@@ -1,123 +1,122 @@
 import {
-  Controller,
-  Post,
-  Put,
   Body,
-  Req,
-  UseGuards,
-  Param,
-  ForbiddenException,
+  Controller,
   Delete,
-  HttpCode,
   Get,
+  HttpCode,
+  Param,
+  Patch,
+  Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-import { ThrottlerGuard } from '@nestjs/throttler';
-import { TaskService } from './task.service';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
+import { AccountId } from 'src/utils/decorators/accountid.decorator';
 import {
-  CreateTaskInput,
-  TaskIdDto,
-  FindTasksControllerDto,
-  UpdateTaskInput,
-} from './task.dtos';
-import { CREDENTIALS_KEY } from 'src/utils/constants';
-import { RequirePermissions, Permissions, RolesGuard } from 'src/guards';
+  CreateOneDto,
+  DeleteOneDto,
+  ReadManyDto,
+  ReadOneDto,
+  UpdateOneDto,
+} from './task.dto';
+import { TaskService } from './task.service';
 
-@UseGuards(ThrottlerGuard)
-@Controller('tasks')
+@ApiTags('Tarefas')
+@UseGuards(RolesGuard)
+@ApiBearerAuth()
+@Controller('/tasks')
 export class TaskController {
-  constructor(private taskService: TaskService) {}
+  constructor(private readonly taskService: TaskService) {}
 
-  @ApiTags('Tasks')
-  @ApiBearerAuth()
   @Post()
-  @UseGuards(RolesGuard)
-  @RequirePermissions([Permissions['301']])
-  async create(@Body() createTaskInput: CreateTaskInput, @Req() req: Request) {
-    const cred = req[CREDENTIALS_KEY];
-
-    const createdTask = await this.taskService.create({
-      ...createTaskInput,
-      accountId: cred.accountId,
-    });
-    return createdTask;
-  }
-
-  @ApiTags('Tasks')
-  @ApiBearerAuth()
-  @Put('/:id')
-  @UseGuards(RolesGuard)
-  @RequirePermissions([Permissions['302']])
-  async updateById(
-    @Param() input: TaskIdDto,
-    @Body() updateTaskInput: UpdateTaskInput,
-    @Req() req: Request
-  ) {
-    const cred = req[CREDENTIALS_KEY];
-
-    const accountId = await this.taskService.getAccountById(input.id);
-
-    // Authorization
-    if (accountId != cred.accountId) throw new ForbiddenException();
-
-    const updatedTask = await this.taskService.updateById(input.id, {
-      ...updateTaskInput,
-      accountId: cred.accountId,
+  @HttpCode(201)
+  @RequirePermissions([Permissions['300']])
+  async createOne(@Body() input: CreateOneDto, @AccountId() accountId: string) {
+    await this.taskService.saveOne({
+      name: input.name,
+      description: input.description,
+      date: input.date,
+      category: input.category,
+      accountId: accountId,
+      finallyDate: input.finallyDate,
+      quantityPerWeek: input.quantityPerWeek,
+      weekDays: input.weekDays,
+      type: input.type,
     });
 
-    return updatedTask;
+    return {
+      message: 'Tarefa criada com sucesso!',
+    };
   }
 
-  @ApiTags('Tasks')
-  @ApiBearerAuth()
-  @Delete('/:id')
-  @UseGuards(RolesGuard)
-  @RequirePermissions([Permissions['303']])
-  @HttpCode(200)
-  async deleteById(@Param() input: TaskIdDto, @Req() req: Request) {
-    const cred = req[CREDENTIALS_KEY];
-
-    const accountId = await this.taskService.getAccountById(input.id);
-
-    // Authorization
-    if (accountId != cred.accountId) throw new ForbiddenException();
-
-    await this.taskService.deleteById(input.id);
-    return;
-  }
-
-  @ApiTags('Tasks')
-  @ApiBearerAuth()
   @Get()
   @HttpCode(200)
-  @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['301']])
-  async accountTasks(
-    @Query() input: FindTasksControllerDto,
-    @Req() request: Request
-  ) {
-    const { accountId } = request[CREDENTIALS_KEY];
-
-    return await this.taskService.findAccountTasks({
+  async readMany(@Query() input: ReadManyDto, @AccountId() accountId: string) {
+    const tasks = await this.taskService.getMany({
+      accountId: accountId,
       month: input.month,
       year: input.year,
-      accountId,
     });
+
+    return {
+      count: tasks.length,
+      tasks: tasks,
+    };
   }
 
-  @ApiTags('Tasks')
-  @ApiBearerAuth()
   @Get('/:id')
   @HttpCode(200)
-  @UseGuards(RolesGuard)
   @RequirePermissions([Permissions['301']])
-  async getATaskInfo(@Param() input: TaskIdDto, @Req() request: Request) {
-    const { accountId } = request[CREDENTIALS_KEY];
-
-    return await this.taskService.findTaskByid({
-      taskId: input.id,
-      accountId,
+  async readOne(@Param() input: ReadOneDto, @AccountId() accountId: string) {
+    const task = await this.taskService.getOne({
+      accountId: accountId,
+      id: input.id,
     });
+
+    return {
+      task: task,
+    };
+  }
+
+  @Patch()
+  @HttpCode(200)
+  @RequirePermissions([Permissions['302']])
+  async updateOne(@Body() input: UpdateOneDto, @AccountId() accountId: string) {
+    await this.taskService.update({
+      id: input.id,
+      accountId: accountId,
+      name: input.name,
+      description: input.description,
+      date: input.date,
+      category: input.category,
+      checked: input.checked,
+      finallyDate: input.finallyDate,
+      quantityPerWeek: input.quantityPerWeek,
+      weekDays: input.weekDays,
+      type: input.type,
+    });
+
+    return {
+      updated: true,
+    };
+  }
+
+  @Delete('/:id')
+  @HttpCode(200)
+  @RequirePermissions([Permissions['303']])
+  async deleteOne(
+    @Param() input: DeleteOneDto,
+    @AccountId() accountId: string
+  ) {
+    await this.taskService.excludeOne({
+      id: input.id,
+      accountId: accountId,
+    });
+
+    return {
+      deleted: true,
+    };
   }
 }

@@ -1,24 +1,19 @@
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
-  Injectable,
-  BadRequestException,
   ForbiddenException,
+  Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { SessionService } from 'src/modules/Session/session.service';
-import { RoleLevel, Permissions } from './roles.config';
 import { CREDENTIALS_KEY } from 'src/utils/constants';
+import { Permissions, RoleLevel } from './roles.config';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-  private credentials = {
-    accountId: 'anonymous',
-    permissions: RoleLevel.Anonymous,
-  };
-
   constructor(
     private reflector: Reflector,
     private sessionService: SessionService
@@ -58,6 +53,10 @@ export class RolesGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     const firstRequiredRole = requiredRoles?.length && requiredRoles[0];
+    let credentials = {
+      accountId: 'anonymous',
+      permissions: RoleLevel.Anonymous,
+    };
 
     if (!firstRequiredRole) {
       throw new InternalServerErrorException(
@@ -89,12 +88,12 @@ export class RolesGuard implements CanActivate {
     }
 
     if (token) {
-      this.credentials = await this.sessionService.findSessionToken(token);
+      credentials = await this.sessionService.findSessionToken(token);
     }
 
     const isInvalid = !this.validatePermissions(
       requiredRoles,
-      this.credentials.permissions
+      credentials.permissions
     );
 
     if (isInvalid) {
@@ -105,8 +104,8 @@ export class RolesGuard implements CanActivate {
 
     request[CREDENTIALS_KEY] = {
       sessionToken: token ?? '',
-      accountId: this.credentials.accountId,
-      permissions: this.credentials.permissions,
+      accountId: credentials.accountId,
+      permissions: credentials.permissions,
     };
 
     return true;

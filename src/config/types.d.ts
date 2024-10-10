@@ -21,4 +21,6 @@ export type iValidationResponses = {
   fullname: iValidator;
   datePattern: iValidator;
   dateRange: iValidator;
+  monthPattern: iValidator;
+  yearPattern: iValidator;
 };

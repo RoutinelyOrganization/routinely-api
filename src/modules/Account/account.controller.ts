@@ -1,27 +1,32 @@
-import { Request } from 'express';
 import {
-  Controller,
   Body,
+  Controller,
+  Get,
+  HttpCode,
   Post,
   Put,
-  UseGuards,
-  HttpCode,
+  Query,
   Req,
+  Res,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { ThrottlerGuard } from '@nestjs/throttler';
-import {
-  CreateAccountControllerInput,
-  AccessAccountControllerInput,
-  RefreshSessionControllerInput,
-  ResetPasswordInput,
-  ChangePasswordInput,
-  DisconnectAccountControllerInput,
-} from './account.dtos';
-import { AccountService } from './account.service';
-import { SessionService } from '../Session/session.service';
+import { Request, Response } from 'express';
 import { Permissions, RequirePermissions, RolesGuard } from 'src/guards';
 import { CREDENTIALS_KEY } from 'src/utils/constants';
+import { SessionService } from '../Session/session.service';
+import {
+  AccessAccountControllerInput,
+  ChangePasswordInput,
+  CreateAccountControllerInput,
+  DisconnectAccountControllerInput,
+  QueryCallBackUrl,
+  RefreshSessionControllerInput,
+  ResetPasswordInput,
+  ValidateTokenInput,
+} from './account.dtos';
+import { AccountService } from './account.service';
 
 @UseGuards(ThrottlerGuard, RolesGuard)
 @Controller('auth')
@@ -58,14 +63,13 @@ export class AccountController {
   @RequirePermissions([Permissions['100']])
   async create(
     @Body()
-    { name, email, password, acceptedTerms }: CreateAccountControllerInput
+    data: CreateAccountControllerInput,
+    @Query() { callBackUrl }: QueryCallBackUrl
   ) {
-    const { message } = await this.accountService.createAccount({
-      name,
-      email,
-      password,
-      acceptedTerms,
-    });
+    const { message } = await this.accountService.createAccount(
+      data,
+      callBackUrl
+    );
 
     return {
       message,
@@ -123,12 +127,39 @@ export class AccountController {
     }
   }
 
+  @ApiTags('Validate code')
+  @Post('validatecode')
+  @RequirePermissions([Permissions['001']])
+  async validateCode(@Body() validateTokenInput: ValidateTokenInput) {
+    try {
+      await this.accountService.validateCode(validateTokenInput);
+      return { message: 'Validação bem-sucedida!' };
+    } catch (e) {
+      throw e;
+    }
+  }
+
   @ApiTags('Password reset')
   @Put('changepassword')
   @RequirePermissions([Permissions['001']])
   async changePassword(@Body() changePasswordInput: ChangePasswordInput) {
     try {
-      return await this.accountService.changePassword(changePasswordInput);
+      await this.accountService.changePassword(changePasswordInput);
+      return { message: 'Senha alterada com sucesso' };
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  @ApiTags('confirm email')
+  @Get('confirmemail')
+  @RequirePermissions([Permissions['001']])
+  async confirmEmail(@Query() confirmEmailquery: string, @Res() res: Response) {
+    try {
+      const { callBackUrl } = await this.accountService.confirmEmail(
+        confirmEmailquery
+      );
+      return res.redirect(callBackUrl);
     } catch (e) {
       throw e;
     }

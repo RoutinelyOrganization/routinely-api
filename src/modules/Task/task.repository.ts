@@ -1,112 +1,207 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { InternalServerError } from 'src/config/exceptions';
 import { PrismaService } from 'src/prisma/prisma.service';
-import {
-  CreateTaskInput,
-  FindTasksRepositoryInput,
-  UpdateTaskInput,
-} from './task.dtos';
+import type {
+  FindManyInput,
+  FindManyOutput,
+  FindOneOutput,
+  InsertOneInput,
+  TaskId,
+  UpdateOneInput,
+} from './task.types';
 
 @Injectable()
 export class TaskRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createTaskInput: CreateTaskInput) {
-    return await this.prisma.task.create({
-      data: {
-        date: createTaskInput.date,
-        hour: createTaskInput.hour,
-        description: createTaskInput.description,
-        name: createTaskInput.name,
-        priority: createTaskInput.priority,
-        tag: createTaskInput.tag,
-        category: createTaskInput.category,
-        accountId: createTaskInput.accountId,
-      },
-    });
+  async insertOne(input: InsertOneInput): Promise<void> {
+    await this.prismaService.task
+      .create({
+        data: {
+          name: input.name,
+          description: input.description,
+          date: input.date,
+          category: input.category,
+          finallyDate: input.finallyDate,
+          quantityPerWeek: input.quantityPerWeek,
+          weekDays: input.weekDays,
+          type: input.type,
+          account: {
+            connect: {
+              id: input.accountId,
+            },
+          },
+        },
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new InternalServerError({
+            message: 'Erro desconhecido :: '.concat(error.code),
+          });
+        }
+
+        throw new InternalServerError({});
+      });
   }
 
-  async updateById(id: number, updateTaskInput: UpdateTaskInput) {
-    return await this.prisma.task.update({
-      where: {
-        id: id,
-      },
-      data: updateTaskInput,
-    });
+  async findMany(input: FindManyInput): Promise<FindManyOutput> {
+    return await this.prismaService.task
+      .findMany({
+        where: {
+          AND: [
+            { accountId: input.accountId },
+            {
+              date: {
+                gte: input.dateRange.start,
+                lte: input.dateRange.end,
+              },
+            },
+          ],
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          date: true,
+          category: true,
+          checked: true,
+          finallyDate: true,
+          quantityPerWeek: true,
+          weekDays: true,
+          type: true,
+        },
+        orderBy: [
+          {
+            date: 'asc',
+          },
+          {
+            name: 'asc',
+          },
+        ],
+      })
+      .then((response) => {
+        return response ?? [];
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new InternalServerError({
+            message: 'Erro desconhecido :: '.concat(error.code),
+          });
+        }
+
+        throw new InternalServerError({});
+      });
   }
 
-  async findById(id: number) {
-    return await this.prisma.task.findUnique({
-      where: {
-        id: id,
-      },
-    });
-  }
-
-  async deleteById(id: number) {
-    return await this.prisma.task.delete({
-      where: {
-        id: id,
-      },
-    });
-  }
-
-  async findAccountByTaskId(id: number) {
-    const accountId = await this.prisma.task
+  async findOne(taskId: TaskId): Promise<FindOneOutput> {
+    return await this.prismaService.task
       .findUnique({
         where: {
-          id: id,
+          id: taskId,
+        },
+        select: {
+          id: true,
+          name: true,
+          description: true,
+          date: true,
+          category: true,
+          checked: true,
+          accountId: true,
+          finallyDate: true,
+          quantityPerWeek: true,
+          weekDays: true,
+          type: true,
+        },
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new InternalServerError({
+            message: 'Erro desconhecido :: '.concat(error.code),
+          });
+        }
+
+        throw new InternalServerError({});
+      });
+  }
+
+  async findAccountIdByTaskId(taskId: TaskId): Promise<string | null> {
+    return await this.prismaService.task
+      .findUniqueOrThrow({
+        where: {
+          id: taskId,
         },
         select: {
           accountId: true,
         },
       })
-      .then((result) => {
-        return result?.accountId;
+      .then((response) => {
+        return response.accountId ?? null;
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === 'P2025') {
+            return null;
+          }
+
+          throw new InternalServerError({
+            message: 'Erro desconhecido :: '.concat(error.code),
+          });
+        }
+
+        throw new InternalServerError({});
       });
-
-    return accountId;
   }
 
-  async findTasks(filters: FindTasksRepositoryInput['filters']) {
-    const tasks = await this.prisma.task.findMany({
-      where: {
-        AND: filters,
-      },
-      select: {
-        id: true,
-        name: true,
-        date: true,
-        hour: true,
-        tag: true,
-        priority: true,
-        category: true,
-        description: true,
-        checked: true,
-      },
-    });
+  async updateOne(input: UpdateOneInput) {
+    await this.prismaService.task
+      .update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          name: input.name,
+          description: input.description,
+          date: input.date,
+          finallyDate: input.finallyDate,
+          quantityPerWeek: input.quantityPerWeek,
+          category: input.category,
+          checked: input.checked,
+        },
+        select: {
+          id: true,
+        },
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          throw new InternalServerError({
+            message: 'Erro desconhecido :: '.concat(error.code),
+          });
+        }
 
-    return tasks;
+        throw new InternalServerError({});
+      });
   }
 
-  async findUserTaskById(taskId: number) {
-    const task = await this.prisma.task.findUnique({
-      where: {
-        id: taskId,
-      },
-      select: {
-        id: true,
-        name: true,
-        date: true,
-        hour: true,
-        tag: true,
-        priority: true,
-        category: true,
-        description: true,
-        checked: true,
-        accountId: true,
-      },
-    });
+  async deleteOne(taskId: TaskId) {
+    await this.prismaService.task
+      .delete({
+        where: {
+          id: taskId,
+        },
+      })
+      .catch((error: unknown) => {
+        if (error instanceof Prisma.PrismaClientKnownRequestError) {
+          if (error.code === 'P2025') {
+            return null;
+          }
 
-    return task;
+          throw new InternalServerError({
+            message: 'Erro desconhecido :: '.concat(error.code),
+          });
+        }
+
+        throw new InternalServerError({});
+      });
   }
 }

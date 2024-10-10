@@ -57,7 +57,7 @@ export class NotFoundError extends CustomException {
 export class UnprocessableEntityError extends CustomException {
   constructor(props: iCustomException) {
     super(
-      props.message || 'Você não tem permissão alterar esta informação',
+      props.message || 'Sem permissão para alterar a informação',
       422,
       props.property
     );
