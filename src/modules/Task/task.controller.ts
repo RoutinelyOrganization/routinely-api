@@ -33,19 +33,19 @@ export class TaskController {
   @HttpCode(201)
   @RequirePermissions([Permissions['300']])
   async createOne(@Body() input: CreateOneDto, @AccountId() accountId: string) {
-    await this.taskService.saveOne({
+    const { id } = await this.taskService.saveOne({
       name: input.name,
       description: input.description,
       date: input.date,
       category: input.category,
       accountId: accountId,
       finallyDate: input.finallyDate,
-      quantityPerWeek: input.quantityPerWeek,
       weekDays: input.weekDays,
       type: input.type,
     });
 
     return {
+      id,
       message: 'Tarefa criada com sucesso!',
     };
   }
@@ -93,7 +93,6 @@ export class TaskController {
       category: input.category,
       checked: input.checked,
       finallyDate: input.finallyDate,
-      quantityPerWeek: input.quantityPerWeek,
       weekDays: input.weekDays,
       type: input.type,
     });

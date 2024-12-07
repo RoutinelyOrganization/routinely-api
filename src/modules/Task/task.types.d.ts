@@ -3,13 +3,7 @@ import { Account, Task } from '@prisma/client';
 // Service
 export type SaveOneInput = Pick<
   Task,
-  | 'name'
-  | 'description'
-  | 'category'
-  | 'accountId'
-  | 'quantityPerWeek'
-  | 'weekDays'
-  | 'type'
+  'name' | 'description' | 'category' | 'accountId' | 'weekDays' | 'type'
 > & {
   date: string;
   finallyDate?: string;
@@ -31,13 +25,7 @@ export type ExcludeOneInput = GetOneInput;
 export type UpdateInput = Partial<
   Pick<
     Task,
-    | 'name'
-    | 'description'
-    | 'category'
-    | 'checked'
-    | 'quantityPerWeek'
-    | 'type'
-    | 'weekDays'
+    'name' | 'description' | 'category' | 'checked' | 'type' | 'weekDays'
   >
 > &
   Pick<Task, 'id' | 'accountId'> & {
@@ -54,7 +42,6 @@ export type InsertOneInput = Pick<
   | 'date'
   | 'accountId'
   | 'finallyDate'
-  | 'quantityPerWeek'
   | 'weekDays'
   | 'type'
 >;
@@ -67,7 +54,6 @@ export type FindOneOutput = Pick<
   | 'name'
   | 'description'
   | 'finallyDate'
-  | 'quantityPerWeek'
   | 'category'
   | 'date'
   | 'checked'
@@ -96,7 +82,6 @@ export type UpdateOneInput = Partial<
     | 'checked'
     | 'date'
     | 'finallyDate'
-    | 'quantityPerWeek'
     | 'weekDays'
     | 'type'
   >
