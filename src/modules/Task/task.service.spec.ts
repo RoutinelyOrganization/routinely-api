@@ -29,7 +29,6 @@ describe('TaskService Unit Tests', () => {
       description: 'Tarefa 1',
       category: 'Career',
       accountId: '123',
-      quantityPerWeek: 1,
       type: 'habit',
       weekDays: [],
       checked: false,
@@ -51,7 +50,6 @@ describe('TaskService Unit Tests', () => {
     description: 'Tarefa 1',
     category: 'Career',
     accountId: '123',
-    quantityPerWeek: 1,
     weekDays: [],
     type: 'habit',
   };
@@ -78,7 +76,9 @@ describe('TaskService Unit Tests', () => {
 
   describe('Save one', () => {
     it('Happy path - should return a SaveOneOutput', async () => {
-      const insertOneSpy = jest.spyOn(taskRepositoryMock, 'insertOne');
+      const insertOneSpy = jest
+        .spyOn(taskRepositoryMock, 'insertOne')
+        .mockResolvedValue({ id: 'generated-id' });
 
       await service.saveOne(fackData);
       const expected = {

@@ -58,13 +58,6 @@ export class CreateOneDto {
   @IsEarlierThanCurrentDate('finallyDate', { message: responses.dateRange })
   finallyDate?: string;
 
-  @ApiProperty({
-    description: 'Quantidade de repetições da tarefa por semana',
-  })
-  @IsOptional()
-  @IsInt({ message: responses.integer })
-  quantityPerWeek?: number;
-
   @ApiProperty({ enum: DaysOfWeek, isArray: true })
   @IsOptional()
   @IsEnum(DaysOfWeek, { each: true, message: responses.enum })

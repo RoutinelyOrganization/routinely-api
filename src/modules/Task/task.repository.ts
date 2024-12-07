@@ -15,8 +15,8 @@ import type {
 export class TaskRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async insertOne(input: InsertOneInput): Promise<void> {
-    await this.prismaService.task
+  async insertOne(input: InsertOneInput): Promise<any> {
+    const result = await this.prismaService.task
       .create({
         data: {
           name: input.name,
@@ -24,7 +24,6 @@ export class TaskRepository {
           date: input.date,
           category: input.category,
           finallyDate: input.finallyDate,
-          quantityPerWeek: input.quantityPerWeek,
           weekDays: input.weekDays,
           type: input.type,
           account: {
@@ -43,6 +42,8 @@ export class TaskRepository {
 
         throw new InternalServerError({});
       });
+
+    return result;
   }
 
   async findMany(input: FindManyInput): Promise<FindManyOutput> {
@@ -67,7 +68,6 @@ export class TaskRepository {
           category: true,
           checked: true,
           finallyDate: true,
-          quantityPerWeek: true,
           weekDays: true,
           type: true,
         },
@@ -109,7 +109,6 @@ export class TaskRepository {
           checked: true,
           accountId: true,
           finallyDate: true,
-          quantityPerWeek: true,
           weekDays: true,
           type: true,
         },
@@ -164,7 +163,6 @@ export class TaskRepository {
           description: input.description,
           date: input.date,
           finallyDate: input.finallyDate,
-          quantityPerWeek: input.quantityPerWeek,
           category: input.category,
           checked: input.checked,
         },
