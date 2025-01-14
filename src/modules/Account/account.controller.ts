@@ -66,6 +66,8 @@ export class AccountController {
     data: CreateAccountControllerInput,
     @Query() { callBackUrl }: QueryCallBackUrl
   ) {
+    console.log(callBackUrl);
+
     const { message } = await this.accountService.createAccount(
       data,
       callBackUrl

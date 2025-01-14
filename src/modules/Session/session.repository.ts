@@ -102,9 +102,6 @@ export class SessionRepository {
       .findFirst({
         where: {
           sessionToken,
-          sessionExpiresIn: {
-            lt: now,
-          },
           refreshExpiresIn: {
             gt: now,
           },

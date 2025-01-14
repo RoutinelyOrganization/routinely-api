@@ -29,11 +29,13 @@ export class TaskService {
       ? this.transformDate(input.finallyDate)
       : null;
 
-    await this.taskRepository.insertOne({
+    const { id } = await this.taskRepository.insertOne({
       ...input,
       date: localeDate,
       finallyDate: localeFinnalyDate,
     });
+
+    return { id };
   }
 
   async getMany(input: GetManyInput): Promise<FindManyOutput> {
@@ -74,7 +76,6 @@ export class TaskService {
       !input.category &&
       !input.checked &&
       !input.finallyDate &&
-      !input.quantityPerWeek &&
       !input.weekDays &&
       !input.type
     ) {
@@ -110,7 +111,6 @@ export class TaskService {
       date: date ?? undefined,
       finallyDate: finallyDate ?? undefined,
       category: input.category ?? undefined,
-      quantityPerWeek: input.quantityPerWeek ?? undefined,
       weekDays: input.weekDays ?? undefined,
       type: input.type ?? undefined,
       checked: input.checked ?? undefined,
