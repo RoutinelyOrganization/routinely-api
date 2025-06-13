@@ -48,7 +48,7 @@ export class AccountService {
     const key = Buffer.from(process.env.SECRET_KEY_CRYPTO, 'hex');
     const iv = Buffer.from(process.env.IV, 'hex');
     const decipher = crypto.createDecipheriv(
-      'aes as any-256-cbc',
+      'aes-256-cbc',
       key as any,
       iv as any
     );
