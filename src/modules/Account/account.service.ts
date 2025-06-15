@@ -31,26 +31,26 @@ export class AccountService {
     private tokenService: PasswordTokenService,
     private mailingService: MailingService
   ) {}
-
   private async hashPassword(password: string): Promise<string> {
     return await hash(password, Number(process.env.SALT_ROUNDS));
   }
   private encrypt(text: string) {
-    const cipher = crypto.createCipheriv(
-      'aes-256-cbc',
-      process.env.SECRET_KEY_CRYPTO,
-      process.env.IV
-    );
+    const key = Buffer.from(process.env.SECRET_KEY_CRYPTO, 'hex');
+    const iv = Buffer.from(process.env.IV, 'hex');
+
+    const cipher = crypto.createCipheriv('aes-256-cbc', key as any, iv as any);
     let encrypted = cipher.update(text, 'utf8', 'hex');
     encrypted += cipher.final('hex');
     return encrypted;
   }
 
   private decrypt(text: string) {
+    const key = Buffer.from(process.env.SECRET_KEY_CRYPTO, 'hex');
+    const iv = Buffer.from(process.env.IV, 'hex');
     const decipher = crypto.createDecipheriv(
       'aes-256-cbc',
-      process.env.SECRET_KEY_CRYPTO,
-      process.env.IV
+      key as any,
+      iv as any
     );
     let decrypted = decipher.update(text, 'hex', 'utf8');
     decrypted += decipher.final('utf8');
