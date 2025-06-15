@@ -5,7 +5,7 @@
 > - Crie PRs pequenos;
 > - Forneça testes para as alterações;
 > - Use o padrão de commit convencional;
-> - tualize todas as documentações necessárias;
+> - Atualize todas as documentações necessárias;
 -->
 
 ## Tipo de PR
@@ -20,18 +20,23 @@ Marque todos os necessários
 - [ ] Tests unit <!-- Comportamento dos métodos -->
 
 ## 🎯 Objetivo
+
 <!-- Descreva o objetivo das alterações. -->
 
 ## Alterações
+
 <!-- Liste todas as mudanças feitas. -->
 
 ## Requisitos de aceite
+
 <!-- Quais os pontos de validação do que foi feito? -->
 
 ## Testes
+
 <!-- Adicionou testes e2e/unitários? -->
 
 ## Tarefas pós-implantação
+
 <!-- Algo precisa ser feito após implanter a branch? -->
 
 ## 🛃 Para controle
