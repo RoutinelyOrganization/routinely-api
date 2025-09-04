@@ -17,4 +17,5 @@ EXPOSE 3000
 
 ENTRYPOINT ["dockerize", "-wait", "tcp://postgres:5432"]
 
-CMD ["npm", "run", "start:dev"]
+CMD ["sh", "-c", "npx prisma db push && npm run start:dev"]
+
